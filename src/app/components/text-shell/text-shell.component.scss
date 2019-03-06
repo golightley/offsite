@@ -1,0 +1,58 @@
+@import "./mixins/bouncing-lines-background";
+
+// WIP on gist: https://www.sassmeister.com/gist/fc8790761e3a6d9dc83f7326c1bc6ab4
+// Inspiration for the animation: https://cloudcannon.com/deconstructions/2014/11/15/facebook-content-placeholder-deconstruction.html
+:host {
+  --text-shell-background: transparent;
+  --text-shell-line-color: #EEE;
+  --text-shell-line-height: 16px;
+  --text-shell-line-gutter: 3px;
+
+  display: block;
+  position: relative;
+  color: transparent;
+  background-color: var(--text-shell-background);
+  transform-style: preserve-3d;
+  // To fix 1px line misalignment in chrome: https://developer.mozilla.org/en-US/docs/Web/CSS/background-clip
+  // (I also noticed that if I set the color to a solid color instead of having opacity, the issue doesn't happen)
+  background-clip: content-box;
+
+  // Default one line text-shell
+  @include bouncing-lines-background(1);
+
+  &[lines="1"] {
+    @include bouncing-lines-background(1);
+  }
+
+  &[lines="2"] {
+    @include bouncing-lines-background(2);
+  }
+
+  &[lines="3"] {
+    @include bouncing-lines-background(3);
+  }
+
+  &[lines="4"] {
+    @include bouncing-lines-background(4);
+  }
+
+  &[lines="5"] {
+    @include bouncing-lines-background(5);
+  }
+
+  &[lines="6"] {
+    @include bouncing-lines-background(6);
+  }
+
+  &.text-loaded {
+    background: none;
+    min-height: inherit;
+    color: inherit;
+    // 0 is the default value (see: https://stackoverflow.com/a/15963044/1116959)
+    animation: 0;
+  }
+
+  &.no-animation {
+    animation: 0;
+  }
+}
