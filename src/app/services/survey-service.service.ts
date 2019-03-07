@@ -5,6 +5,8 @@ import * as firebase from 'firebase/app';
   providedIn: 'root'
 })
 export class SurveyServiceService {
+  
+  public myParam: any; 
 
   constructor() { }
 
@@ -22,17 +24,21 @@ export class SurveyServiceService {
     });
   }
 
+  //pull quesitons
   getQuestions(selectedSurveyObect){
     let questions = [];
     //iterate through list of questions
     let surveyID = selectedSurveyObect.data().survey;
+    console.log("Survey id... "+surveyID);
+
     //pull each question from firebase 
     return new Promise<any>((resolve, reject) => {
       firebase.firestore().collection("questions").where("surveys", "array-contains", surveyID).get()
-      .then((docs)=>{
-        docs.forEach((doc)=>{
+      .then((questionData)=>{
+        questionData.forEach((doc)=>{
           questions.push(doc);
         })
+        console.log(questions);
         resolve(questions);
       }, err => reject(err));
     });

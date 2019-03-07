@@ -1,7 +1,9 @@
-import { Component, ViewEncapsulation} from '@angular/core';
+import { Component,OnInit, ViewEncapsulation,} from '@angular/core';
 import { FormGroup, FormControl } from '@angular/forms';
 
 import { counterRangeValidator } from '../../components/counter-input/counter-input.component';
+import * as firebase from 'firebase/app';
+import { SurveyServiceService } from '../../services/survey-service.service';
 
 @Component({
   selector: 'forms-filters-page',
@@ -10,7 +12,7 @@ import { counterRangeValidator } from '../../components/counter-input/counter-in
     './styles/forms-filters.page.scss'
   ]
 })
-export class FormsFiltersPage {
+export class FormsFiltersPage implements OnInit {
   rangeForm: any;
   checkboxForm: FormGroup;
   radioForm: FormGroup;
@@ -20,8 +22,11 @@ export class FormsFiltersPage {
   counterForm: any;
   ratingForm: FormGroup;
   radioColorForm: FormGroup;
+  questions: any = [];
 
-  constructor() {
+
+  constructor(public surveyService: SurveyServiceService) {
+    
     this.rangeForm = new FormGroup({
       single: new FormControl(25),
       dual: new FormControl({lower: 12, upper: 23})
@@ -73,8 +78,20 @@ export class FormsFiltersPage {
       selected_color: new FormControl('#fc9961')
     });
   }
-
+  ngOnInit(): void {
+    // get questions based on survey passed in notifications
+    this.getQuestions();
+  }
   rangeChange(range: Range) {
     console.log('range change', range);
   }
+
+  getQuestions(){
+  this.surveyService.getQuestions(this.surveyService.myParam).then((questiondata)=>{
+    console.log("Question data...");
+    this.questions = questiondata;
+    console.log(this.questions);
+  })
+  }
+
 }

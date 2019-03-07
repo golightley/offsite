@@ -15,6 +15,7 @@ require('firebase/auth')
   ]
 })
 export class NotificationsPage implements OnInit {
+  
   notifications: any = [];
 
   constructor(
@@ -28,7 +29,9 @@ export class NotificationsPage implements OnInit {
   ngOnInit(): void {
 
     //get user ID 
-    let userId: any = firebase.auth().currentUser.uid;
+    // let userId: any = firebase.auth().currentUser.uid;
+    let userId: any = "AKfOgVZrSTYsYN01JA0NUTicf703";
+
     console.log("UID"+userId);
 
     // get notification data from the survey service 
@@ -43,11 +46,12 @@ export class NotificationsPage implements OnInit {
 
   }
     teamSurvey(notification){
-      this.NotificationsService.myParam = notification;
-      this.surveyService.getQuestions(notification).then((questiondata)=>{
-        console.log("Question data...");
-        console.log(questiondata);
-      })
+      // this.NotificationsService.myParam = notification;
+      // this.surveyService.getQuestions(notification).then((questiondata)=>{
+      //   console.log("Question data...");
+      //   console.log(questiondata);
+      // })
+      this.surveyService.myParam = notification;
       this.navCtrl.navigateForward('/forms-filters');
     }
   
