@@ -23,6 +23,8 @@ export class FormsFiltersPage implements OnInit {
   ratingForm: FormGroup;
   radioColorForm: FormGroup;
   questions: any = [];
+  responses: any = [];
+
 
 
   constructor(public surveyService: SurveyServiceService) {
@@ -92,6 +94,9 @@ export class FormsFiltersPage implements OnInit {
     this.questions = questiondata;
     console.log(this.questions);
   })
+  }
+  log(){
+    console.log(this.responses);
   }
 
 }
