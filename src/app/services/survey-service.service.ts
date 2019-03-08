@@ -7,6 +7,7 @@ import * as firebase from 'firebase/app';
 export class SurveyServiceService {
   
   public myParam: any; 
+  public responses: any; 
 
   constructor() { }
 
@@ -43,6 +44,70 @@ export class SurveyServiceService {
       }, err => reject(err));
     });
   }
+
+    //submit survey response 
+    submitSurvey(surveyResponses){
+      console.log(Object.entries(surveyResponses));
+      this.responses = Object.entries(surveyResponses);
+      this.responses.forEach((response)=>{
+          console.log("for each...")
+          console.log(response);  
+          this.updateDocument(response); 
+          this.createResponse(response);
+      })
+    }
+
+    updateDocument(response){
+      // get data 
+      var questionRef = firebase.firestore().collection("questions").doc(response[0]);
+
+      questionRef.get().then(function(doc) {
+        if (doc.exists) {
+            console.log("Document data:", doc.data());
+            // Set the "capital" field of the city 'DC'
+              return questionRef.update({
+                lastresponse: response[1],
+                numresponses: doc.data().numresponses +1,
+                avereragescore:  (((doc.data().avereragescore * doc.data().numresponses) + response[1])) / (doc.data().numresponses +1),
+              })
+              .then(function() {
+                console.log("Document successfully updated!");
+              })
+              .catch(function(error) {
+                // The document probably doesn't exist.
+                console.error("Error updating document: ", error);
+              });
+            
+        } else {
+            // doc.data() will be undefined in this case
+            console.log("No such document!");
+        }
+    }).catch(function(error) {
+        console.log("Error getting document:", error);
+    });
+
+      // Set the "capital" field of the city 'DC'
+      // Atomically add a new region to the "regions" array field.
+      questionRef.update({
+        responses: firebase.firestore.FieldValue.arrayUnion(response[1])
+      });
+    }
+    
+
+    createResponse(response){
+      // Add a new document with a generated id.
+      firebase.firestore().collection("surveyResponses").add({
+        question: response[0],
+        answer: response[1],
+        user:firebase.auth().currentUser.uid,
+      })
+      .then(function(docRef) {
+        console.log("Document written with ID: ", docRef.id);
+      })
+      .catch(function(error) {
+        console.error("Error adding document: ", error);
+      });
+    }
 
 
 }

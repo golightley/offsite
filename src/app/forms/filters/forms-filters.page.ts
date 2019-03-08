@@ -23,7 +23,7 @@ export class FormsFiltersPage implements OnInit {
   ratingForm: FormGroup;
   radioColorForm: FormGroup;
   questions: any = [];
-  responses: any = [];
+  responses: any = {};
 
 
 
@@ -95,8 +95,18 @@ export class FormsFiltersPage implements OnInit {
     console.log(this.questions);
   })
   }
-  log(){
+  submitSurvey(){
+    console.log("Survey submitted--->")
     console.log(this.responses);
+
+    console.log("FIrst element")
+    console.log(this.responses[0]);
+
+
+
+    // iterate through each survey response=
+    this.surveyService.responses = this.responses;
+    this.surveyService.submitSurvey(this.responses);
   }
 
 }
