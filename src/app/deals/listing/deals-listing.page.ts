@@ -1,7 +1,9 @@
 import { Component, OnInit, HostBinding } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-
 import { DealsListingModel } from './deals-listing.model';
+import { SurveyServiceService } from '../../services/survey-service.service';
+import * as firebase from 'firebase/app';
+require('firebase/auth')
 
 @Component({
   selector: 'app-deals-listing',
@@ -14,18 +16,26 @@ import { DealsListingModel } from './deals-listing.model';
 })
 export class DealsListingPage implements OnInit {
   listing: DealsListingModel;
+  results: any = [];
+
 
   @HostBinding('class.is-shell') get isShell() {
     return (this.listing && this.listing.isShell) ? true : false;
   }
 
-  constructor(private route: ActivatedRoute) { }
+  constructor(
+    private route: ActivatedRoute,
+    public surveyService: SurveyServiceService,
+    ) { }
 
   ngOnInit(): void {
     if (this.route && this.route.data) {
       // We resolved a promise for the data Observable
       const promiseObservable = this.route.data;
       console.log('Route Resolve Observable => promiseObservable: ', promiseObservable);
+      
+      //get results to show for each card 
+      this.getResults();
 
       if (promiseObservable) {
         promiseObservable.subscribe(promiseValue => {
@@ -53,5 +63,12 @@ export class DealsListingPage implements OnInit {
     } else {
       console.warn('No data coming from Route Resolver');
     }
+  }
+
+  getResults(){
+    this.surveyService.getResults(firebase.auth().currentUser.uid).then((resultsData)=>{
+      this.results = resultsData;
+      console.log(this.results);
+    })
   }
 }

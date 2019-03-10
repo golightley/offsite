@@ -45,6 +45,24 @@ export class SurveyServiceService {
     });
   }
 
+  //pull quesitons for results tab
+  getResults(userID){
+    let questions = [];
+    //pull each question from firebase 
+    return new Promise<any>((resolve, reject) => {
+      firebase.firestore().collection("questions").where("users", "array-contains", userID).get()
+      .then((questionData)=>{
+        questionData.forEach((doc)=>{
+          questions.push(doc);
+        })
+        console.log("Printing result data for the results page...")
+        console.log(questions);
+        resolve(questions);
+      }, err => reject(err));
+    });
+  }
+
+
     //submit survey response 
     submitSurvey(surveyResponses){
       console.log(Object.entries(surveyResponses));
@@ -64,11 +82,22 @@ export class SurveyServiceService {
       questionRef.get().then(function(doc) {
         if (doc.exists) {
             console.log("Document data:", doc.data());
+            let oldTotal  = (doc.data().averagescore * doc.data().numresponses);
+            let newTotal  = parseInt(response[1], 10) + oldTotal;
+            let newNumRes = doc.data().numresponses +1;
+            let newAvg    = newTotal / newNumRes;
+
+            console.log("Old total:"+oldTotal + "new total:"+newTotal + "new responses #"+newNumRes + "New average"+ newAvg)
+
+
+            // 1 *2 / # of res (2)
             // Set the "capital" field of the city 'DC'
               return questionRef.update({
                 lastresponse: response[1],
-                numresponses: doc.data().numresponses +1,
-                avereragescore:  (((doc.data().avereragescore * doc.data().numresponses) + response[1])) / (doc.data().numresponses +1),
+                averagescore:  newAvg,
+                numresponses:newNumRes,
+                lastUpdate: firebase.firestore.FieldValue.serverTimestamp()
+
               })
               .then(function() {
                 console.log("Document successfully updated!");
@@ -100,6 +129,8 @@ export class SurveyServiceService {
         question: response[0],
         answer: response[1],
         user:firebase.auth().currentUser.uid,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+
       })
       .then(function(docRef) {
         console.log("Document written with ID: ", docRef.id);
@@ -111,5 +142,3 @@ export class SurveyServiceService {
 
 
 }
-
-

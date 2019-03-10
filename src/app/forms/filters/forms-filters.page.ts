@@ -4,6 +4,7 @@ import { FormGroup, FormControl } from '@angular/forms';
 import { counterRangeValidator } from '../../components/counter-input/counter-input.component';
 import * as firebase from 'firebase/app';
 import { SurveyServiceService } from '../../services/survey-service.service';
+import { AlertController, NavController} from '@ionic/angular';
 
 @Component({
   selector: 'forms-filters-page',
@@ -27,7 +28,12 @@ export class FormsFiltersPage implements OnInit {
 
 
 
-  constructor(public surveyService: SurveyServiceService) {
+  constructor(
+    public surveyService: SurveyServiceService,
+    private navCtrl: NavController, 
+    public alertController: AlertController,
+    
+    ) {
     
     this.rangeForm = new FormGroup({
       single: new FormControl(25),
@@ -98,15 +104,22 @@ export class FormsFiltersPage implements OnInit {
   submitSurvey(){
     console.log("Survey submitted--->")
     console.log(this.responses);
-
     console.log("FIrst element")
     console.log(this.responses[0]);
-
-
-
     // iterate through each survey response=
     this.surveyService.responses = this.responses;
     this.surveyService.submitSurvey(this.responses);
+    // this.presentAlert();
+    this.navCtrl.navigateBack('app/categories/deals');
+
   }
 
+  async presentAlert() {
+    const alert = await this.alertController.create({
+      header: 'Thank you!',
+      message: 'Your response have been recorded.',
+      buttons: ['OK']
+    });
+    await alert.present();
+  }
 }
