@@ -14,6 +14,8 @@ import { ComponentsModule } from './components/components.module';
 import { ServiceWorkerModule } from '@angular/service-worker';
 
 import { environment } from '../environments/environment';
+import { HttpClientModule } from '@angular/common/http';
+
 
 import * as firebase from 'firebase/app';
 import 'firebase/firestore';
@@ -40,6 +42,7 @@ firebase.firestore().settings({
     IonicModule.forRoot(),
     AppRoutingModule,
     ComponentsModule,
+    HttpClientModule,
     ServiceWorkerModule.register('/ngsw-worker.js', { enabled: environment.production })
   ],
   providers: [

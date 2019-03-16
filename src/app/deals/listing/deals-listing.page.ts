@@ -3,6 +3,8 @@ import { ActivatedRoute } from '@angular/router';
 import { DealsListingModel } from './deals-listing.model';
 import { SurveyServiceService } from '../../services/survey-service.service';
 import * as firebase from 'firebase/app';
+import { HttpClient } from '@angular/common/http';
+
 require('firebase/auth')
 
 @Component({
@@ -26,6 +28,7 @@ export class DealsListingPage implements OnInit {
   constructor(
     private route: ActivatedRoute,
     public surveyService: SurveyServiceService,
+    private http:HttpClient
     ) { }
 
   ngOnInit(): void {
@@ -69,6 +72,24 @@ export class DealsListingPage implements OnInit {
     this.surveyService.getResults(firebase.auth().currentUser.uid).then((resultsData)=>{
       this.results = resultsData;
       console.log(this.results);
+    })
+  }
+
+
+  // this should be moved to the service 
+  like(result){
+    console.log("Like function fired...");
+    let body  = {
+      questId:result.id,
+      userId: firebase.auth().currentUser.uid,
+      action: "like"
+    }
+    this.http.post("https://us-central1-offsite-9f67c.cloudfunctions.net/updateLikesCount", JSON.stringify(body),{
+      responseType:"text"
+    }).subscribe((data) => {
+      console.log(data);
+    }, (error) => {
+      console.log(error)
     })
   }
 }
