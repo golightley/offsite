@@ -46,7 +46,7 @@
     <ion-toolbar class="message-form">
       <ion-row>
         <ion-col>
-          <ion-textarea #chatMessage class="toolbar-content"  placeholder="Write a suggestion..." [(ngModel)]="this.message" (ionFocus)="scrollBottom()" (keyup.enter)="sendMessage();" (click)="scrollBottom()" autofocus></ion-textarea>
+          <ion-textarea #chatMessage class="toolbar-content"  placeholder="Write a suggestion..." [(ngModel)]="this.message" (ionFocus)="scrollBottom()" (keyup.enter)="createComment();" (click)="scrollBottom()" autofocus></ion-textarea>
         </ion-col>
         <ion-col width-10>
           <ion-buttons end class="send-bt">

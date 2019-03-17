@@ -82,6 +82,7 @@ export class DealsListingPage implements OnInit {
     this.surveyService.myParam = result;
     // navigate to [routerLink]="['/app/user/friends']"
     this.router.navigateByUrl('/app/user/friends');
+    
   }
 
   // this should be moved to the service 

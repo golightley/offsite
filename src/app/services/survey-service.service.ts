@@ -63,11 +63,60 @@ export class SurveyServiceService {
   }
 
     //get the comments associated with a specfic survey questino
+    // getComments(questionID){
+    //   let comments = [];
+    //   //pull each question from firebase 
+    //   return new Promise<any>((resolve, reject) => {
+    //     firebase.firestore().collection("comments").where("questionId", "==", questionID).get()
+    //     .then((commentData)=>{
+    //       commentData.forEach((doc)=>{
+    //         comments.push(doc);
+    //       })
+    //       console.log("Printing result data for the comments page...")
+    //       console.log(comments);
+    //       resolve(comments);
+    //     }, err => reject(err));
+    //   });
+    // }
+
+    updateComments(questionID){
+
+      let query = firebase.firestore().collection("comments").where("questionId", "==", questionID)
+
+      query.onSnapshot((snapshot)=>{
+        console.log("Changed")
+        console.log(snapshot)
+
+        //retrieve anything that has changed
+        let changedDocs = snapshot.docChanges();
+        changedDocs.forEach((change) => {
+
+          if(change.type == "added"){
+            return change;
+          }
+
+          if(change.type == "modified"){
+
+          }
+          
+          if(change.type == "removed"){
+
+          }
+
+        })
+
+      })
+
+    }
+
     getComments(questionID){
       let comments = [];
       //pull each question from firebase 
       return new Promise<any>((resolve, reject) => {
-        firebase.firestore().collection("comments").where("questionId", "==", questionID).get()
+
+        let query = firebase.firestore().collection("comments").where("questionId", "==", questionID)
+
+        query.get()
         .then((commentData)=>{
           commentData.forEach((doc)=>{
             comments.push(doc);
@@ -78,6 +127,10 @@ export class SurveyServiceService {
         }, err => reject(err));
       });
     }
+
+
+
+
 
 
     //submit survey response 

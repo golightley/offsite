@@ -25,27 +25,18 @@
         <ion-col size="2">
           <ion-button class="bookmark-button" expand="block" fill="clear" color="claim" (click)="viewComments(result)" >
             <ion-icon slot="icon-only" name="chatboxes"  ></ion-icon>
+            <h4 class="item-name">{{result.data().commentsCount || 0}}</h4>
           </ion-button>
         </ion-col>
       </ion-row>
       <ion-row class="bottom-row">
         <ion-col class="code-wrapper">
-          <span class="code-cta"> {{result.data().averagescore}}</span>
         </ion-col>
-        <!-- <ion-col class="time-left-wrapper" size="5" [ngClass]="{'countdown-active': ((item.expirationDate | appTimeDifference) > 0 && (item.expirationDate | appTimeDifference) <= 2)}">
-          <span class="expiration-cta">DEAL {{ ((item.expirationDate | appTimeDifference) < 0) ? 'EXPIRED' : 'EXPIRES IN' }}:</span>
-          <ng-container *ngIf="((item.expirationDate | appTimeDifference) < 0 || (item.expirationDate | appTimeDifference) > 2)">
-            <span class="item-time-left">
-              <app-text-shell [data]="(item.expirationDate | appTimeAgo)" class="no-animation"></app-text-shell>
-            </span>
-          </ng-container>
-          <ng-container *ngIf="((item.expirationDate | appTimeDifference) > 0 && (item.expirationDate | appTimeDifference) <= 2)">
-            <ion-row class="countdown-wrapper">
-              <app-countdown-timer class="item-countdown" fill="inner-time" [end]="item.expirationDate" [units]="{from: 'hour', to: 'second'}"></app-countdown-timer>
-            </ion-row>
-          </ng-container>
-        </ion-col> -->
       </ion-row>
+      <ion-row>
+          <span class="code-cta"> {{result.data().averagescore}}</span>
+      </ion-row>
+
     </div>
   </ng-container>
 </ion-content>
