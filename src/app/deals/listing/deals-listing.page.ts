@@ -4,6 +4,7 @@ import { DealsListingModel } from './deals-listing.model';
 import { SurveyServiceService } from '../../services/survey-service.service';
 import * as firebase from 'firebase/app';
 import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
 
 require('firebase/auth')
 
@@ -28,7 +29,8 @@ export class DealsListingPage implements OnInit {
   constructor(
     private route: ActivatedRoute,
     public surveyService: SurveyServiceService,
-    private http:HttpClient
+    private http:HttpClient,
+    private router: Router
     ) { }
 
   ngOnInit(): void {
@@ -75,6 +77,12 @@ export class DealsListingPage implements OnInit {
     })
   }
 
+  viewComments(result){
+    // store question ID in service
+    this.surveyService.myParam = result;
+    // navigate to [routerLink]="['/app/user/friends']"
+    this.router.navigateByUrl('/app/user/friends');
+  }
 
   // this should be moved to the service 
   like(result){

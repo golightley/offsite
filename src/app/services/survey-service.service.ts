@@ -62,6 +62,23 @@ export class SurveyServiceService {
     });
   }
 
+    //get the comments associated with a specfic survey questino
+    getComments(questionID){
+      let comments = [];
+      //pull each question from firebase 
+      return new Promise<any>((resolve, reject) => {
+        firebase.firestore().collection("comments").where("questionId", "==", questionID).get()
+        .then((commentData)=>{
+          commentData.forEach((doc)=>{
+            comments.push(doc);
+          })
+          console.log("Printing result data for the comments page...")
+          console.log(comments);
+          resolve(comments);
+        }, err => reject(err));
+      });
+    }
+
 
     //submit survey response 
     submitSurvey(surveyResponses){
@@ -74,6 +91,8 @@ export class SurveyServiceService {
           this.createResponse(response);
       })
     }
+
+
 
     updateDocument(response){
       // get data 
@@ -128,6 +147,24 @@ export class SurveyServiceService {
       firebase.firestore().collection("surveyResponses").add({
         question: response[0],
         answer: response[1],
+        user:firebase.auth().currentUser.uid,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+
+      })
+      .then(function(docRef) {
+        console.log("Document written with ID: ", docRef.id);
+      })
+      .catch(function(error) {
+        console.error("Error adding document: ", error);
+      });
+    }
+
+    createComment(surveyId,comment){
+      // Add a new document with a generated id.
+      firebase.firestore().collection("comments").add({
+        questionId: surveyId,
+        text: comment,
+        name:"Anonymous",
         user:firebase.auth().currentUser.uid,
         timestamp: firebase.firestore.FieldValue.serverTimestamp()
 
