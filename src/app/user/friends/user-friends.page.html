@@ -25,7 +25,9 @@
         </div>
       </ion-col>
       <ion-col class="user-actions-wrapper">
-          <ion-icon name="heart"></ion-icon>
+          <ion-icon name="arrow-round-up" (click)="increaseScore(friend)" ></ion-icon>
+          <h6>{{friend.data().score}}</h6>
+          <ion-icon name="arrow-round-down" (click)="decreaseScore(friend)"></ion-icon>
         <!-- <ion-button *ngIf="!friend.following" class="user-action" expand="block" size="small" color="primary">Vote</ion-button> -->
       </ion-col>
     </ion-row>

@@ -3,6 +3,8 @@ import { ActivatedRoute } from '@angular/router';
 import { SurveyServiceService } from '../../services/survey-service.service';
 import { UserFriendsModel } from './user-friends.model';
 import * as firebase from 'firebase/app';
+import { HttpClient } from '@angular/common/http';
+
 
 @Component({
   selector: 'app-user-friends',
@@ -32,6 +34,7 @@ export class UserFriendsPage implements OnInit {
   constructor(
     private route: ActivatedRoute,    
     public surveyService: SurveyServiceService,
+    private http:HttpClient,
     ) { }
 
   ngOnInit(): void {
@@ -105,6 +108,40 @@ export class UserFriendsPage implements OnInit {
   //     that.content.scrollToBottom();    
   //   }, 300);
   // }
+
+    // this should be moved to the service 
+    increaseScore(result){
+      console.log("Update score function fired...");
+      let body  = {
+        questId:result.id,
+        userId: firebase.auth().currentUser.uid,
+        action: "upvote"
+      }
+      this.http.post("https://us-central1-offsite-9f67c.cloudfunctions.net/updateScore", JSON.stringify(body),{
+        responseType:"text"
+      }).subscribe((data) => {
+        console.log(data);
+      }, (error) => {
+        console.log(error)
+      })
+    }
+
+        // this should be moved to the service 
+        decreaseScore(result){
+          console.log("Update score function fired...");
+          let body  = {
+            questId:result.id,
+            userId: firebase.auth().currentUser.uid,
+            action: "downvote"
+          }
+          this.http.post("https://us-central1-offsite-9f67c.cloudfunctions.net/updateScore", JSON.stringify(body),{
+            responseType:"text"
+          }).subscribe((data) => {
+            console.log(data);
+          }, (error) => {
+            console.log(error)
+          })
+        }
 
 
   searchList(): void {
