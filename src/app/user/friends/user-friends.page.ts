@@ -77,7 +77,21 @@ export class UserFriendsPage implements OnInit {
         }
 
         if(change.type == "modified"){
+          
+          let index = 0;
+          for (let i=0; i<this.comments.length; i++) {
+            if(this.comments[i].id == change.doc.id){
+              index = i;
+            }
 
+          }
+          
+          //get the index of the object 
+          console.log("Modified called...");
+          console.log(change.doc);
+          console.log(this.comments)
+          console.log("index" + index);
+          this.comments[index].data().score = change.doc.data().score;
         }
         
         if(change.type == "removed"){
@@ -96,11 +110,11 @@ export class UserFriendsPage implements OnInit {
     this.message = '';
   }
 
-  segmentChanged(ev): void {
-    this.segmentValue = ev.detail.value;
-    // Check if there's any filter and apply it
-    this.searchList();
-  }
+  // segmentChanged(ev): void {
+  //   this.segmentValue = ev.detail.value;
+  //   // Check if there's any filter and apply it
+  //   this.searchList();
+  // }
   
   // scrollBottom() {
   //   var that = this;
@@ -132,7 +146,7 @@ export class UserFriendsPage implements OnInit {
           let body  = {
             questId:result.id,
             userId: firebase.auth().currentUser.uid,
-            action: "downvote"
+            action: "upvote"
           }
           this.http.post("https://us-central1-offsite-9f67c.cloudfunctions.net/updateScore", JSON.stringify(body),{
             responseType:"text"
@@ -159,5 +173,12 @@ export class UserFriendsPage implements OnInit {
   filterList(list, query): Array<any> {
     return list.filter(item => item.name.toLowerCase().includes(query.toLowerCase()));
   }
+
+  segmentChanged($event){
+    console.log(event);
+    this.message = "Our team should keep doing..."
+  }
+
+
 }
 

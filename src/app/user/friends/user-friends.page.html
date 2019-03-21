@@ -45,7 +45,23 @@
 </ion-content>
 
 <ion-footer>
+
     <ion-toolbar class="message-form">
+      <ion-row>
+          <ion-toolbar>
+              <ion-segment (ionChange)="segmentChanged($event)">
+                <ion-segment-button value="keep">
+                  <ion-label>Keep</ion-label>
+                </ion-segment-button>
+                <ion-segment-button value="stop">
+                    <ion-label>Stop</ion-label>
+                  </ion-segment-button>
+                  <ion-segment-button value="start">
+                      <ion-label>Start</ion-label>
+                    </ion-segment-button>
+              </ion-segment>
+            </ion-toolbar>
+      </ion-row>
       <ion-row>
         <ion-col>
           <ion-textarea #chatMessage class="toolbar-content"  placeholder="Write a suggestion..." [(ngModel)]="this.message" (ionFocus)="scrollBottom()" (keyup.enter)="createComment();" (click)="scrollBottom()" autofocus></ion-textarea>
