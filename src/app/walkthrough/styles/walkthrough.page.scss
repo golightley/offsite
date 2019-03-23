@@ -69,6 +69,7 @@ ion-content {
     min-height: fit-content;
     max-width: 30vh;
     padding: 0px;
+    
   }
 
   .decoration-col {
@@ -106,6 +107,7 @@ ion-content {
     .info-wrapper {
       margin: calc(var(--page-margin) * -1) var(--page-margin) 0px;
       text-align: left;
+      padding-top: 50px;
 
       .info-title {
         margin: 0px;
