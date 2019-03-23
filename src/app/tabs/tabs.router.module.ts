@@ -9,55 +9,18 @@ const routes: Routes = [
     path: '',
     component: TabsPage,
     children: [
+      
       {
-        path: 'categories',
-        children: [
-          {
-            path: '',
-            loadChildren: '../categories/categories.module#CategoriesPageModule'
-          },
-          {
-            path: 'fashion',
-            loadChildren: '../fashion/listing/fashion-listing.module#FashionListingPageModule'
-          },
-          {
-            path: 'fashion/:productId',
-            loadChildren: '../fashion/details/fashion-details.module#FashionDetailsPageModule'
-          },
-          {
-            path: 'food',
-            loadChildren: '../food/listing/food-listing.module#FoodListingPageModule'
-          },
-          {
-            path: 'food/:productId',
-            loadChildren: '../food/details/food-details.module#FoodDetailsPageModule'
-          },
-          {
-            path: 'travel',
-            loadChildren: '../travel/listing/travel-listing.module#TravelListingPageModule'
-          },
-          {
-            path: 'travel/:productId',
-            loadChildren: '../travel/details/travel-details.module#TravelDetailsPageModule'
-          },
-          {
-            path: 'deals',
-            loadChildren: '../deals/listing/deals-listing.module#DealsListingPageModule'
-          },
-          {
-            path: 'deals/:productId',
-            loadChildren: '../deals/details/deals-details.module#DealsDetailsPageModule'
-          },
-          {
-            path: 'real-state',
-            loadChildren: '../real-state/listing/real-state-listing.module#RealStateListingPageModule'
-          },
-          {
-            path: 'real-state/:productId',
-            loadChildren: '../real-state/details/real-state-details.module#RealStateDetailsPageModule'
-          }
-        ]
-      },
+    path: 'categories',
+      children: [
+
+        
+        {
+          path: '',
+          loadChildren: '../deals/listing/deals-listing.module#DealsListingPageModule'
+        }
+      ]
+    },
       {
         path: 'user',
         children: [
@@ -85,7 +48,7 @@ const routes: Routes = [
   // /app/ redirect
   {
     path: '',
-    redirectTo: 'app/categories',
+    redirectTo: 'app/categories/deals',
     pathMatch: 'full'
   }
 ];

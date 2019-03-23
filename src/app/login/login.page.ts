@@ -73,7 +73,7 @@ export class LoginPage implements OnInit {
     })
 
 
-    this.router.navigate(['app/categories']);
+    this.router.navigate(['app/notifications']);
   }
 
   goToForgotPassword(): void {

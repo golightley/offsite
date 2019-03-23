@@ -110,7 +110,7 @@ export class FormsFiltersPage implements OnInit {
     this.surveyService.responses = this.responses;
     this.surveyService.submitSurvey(this.responses);
     // this.presentAlert();
-    this.navCtrl.navigateBack('app/categories/deals');
+    this.navCtrl.navigateBack('app/categories');
 
   }
 
