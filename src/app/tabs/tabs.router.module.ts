@@ -13,8 +13,6 @@ const routes: Routes = [
       {
     path: 'categories',
       children: [
-
-        
         {
           path: '',
           loadChildren: '../deals/listing/deals-listing.module#DealsListingPageModule'
@@ -26,12 +24,16 @@ const routes: Routes = [
         children: [
           {
             path: '',
-            loadChildren: '../user/profile/user-profile.module#UserProfilePageModule'
+            loadChildren: '../feedback/feedback.module#FeedbackPageModule'
           },
-          {
+           {
             path: 'friends',
             loadChildren: '../user/friends/user-friends.module#UserFriendsPageModule'
-          }
+          },
+          { path: 'feedback-request-friends', 
+          loadChildren: './feedback-request-friends/feedback-request-friends.module#FeedbackRequestFriendsPageModule' 
+        }
+
         ]
       },
       {

@@ -1,0 +1,26 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>feedback</ion-title>
+  </ion-toolbar>
+</ion-header>
+  <ion-content padding="false" scroll="false" class="has-header">
+    <form id="feedbackCategory-form10" class="list">
+      <div id="feedbackCategory-markdown8" class="show-list-numbers-and-dots">
+        <p style="color:#424242;font-size:23px;" class="feedback-title">
+          <strong>Who would you like to ask for feedback from?</strong>
+        </p>
+      </div>
+      <div class="spacer" style="width: 320px; height: 8px;"></div>
+      <ion-list lines="none">
+        <ion-item *ngFor="let item of members">
+          <ion-checkbox class="feedbackCategory-checkbox" [(ngModel)]="item.checked" [ngModelOptions]="{standalone: true}"></ion-checkbox>
+          <ion-label>{{item.name}}</ion-label>
+        </ion-item>
+        <!-- <ion-item>
+          <ion-checkbox class="feedbackCategory-checkbox" [(ngModel)]="this.isChecked" [ngModelOptions]="{standalone: true}"></ion-checkbox>
+          <ion-label>{{ item.data().name }}</ion-label>
+        </ion-item> -->
+      </ion-list>
+    </form>
+    <ion-button  type="submit" expand="block" (click)="submitSurvey()" >Submit Feedback Request</ion-button>
+  </ion-content>

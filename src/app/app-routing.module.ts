@@ -14,7 +14,10 @@ const routes: Routes = [
   { path: 'forms-filters', loadChildren: './forms/filters/forms-filters.module#FormsFiltersPageModule' },
   { path: 'page-not-found', loadChildren: './page-not-found/page-not-found.module#PageNotFoundModule' },
   { path: 'showcase', loadChildren: './showcase/showcase.module#ShowcasePageModule' },
-  { path: '**', redirectTo: 'page-not-found' }
+  { path: '**', redirectTo: 'page-not-found' },
+  { path: 'feedback', loadChildren: './feedback/feedback.module#FeedbackPageModule' },
+  { path: 'contact', loadChildren: './contact/contact.module#ContactPageModule' },
+  { path: 'feedback-request-friends', loadChildren: './feedback-request-friends/feedback-request-friends.module#FeedbackRequestFriendsPageModule' }
 ];
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
