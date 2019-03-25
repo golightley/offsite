@@ -5,6 +5,8 @@ import * as firebase from 'firebase/app';
 import { Router } from '@angular/router';
 import { SurveyServiceService } from '../services/survey-service.service';
 require('firebase/auth')
+import { HttpClient } from '@angular/common/http';
+
 
 @Component({
   selector: 'app-feedback-request-friends',
@@ -19,6 +21,8 @@ export class FeedbackRequestFriendsPage implements OnInit {
     private navCtrl: NavController,
     private router: Router,
     public surveyService: SurveyServiceService,
+    private http:HttpClient,
+
   ) { }
 
   ngOnInit() {
@@ -34,5 +38,21 @@ export class FeedbackRequestFriendsPage implements OnInit {
   }
 
 
+  // this should be moved to the service 
+  createFeedbackRequest(result){
+    console.log("Like function fired...");
+    let body  = {
+      team:this.members,
+      userId: firebase.auth().currentUser.uid,
+      category: "Professionalism"
+    }
+    this.http.post("https://us-central1-offsite-9f67c.cloudfunctions.net/createFeedbackRequest", JSON.stringify(body),{
+      responseType:"text"
+    }).subscribe((data) => {
+      console.log(data);
+    }, (error) => {
+      console.log(error)
+    })
+  }
 
 }

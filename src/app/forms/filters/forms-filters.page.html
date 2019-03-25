@@ -9,12 +9,13 @@
 <ion-content class="filters-content">
   <ion-item-group class="filters-group">
     <ng-container *ngFor="let question of questions">
-    <ion-item-divider >
-      <ion-label > 
-          {{ question.data().Question }}    
-      </ion-label>
-    </ion-item-divider>
-    <form [formGroup]="radioTagsForm">
+    <form [formGroup]="radioTagsForm" *ngIf="question.data().type == 'multiple'">
+        <ion-item-divider >
+            <ion-label > 
+                {{ question.data().Question }}    
+            </ion-label>  +
+
+          </ion-item-divider>
       <ion-radio-group formControlName="selected_option" [(ngModel)]="responses[question.id]">
         <ion-row class="radio-tags">
           <ion-item class="radio-tag" lines="none"  >
@@ -44,6 +45,15 @@
         </ion-row>
       </ion-radio-group>
     </form>
+
+    <form [formGroup]="radioTagsForm"  *ngIf="question.data().type == 'input'" >
+          <ion-item class="input-item">
+              <ion-label position="floating">{{question.data().Question}}</ion-label>
+              <ion-input [(ngModel)]="responses[question.id]" type="text" formControlName="selected_option" clearInput required></ion-input>
+            </ion-item>
+    </form>
+
+
   </ng-container>
   </ion-item-group>
   <ion-button  type="submit" expand="block" (click)="submitSurvey()" >Submit survey</ion-button>
