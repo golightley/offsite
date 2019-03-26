@@ -173,6 +173,14 @@ export class SurveyServiceService {
           console.log(response);  
           this.updateDocument(response); 
           this.createResponse(response);
+          if(typeof response[1]=="string"){
+            console.log("This is a string")
+            console.log(response[1]);
+            //if does not contain a number
+            if(!(response[0].includes("1") || response[0].includes("2")|| response[0].includes("3")||response[0].includes("4"))){
+              this.createComment(response[0],response[1])
+            }
+          }
       })
     }
 

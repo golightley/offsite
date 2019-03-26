@@ -31,7 +31,7 @@ const routes: Routes = [
             loadChildren: '../user/friends/user-friends.module#UserFriendsPageModule'
           },
           { path: 'feedback-request-friends', 
-          loadChildren: './feedback-request-friends/feedback-request-friends.module#FeedbackRequestFriendsPageModule' 
+          loadChildren: '../feedback-request-friends/feedback-request-friends.module#FeedbackRequestFriendsPageModule' 
         }
 
         ]
