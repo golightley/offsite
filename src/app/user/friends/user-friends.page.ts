@@ -49,8 +49,16 @@ export class UserFriendsPage implements OnInit {
 
   }
 
+  ionViewWillEnter(){
+    console.log("IonViewWillEnter")
+    //get the comments 
+    this.getComment();
+    this.updateComment();
+  }
+
   getComment(){
         //gert
+        this.comments = [];
         this.surveyService.getComments(this.surveyService.myParam.id).then((commentData)=>{
           this.comments = commentData;
           console.log(this.comments);
@@ -105,7 +113,7 @@ export class UserFriendsPage implements OnInit {
 
   createComment(){
     // create the comment 
-    this.surveyService.createComment(this.surveyService.myParam.id, this.message);
+    this.surveyService.createComment(this.surveyService.myParam.id, this.message,"comment");
     // reset the message 
     this.message = '';
   }

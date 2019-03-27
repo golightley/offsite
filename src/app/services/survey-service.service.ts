@@ -176,11 +176,11 @@ export class SurveyServiceService {
           if(typeof response[1]=="string"){
             console.log("This is a string")
             console.log(response[1]);
-            //if does not contain a number
-            if(!(response[0].includes("1") || response[0].includes("2")|| response[0].includes("3")||response[0].includes("4"))){
-              this.createComment(response[0],response[1])
+            //if does not contain a number then save as a comment 
+            if(!((response[1].includes("1") || response[1].includes("2")|| response[1].includes("3")||response[1].includes("4")))){
+              this.createComment(response[0],response[1],"feedback")
             }
-          }
+          } 
       })
     }
 
@@ -251,12 +251,13 @@ export class SurveyServiceService {
       });
     }
 
-    createComment(surveyId,comment){
+    createComment(surveyId,comment,type){
       // Add a new document with a generated id.
       firebase.firestore().collection("comments").add({
         questionId: surveyId,
         text: comment,
         name:"Anonymous",
+        type:type,
         user:firebase.auth().currentUser.uid,
         timestamp: firebase.firestore.FieldValue.serverTimestamp()
 

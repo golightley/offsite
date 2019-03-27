@@ -8,6 +8,9 @@
   <ng-container *ngIf="listing?.items">
       <!-- <div class="listing-item" *ngFor="let item of listing.items" [ngClass]="{'imminent-end': ((item.expirationDate | appTimeDifference) > 0 && (item.expirationDate | appTimeDifference) <= 2), 'ends-soon': ((item.expirationDate | appTimeDifference) > 0 && (item.expirationDate | appTimeDifference) > 2 && (item.expirationDate | appTimeDifference) < 10), 'distant-end': ((item.expirationDate | appTimeDifference) >= 10)}"> -->
     <div class="listing-item" *ngFor="let result of results" [ngClass]="imminent-end">
+        <ion-icon *ngIf= "result.data().type == 'multiple'"  slot="icon-only" name="pulse"  ></ion-icon>
+        <ion-icon *ngIf= "result.data().type == 'input'"  slot="icon-only" name="flag"  ></ion-icon>
+
       <ion-row class="top-row">
         {{result.data().Question}}
       </ion-row>

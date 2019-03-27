@@ -17,6 +17,7 @@ const routes: Routes = [
   { path: '**', redirectTo: 'page-not-found' },
   { path: 'feedback', loadChildren: './feedback/feedback.module#FeedbackPageModule' },
   { path: 'contact', loadChildren: './contact/contact.module#ContactPageModule' },
+  { path: 'friends', loadChildren: '../user/friends/user-friends.module#UserFriendsPageModule'},  
   { path: 'feedback-request-friends', loadChildren: './feedback-request-friends/feedback-request-friends.module#FeedbackRequestFriendsPageModule' }
 ];
 @NgModule({
