@@ -25,7 +25,7 @@ export class FeedbackPage implements OnInit {
 
   ngOnInit() {
 
-          //get user ID 
+      
       // let userId: any = firebase.auth().currentUser.uid;
       let userId: any = "AKfOgVZrSTYsYN01JA0NUTicf703";
 
@@ -41,8 +41,10 @@ export class FeedbackPage implements OnInit {
   }
 
   nextFeedback(){
-    this.router.navigateByUrl('/app/user/feedback-request-friends');
-
+    console.log(this.categories);
+    this.surveyService.categories = this.categories;
+    this.router.navigate(['/app/user/feedback-request-friends', { categories:"test" }]);
+    // this.router.navigate(['/detail', { id: itemId }]);
   }
 
 }

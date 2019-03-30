@@ -16,10 +16,6 @@
           <ion-checkbox class="feedbackCategory-checkbox" [(ngModel)]="item.checked" [ngModelOptions]="{standalone: true}"></ion-checkbox>
           <ion-label>{{item.data().name}}</ion-label>
         </ion-item>
-        <!-- <ion-item>
-          <ion-checkbox class="feedbackCategory-checkbox" [(ngModel)]="this.isChecked" [ngModelOptions]="{standalone: true}"></ion-checkbox>
-          <ion-label>{{ item.data().name }}</ion-label>
-        </ion-item> -->
       </ion-list>
     </form>
     <a id="feedbackCategory-button17" class="button button-balanced button-block" (click)=nextFeedback();>Next</a>
