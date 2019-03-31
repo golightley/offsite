@@ -20,6 +20,7 @@ const routes: Routes = [
   { path: 'feedback-request-friends', loadChildren: './feedback-request-friends/feedback-request-friends.module#FeedbackRequestFriendsPageModule' },
   { path: 'invite-team-mates', loadChildren: './invite-team-mates/invite-team-mates.module#InviteTeamMatesPageModule' },
   { path: 'test', loadChildren: './pages/test/test.module#TestPageModule' },
+  { path: 'feedback-request-submitted', loadChildren: './feedback-request-submitted/feedback-request-submitted.module#FeedbackRequestSubmittedPageModule' },
 ];
 @NgModule({
   imports: [RouterModule.forRoot(routes)],

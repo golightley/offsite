@@ -32,7 +32,11 @@ const routes: Routes = [
           },
           { path: 'feedback-request-friends', 
           loadChildren: '../feedback-request-friends/feedback-request-friends.module#FeedbackRequestFriendsPageModule' 
-        }
+        },
+        { path: 'feedback-request-submitted', 
+        loadChildren: './feedback-request-submitted/feedback-request-submitted.module#FeedbackRequestSubmittedPageModule' 
+      },
+
 
         ]
       },

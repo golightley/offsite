@@ -65,9 +65,11 @@ export class FeedbackRequestFriendsPage implements OnInit {
             responseType:"text"
           }).subscribe((data) => {
             console.log(data);
+
           }, (error) => {
             console.log(error)
           })
+          this.router.navigateByUrl('/app/user/feedback-request-submitted');
 
         }
 
