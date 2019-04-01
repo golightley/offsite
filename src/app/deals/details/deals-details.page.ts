@@ -20,7 +20,7 @@ export class DealsDetailsPage implements OnInit {
   };
 
   @HostBinding('class.is-shell') get isShell() {
-    return (this.details && this.details.isShell) ? true : false;
+    return this.details && this.details.isShell;
   }
 
   constructor(private route: ActivatedRoute) { }

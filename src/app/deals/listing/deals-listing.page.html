@@ -1,39 +1,51 @@
 <ion-header>
   <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
     <ion-title>Team Results</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content class="deals-listing-content">
-  <ng-container *ngIf="listing?.items">
-      <!-- <div class="listing-item" *ngFor="let item of listing.items" [ngClass]="{'imminent-end': ((item.expirationDate | appTimeDifference) > 0 && (item.expirationDate | appTimeDifference) <= 2), 'ends-soon': ((item.expirationDate | appTimeDifference) > 0 && (item.expirationDate | appTimeDifference) > 2 && (item.expirationDate | appTimeDifference) < 10), 'distant-end': ((item.expirationDate | appTimeDifference) >= 10)}"> -->
-    <div class="listing-item" *ngFor="let result of results" [ngClass]="imminent-end">
-      <ion-row class="top-row">
-        {{result.data().Question}}
-      </ion-row>
-      <ion-row class="middle-row">
-        <ion-col class="info-col">
-          <h4 class="item-name">
-          </h4>
-          <p class="item-description">
-              Work life balance has been okay recently
-          </p>
-        </ion-col>
-        <ion-col size="2">
-          <ion-button class="bookmark-button" expand="block" fill="clear" color="claim" (click)="viewComments(result)" >
-            <ion-icon slot="icon-only" name="chatboxes"  ></ion-icon>
-            <h4 class="item-name">{{result.data().commentsCount || 0}}</h4>
-          </ion-button>
-        </ion-col>
-      </ion-row>
-      <ion-row class="bottom-row">
-        <ion-col class="code-wrapper">
-        </ion-col>
-      </ion-row>
+  <ion-card *ngFor="let question of results">
+    <div class="question-content">
       <ion-row>
-          <span class="code-cta"> {{result.data().averagescore}}</span>
+        <ion-col text-start class="question-type">
+          Team
+        </ion-col>
+        <ion-col text-end class="question-date">
+          {{question.updatedAt | date: 'd MMM yyyy'}}
+        </ion-col>
       </ion-row>
-
+      <div class="question-title" text-wrap>
+        {{question.question}}
+      </div>
+      <div class="question-divider"></div>
+      <ion-row align-items-center>
+        <ion-col class="question-chat" (click)="viewComments(question)">
+          <ion-row align-items-center>
+            <ion-col size="auto">
+              <ion-icon name="chatbubbles" mode="ios"></ion-icon>
+            </ion-col>
+            <ion-col>
+              <span>{{question.commentsCount}}</span>
+            </ion-col>
+          </ion-row>
+        </ion-col>
+        <ion-col></ion-col>
+        <ion-col size="auto" class="question-star">
+          <ion-row align-items-center>
+            <ion-col size="auto">
+              <ion-icon name="star"></ion-icon>
+            </ion-col>
+            <ion-col align-self-start>
+              <span>{{question.avgScore}}</span> /5
+            </ion-col>
+          </ion-row>
+        </ion-col>
+      </ion-row>
     </div>
-  </ng-container>
+    <div class="question-marker" [ngStyle]="{'background-color': getMarkColorStyle(question)}"></div>
+  </ion-card>
 </ion-content>

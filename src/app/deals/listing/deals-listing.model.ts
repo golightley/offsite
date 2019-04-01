@@ -6,8 +6,6 @@ export class DealsItemModel {
   name: string;
   code: string;
   description: string;
-  // Default mock value
-  // expirationDate = '12/01/2018';
   expirationDate: string = dayjs().add(5, 'day').format('MM/DD/YYYY HH:mm:ss') as string;
 }
 
@@ -20,4 +18,28 @@ export class DealsListingModel {
   ];
 
   constructor(readonly isShell: boolean) { }
+}
+
+export class QuestionModel {
+  id: string;
+  question: string;
+  commentsCount = 0;
+  avgScore = 0;
+  updatedAt: Date;
+
+  constructor(id: string, data: any) {
+    this.id = id;
+    this.question = data['Question'];
+    if (data['commentsCount']) {
+      this.commentsCount = data['commentsCount'];
+    }
+    if (data['averagescore']) {
+      this.avgScore = data['averagescore'];
+    }
+    if (data['lastUpdate']) {
+      this.updatedAt = data['lastUpdate'].toDate();
+    } else {
+      this.updatedAt = new Date();
+    }
+  }
 }

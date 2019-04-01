@@ -1,12 +1,12 @@
 import { Component, OnInit, HostBinding } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { DealsListingModel } from './deals-listing.model';
+import {DealsListingModel, QuestionModel} from './deals-listing.model';
 import { SurveyServiceService } from '../../services/survey-service.service';
 import * as firebase from 'firebase/app';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 
-require('firebase/auth')
+require('firebase/auth');
 
 @Component({
   selector: 'app-deals-listing',
@@ -19,17 +19,17 @@ require('firebase/auth')
 })
 export class DealsListingPage implements OnInit {
   listing: DealsListingModel;
-  results: any = [];
+  results: QuestionModel[] = [];
 
 
   @HostBinding('class.is-shell') get isShell() {
-    return (this.listing && this.listing.isShell) ? true : false;
+    return this.listing && this.listing.isShell;
   }
 
   constructor(
     private route: ActivatedRoute,
     public surveyService: SurveyServiceService,
-    private http:HttpClient,
+    private http: HttpClient,
     private router: Router
     ) { }
 
@@ -38,8 +38,7 @@ export class DealsListingPage implements OnInit {
       // We resolved a promise for the data Observable
       const promiseObservable = this.route.data;
       console.log('Route Resolve Observable => promiseObservable: ', promiseObservable);
-      
-      //get results to show for each card 
+      // Get results to show for each card
       this.getResults();
 
       if (promiseObservable) {
@@ -70,35 +69,38 @@ export class DealsListingPage implements OnInit {
     }
   }
 
-  getResults(){
-    this.surveyService.getResults(firebase.auth().currentUser.uid).then((resultsData)=>{
-      this.results = resultsData;
+  getResults() {
+    this.surveyService.getResults(firebase.auth().currentUser.uid).then((resultsData: firebase.firestore.QueryDocumentSnapshot[]) => {
+      resultsData.forEach(data => {
+        this.results.push(new QuestionModel(data.id, data.data()));
+      });
       console.log(this.results);
-    })
+    });
   }
 
-  viewComments(result){
+  getMarkColorStyle(question: QuestionModel) {
+    return 3 < question.avgScore ? '#20dc6a' : '#ff1a72';
+  }
+
+  viewComments(result) {
     // store question ID in service
     this.surveyService.myParam = result;
     // navigate to [routerLink]="['/app/user/friends']"
     this.router.navigateByUrl('/app/user/friends');
-    
   }
-
-  // this should be moved to the service 
-  like(result){
-    console.log("Like function fired...");
-    let body  = {
-      questId:result.id,
-      userId: firebase.auth().currentUser.uid,
-      action: "like"
-    }
-    this.http.post("https://us-central1-offsite-9f67c.cloudfunctions.net/updateLikesCount", JSON.stringify(body),{
-      responseType:"text"
-    }).subscribe((data) => {
-      console.log(data);
-    }, (error) => {
-      console.log(error)
-    })
-  }
+  // like(result) {
+  //   console.log('Like function fired...');
+  //   const body  = {
+  //     questId: result.id,
+  //     userId: firebase.auth().currentUser.uid,
+  //     action: 'like'
+  //   };
+  //   this.http.post('https://us-central1-offsite-9f67c.cloudfunctions.net/updateLikesCount', JSON.stringify(body), {
+  //     responseType: 'text'
+  //   }).subscribe((data) => {
+  //     console.log(data);
+  //   }, (error) => {
+  //     console.log(error);
+  //   });
+  // }
 }

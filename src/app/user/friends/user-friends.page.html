@@ -45,33 +45,26 @@
 </ion-content>
 
 <ion-footer>
-
     <ion-toolbar class="message-form">
-      <ion-row>
-          <ion-toolbar>
-              <ion-segment (ionChange)="segmentChanged($event)">
-                <ion-segment-button value="keep">
-                  <ion-label>Keep</ion-label>
-                </ion-segment-button>
-                <ion-segment-button value="stop">
-                    <ion-label>Stop</ion-label>
-                  </ion-segment-button>
-                  <ion-segment-button value="start">
-                      <ion-label>Start</ion-label>
-                    </ion-segment-button>
-              </ion-segment>
-            </ion-toolbar>
-      </ion-row>
+      <ion-segment [(ngModel)]="messageType" (ionChange)="segmentChanged()">
+        <ion-segment-button value="keep">
+          <ion-label>Keep</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="stop">
+          <ion-label>Stop</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="start">
+          <ion-label>Start</ion-label>
+        </ion-segment-button>
+      </ion-segment>
       <ion-row>
         <ion-col>
-          <ion-textarea #chatMessage class="toolbar-content"  placeholder="Write a suggestion..." [(ngModel)]="this.message" (ionFocus)="scrollBottom()" (keyup.enter)="createComment();" (click)="scrollBottom()" autofocus></ion-textarea>
+          <ion-textarea #chatMessage class="toolbar-content"  placeholder="Write a suggestion..." [(ngModel)]="message" (ionFocus)="scrollBottom()" (keyup.enter)="createComment();" (click)="scrollBottom()" autofocus></ion-textarea>
         </ion-col>
-        <ion-col width-10>
-          <ion-buttons end class="send-bt">
-            <button ion-button clear class="bar-button" (click)="createComment();">
-              <i class="chat-icon send-icon"></i>
-            </button>
-          </ion-buttons>
+        <ion-col size="auto">
+          <ion-button fill="clear" [disabled]="0 == message.length" class="bar-button" (click)="createComment()">
+            SEND
+          </ion-button>
         </ion-col>
       </ion-row>    
     </ion-toolbar>

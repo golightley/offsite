@@ -76,17 +76,17 @@ export class SurveyServiceService {
     });
   }
 
-  //pull quesitons for results tab
-  getResults(userID){
-    let questions = [];
-    //pull each question from firebase 
+  // pull questions for results tab
+  getResults(userID) {
+    const questions = [];
+    // pull each question from firebase
     return new Promise<any>((resolve, reject) => {
-      firebase.firestore().collection("questions").where("users", "array-contains", userID).orderBy("lastUpdate","desc").get()
-      .then((questionData)=>{
-        questionData.forEach((doc)=>{
-          questions.push(doc);
-        })
-        console.log("Printing result data for the results page...")
+      firebase.firestore().collection('questions').where('users', 'array-contains', userID).orderBy('lastUpdate', 'desc').get()
+        .then((questionData) => {
+          questionData.forEach((doc) => {
+            questions.push(doc);
+          });
+        console.log('Printing result data for the results page...');
         console.log(questions);
         resolve(questions);
       }, err => reject(err));
@@ -232,42 +232,35 @@ export class SurveyServiceService {
         responses: firebase.firestore.FieldValue.arrayUnion(response[1])
       });
     }
-    
 
-    createResponse(response){
+    createResponse(response) {
       // Add a new document with a generated id.
-      firebase.firestore().collection("surveyResponses").add({
-        question: response[0],
-        answer: response[1],
-        user:firebase.auth().currentUser.uid,
-        timestamp: firebase.firestore.FieldValue.serverTimestamp()
-
-      })
-      .then(function(docRef) {
-        console.log("Document written with ID: ", docRef.id);
-      })
-      .catch(function(error) {
-        console.error("Error adding document: ", error);
-      });
+      firebase.firestore().collection('surveyResponses')
+        .add({
+          question: response[0],
+          answer: response[1],
+          user: firebase.auth().currentUser.uid,
+          timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        }).then(function(docRef) {
+          console.log('Document written with ID: ', docRef.id);
+        }).catch(function(error) {
+          console.error('Error adding document: ', error);
+        });
     }
 
-    createComment(surveyId,comment){
+    createComment(surveyId, comment) {
       // Add a new document with a generated id.
-      firebase.firestore().collection("comments").add({
-        questionId: surveyId,
-        text: comment,
-        name:"Anonymous",
-        user:firebase.auth().currentUser.uid,
-        timestamp: firebase.firestore.FieldValue.serverTimestamp()
-
-      })
-      .then(function(docRef) {
-        console.log("Document written with ID: ", docRef.id);
-      })
-      .catch(function(error) {
-        console.error("Error adding document: ", error);
-      });
+      firebase.firestore().collection('comments')
+        .add({
+          questionId: surveyId,
+          text: comment,
+          name: 'Anonymous',
+          user: firebase.auth().currentUser.uid,
+          timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        }).then(function(docRef) {
+          console.log('Document written with ID: ', docRef.id);
+        }).catch(function(error) {
+          console.error('Error adding document: ', error);
+        });
     }
-
-
 }
