@@ -16,9 +16,11 @@ import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
 import { HttpClientModule } from '@angular/common/http';
 
+import { Firebase } from '@ionic-native/firebase/ngx';
 
 import * as firebase from 'firebase/app';
 import 'firebase/firestore';
+
 
 var config = {
   apiKey: "AIzaSyD7_p-5IpsI1LY76bz8zvteCi00KvoMP18",
@@ -47,6 +49,7 @@ firebase.firestore().settings({
   ],
   providers: [
     StatusBar,
+    Firebase,
     SplashScreen,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
   ],
