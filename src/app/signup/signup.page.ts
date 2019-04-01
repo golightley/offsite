@@ -102,7 +102,7 @@ export class SignupPage implements OnInit {
     }).catch((err)=>{
       console.log(err)
     })
-    this.router.navigate(['app/categories']);
+    this.router.navigate(['/invite-team-mates']);
   }
 
   doFacebookSignup(): void {

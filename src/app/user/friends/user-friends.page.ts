@@ -1,4 +1,4 @@
-import {Component, HostBinding, OnInit} from '@angular/core';
+import {Component, HostBinding} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {SurveyServiceService} from '../../services/survey-service.service';
 import {UserFriendsModel} from './user-friends.model';
@@ -15,7 +15,7 @@ import {HttpClient} from '@angular/common/http';
     './styles/user-friends.md.scss'
   ]
 })
-export class UserFriendsPage implements OnInit {
+export class UserFriendsPage {
   data: UserFriendsModel;
 
   comments: Array<any>;
@@ -32,21 +32,18 @@ export class UserFriendsPage implements OnInit {
     private http: HttpClient
     ) { }
 
-  ngOnInit(): void {
-    // log the question id
-    console.log('Logging param that has been set...');
-    console.log(this.surveyService.myParam);
-    // get the comments
-    this.getComment();
-    this.updateComment();
-  }
-
   getComment() {
     // get
     this.surveyService.getComments(this.surveyService.myParam.id).then((commentData) => {
       this.comments = commentData;
       console.log(this.comments);
     });
+  }
+
+  ionViewWillEnter() {
+    // get the comments
+    this.getComment();
+    this.updateComment();
   }
 
   updateComment() {
@@ -79,7 +76,7 @@ export class UserFriendsPage implements OnInit {
 
   createComment() {
     // create the comment
-    this.surveyService.createComment(this.surveyService.myParam.id, this.message);
+    this.surveyService.createComment(this.surveyService.myParam.id, this.message,'comment');
     // reset the message
     this.message = '';
     this.messageType = null;

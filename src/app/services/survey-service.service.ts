@@ -8,6 +8,7 @@ export class SurveyServiceService {
   
   public myParam: any; 
   public responses: any; 
+  public categories: any; 
 
   constructor() { }
 
@@ -93,22 +94,6 @@ export class SurveyServiceService {
     });
   }
 
-    //get the comments associated with a specfic survey questino
-    // getComments(questionID){
-    //   let comments = [];
-    //   //pull each question from firebase 
-    //   return new Promise<any>((resolve, reject) => {
-    //     firebase.firestore().collection("comments").where("questionId", "==", questionID).get()
-    //     .then((commentData)=>{
-    //       commentData.forEach((doc)=>{
-    //         comments.push(doc);
-    //       })
-    //       console.log("Printing result data for the comments page...")
-    //       console.log(comments);
-    //       resolve(comments);
-    //     }, err => reject(err));
-    //   });
-    // }
 
     updateComments(questionID){
 
@@ -176,11 +161,11 @@ export class SurveyServiceService {
           if(typeof response[1]=="string"){
             console.log("This is a string")
             console.log(response[1]);
-            //if does not contain a number
-            if(!(response[0].includes("1") || response[0].includes("2")|| response[0].includes("3")||response[0].includes("4"))){
-              this.createComment(response[0],response[1])
+            //if does not contain a number then save as a comment 
+            if(!((response[1].includes("1") || response[1].includes("2")|| response[1].includes("3")||response[1].includes("4")))){
+              this.createComment(response[0],response[1],"feedback")
             }
-          }
+          } 
       })
     }
 
@@ -247,20 +232,20 @@ export class SurveyServiceService {
           console.error('Error adding document: ', error);
         });
     }
-
-    createComment(surveyId, comment) {
+    createComment(surveyId, comment, type){
       // Add a new document with a generated id.
-      firebase.firestore().collection('comments')
-        .add({
-          questionId: surveyId,
-          text: comment,
-          name: 'Anonymous',
-          user: firebase.auth().currentUser.uid,
-          timestamp: firebase.firestore.FieldValue.serverTimestamp()
-        }).then(function(docRef) {
-          console.log('Document written with ID: ', docRef.id);
-        }).catch(function(error) {
-          console.error('Error adding document: ', error);
-        });
+      firebase.firestore().collection('comments').add({
+        questionId: surveyId,
+        text: comment,
+        name: 'Anonymous',
+        type: type,
+        user: firebase.auth().currentUser.uid,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+
+      }).then(function(docRef) {
+        console.log('Document written with ID: ', docRef.id);
+      }).catch(function(error) {
+        console.error('Error adding document: ', error);
+      });
     }
 }

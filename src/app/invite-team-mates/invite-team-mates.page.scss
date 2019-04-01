@@ -1,0 +1,97 @@
+#inviteTeamMembers-markdown12{
+    font-size: 30px;
+    margin: 60px 30px -20px 30px;
+    text-align: left !important;
+  }
+  
+  .item.item-input{
+    padding: 5px;
+    margin: 5px 30px;
+    border-radius: 2px;
+    background-color: #f8f8f8;
+    border: 0px;
+  
+    input{
+      background: #f8f8f8;
+    }
+  }
+  
+  #inviteTeamMembers-button11{
+    border-color: #12b93e;
+    background: #12b93e;
+    color: white;
+    margin: 15px 30px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    bottom: 0px;
+    width: 75%;
+  }
+  
+  #inviteTeamMembers-button10{
+    color: #5a12b9;
+    background: #e6dcf3;
+    margin: 15px 30px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    line-height: 15px;
+    min-height: 35px;
+    font-size: 15px;
+    width: 150px;
+  }
+  
+  .line-spacer{
+    height: 1px;
+    background: #f3ecec;
+    width: 115%;
+    margin-left: -20px;
+  }
+  
+  #select_role{
+    --padding-start: 32px;
+    font-size: 15px;
+  }
+  
+  .checkbox_input{
+    color: #635e5e;
+    margin-top: 15px;
+  
+    .checkbox_col{
+      text-align: right;
+    }   
+  
+    #send-invite{
+      --background : #e6dcf3;
+      --height : 25px;
+      --width: 25px;
+      --checkmark-color:#5a12b9;
+      --background-checked: #e6dcf3;
+      --border-color: #e6dcf3;
+      --border-color-checked :#e6dcf3;
+    }
+  
+    .checkbox_label{
+      padding-top: 7px;
+    }
+  
+    span{
+      padding-left: 5px;              
+      font-size: 14px;
+    }
+  
+    ion-col {
+        &[width-18] {
+            flex: 0 0 18%;
+            max-width: 18%;
+        }
+    }
+  }
+  
+  .sc-ion-select-popover.in-list.item{
+    height: 61px;
+  }
+  
+  #inviteTeamMembers-form7{
+    height: 85%;
+  }

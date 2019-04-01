@@ -8,6 +8,7 @@ require('firebase/auth')
 import { HttpClient } from '@angular/common/http';
 
 
+
 @Component({
   selector: 'app-feedback-request-friends',
   templateUrl: './feedback-request-friends.page.html',
@@ -15,19 +16,27 @@ import { HttpClient } from '@angular/common/http';
 })
 export class FeedbackRequestFriendsPage implements OnInit {
   
-  members: any = [];
+  members: any   = [];
+  category: any  = [];
 
   constructor(
     private navCtrl: NavController,
     private router: Router,
     public surveyService: SurveyServiceService,
     private http:HttpClient,
+    private route: ActivatedRoute,
 
   ) { }
 
   ngOnInit() {
       // let userId: any = firebase.auth().currentUser.uid;
       let userId: any = "AKfOgVZrSTYsYN01JA0NUTicf703";
+
+      // get the categories from the previous page
+      this.category = this.route.snapshot.paramMap.get('categories');
+      console.log("Printing categories array -->");
+      this.category = this.surveyService.categories;
+      console.log(this.category);
 
       // get notification data from the survey service 
       this.surveyService.getTeamMembers(userId).then((notificationData)=>{
@@ -37,22 +46,37 @@ export class FeedbackRequestFriendsPage implements OnInit {
       })
   }
 
-
   // this should be moved to the service 
   createFeedbackRequest(result){
-    console.log("Like function fired...");
-    let body  = {
-      team:this.members,
-      userId: firebase.auth().currentUser.uid,
-      category: "Professionalism"
-    }
-    this.http.post("https://us-central1-offsite-9f67c.cloudfunctions.net/createFeedbackRequest", JSON.stringify(body),{
-      responseType:"text"
-    }).subscribe((data) => {
-      console.log(data);
-    }, (error) => {
-      console.log(error)
-    })
+    this.category.forEach(category => {
+      console.log("Iterating through each category");
+      console.log(category);
+      console.log(category.data().name);
+
+        if (category.checked == true){
+          console.log("Like function fired...");
+          let body  = {
+            team: this.members,
+            userId: firebase.auth().currentUser.uid,
+            category: category.data().name,
+            displayName:firebase.auth().currentUser.displayName
+          }
+          this.http.post("https://us-central1-offsite-9f67c.cloudfunctions.net/createFeedbackRequest", JSON.stringify(body),{
+            responseType:"text"
+          }).subscribe((data) => {
+            console.log(data);
+
+          }, (error) => {
+            console.log(error)
+          })
+          this.router.navigateByUrl('/app/user/feedback-request-submitted');
+
+        }
+
+    });
+
+
   }
 
 }
+
