@@ -82,7 +82,9 @@ export class SurveyServiceService {
     const questions = [];
     // pull each question from firebase
     return new Promise<any>((resolve, reject) => {
-      firebase.firestore().collection('questions').where('users', 'array-contains', userID).orderBy('lastUpdate', 'desc').get()
+      firebase.firestore().collection('questions').orderBy('lastUpdate', 'desc').get()
+
+      // firebase.firestore().collection('questions').where('users', 'array-contains', userID).orderBy('lastUpdate', 'desc').get()
         .then((questionData) => {
           questionData.forEach((doc) => {
             questions.push(doc);
