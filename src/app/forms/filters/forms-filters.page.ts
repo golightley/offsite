@@ -1,10 +1,10 @@
-import { Component,OnInit, ViewEncapsulation,} from '@angular/core';
-import { FormGroup, FormControl } from '@angular/forms';
+import {Component, OnInit} from '@angular/core';
+import {FormControl, FormGroup} from '@angular/forms';
 
-import { counterRangeValidator } from '../../components/counter-input/counter-input.component';
-import * as firebase from 'firebase/app';
-import { SurveyServiceService } from '../../services/survey-service.service';
-import { AlertController, NavController} from '@ionic/angular';
+import {counterRangeValidator} from '../../components/counter-input/counter-input.component';
+import {SurveyServiceService} from '../../services/survey-service.service';
+import {AlertController, NavController} from '@ionic/angular';
+import {QuestionModel} from '../../deals/listing/deals-listing.model';
 
 @Component({
   selector: 'forms-filters-page',
@@ -23,18 +23,14 @@ export class FormsFiltersPage implements OnInit {
   counterForm: any;
   ratingForm: FormGroup;
   radioColorForm: FormGroup;
-  questions: any = [];
+  questions: QuestionModel[] = [];
   responses: any = {};
-
-
 
   constructor(
     public surveyService: SurveyServiceService,
-    private navCtrl: NavController, 
-    public alertController: AlertController,
-    
+    private navCtrl: NavController,
+    public alertController: AlertController
     ) {
-    
     this.rangeForm = new FormGroup({
       single: new FormControl(25),
       dual: new FormControl({lower: 12, upper: 23})
@@ -86,32 +82,26 @@ export class FormsFiltersPage implements OnInit {
       selected_color: new FormControl('#fc9961')
     });
   }
-  ngOnInit(): void {
+  ngOnInit() {
     // get questions based on survey passed in notifications
     this.getQuestions();
   }
-  rangeChange(range: Range) {
-    console.log('range change', range);
-  }
+  getQuestions() {
+    const surveyId = this.surveyService.myParam.data().survey;
 
-  getQuestions(){
-  this.surveyService.getQuestions(this.surveyService.myParam).then((questiondata)=>{
-    console.log("Question data...");
-    this.questions = questiondata;
-    console.log(this.questions);
-  })
+    this.surveyService.getQuestions(surveyId).then(questionData => {
+      questionData.forEach(data => {
+        this.questions.push(new QuestionModel(data.id, data.data()));
+      });
+      console.log(this.questions);
+    });
   }
-  submitSurvey(){
-    console.log("Survey submitted--->")
-    console.log(this.responses);
-    console.log("FIrst element")
-    console.log(this.responses[0]);
+  submitSurvey() {
     // iterate through each survey response=
     this.surveyService.responses = this.responses;
     this.surveyService.submitSurvey(this.responses);
     // this.presentAlert();
     this.navCtrl.navigateBack('app/categories');
-
   }
 
   async presentAlert() {

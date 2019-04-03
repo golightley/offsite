@@ -267,3 +267,13 @@
     margin-bottom: calc(var(--page-margin) * 2);
   }
 }
+
+ion-footer {
+  background-color: #f2f2f2;
+
+  .button-submit {
+    margin: 5%;
+    width: 90%;
+    --background: #4fdba5;
+  }
+}

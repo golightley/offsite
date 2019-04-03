@@ -55,23 +55,18 @@ export class SurveyServiceService {
           }, err => reject(err));
         });
       }
-  
 
-  //pull quesitons
-  getQuestions(selectedSurveyObect){
-    let questions = [];
-    //iterate through list of questions
-    let surveyID = selectedSurveyObect.data().survey;
-    console.log("Survey id... "+surveyID);
+  // pull questions
+  getQuestions(surveyId: string) {
+    const questions = [];
 
-    //pull each question from firebase 
+    // pull each question from firebase
     return new Promise<any>((resolve, reject) => {
-      firebase.firestore().collection("questions").where("surveys", "array-contains", surveyID).get()
-      .then((questionData)=>{
-        questionData.forEach((doc)=>{
+      firebase.firestore().collection('questions').where('surveys', 'array-contains', surveyId).get()
+      .then(questionData => {
+        questionData.forEach(doc => {
           questions.push(doc);
-        })
-        console.log(questions);
+        });
         resolve(questions);
       }, err => reject(err));
     });
@@ -125,29 +120,19 @@ export class SurveyServiceService {
 
     }
 
-    getComments(questionID){
-      let comments = [];
-      //pull each question from firebase 
+    getComments(questionID) {
+      const comments: any[] = [];
+      // pull each question from firebase
       return new Promise<any>((resolve, reject) => {
-
-        let query = firebase.firestore().collection("comments").where("questionId", "==", questionID)
-
-        query.get()
-        .then((commentData)=>{
-          commentData.forEach((doc)=>{
-            comments.push(doc);
-          })
-          console.log("Printing result data for the comments page...")
-          console.log(comments);
-          resolve(comments);
+        firebase.firestore().collection('comments').where('questionId', '==', questionID).get()
+          .then((commentData) => {
+            commentData.forEach((doc) => {
+              comments.push(doc);
+            });
+            resolve(comments);
         }, err => reject(err));
       });
     }
-
-
-
-
-
 
     //submit survey response 
     submitSurvey(surveyResponses){
@@ -232,16 +217,16 @@ export class SurveyServiceService {
           console.error('Error adding document: ', error);
         });
     }
-    createComment(surveyId, comment, type){
+    createComment(surveyId: string, comment: string, type: string, action: string) {
       // Add a new document with a generated id.
       firebase.firestore().collection('comments').add({
         questionId: surveyId,
         text: comment,
         name: 'Anonymous',
         type: type,
+        action: action,
         user: firebase.auth().currentUser.uid,
         timestamp: firebase.firestore.FieldValue.serverTimestamp()
-
       }).then(function(docRef) {
         console.log('Document written with ID: ', docRef.id);
       }).catch(function(error) {

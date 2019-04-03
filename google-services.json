@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "143692410973",
+    "firebase_url": "https://offsite-9f67c.firebaseio.com",
+    "project_id": "offsite-9f67c",
+    "storage_bucket": "offsite-9f67c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:143692410973:android:84d90791208bb6bd",
+        "android_client_info": {
+          "package_name": "com.bigbowieventures.offsite"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "143692410973-lovt9j121r6u6a2g33lts007t6d9gdm1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDQE3T0xx-c36rsr6q8gE-GxaRMA0iI9IU"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -16,6 +16,7 @@ import {ServiceWorkerModule} from '@angular/service-worker';
 import {environment} from '../environments/environment';
 import {HttpClientModule} from '@angular/common/http';
 
+import { Firebase } from '@ionic-native/firebase/ngx';
 
 import * as firebase from 'firebase/app';
 import 'firebase/firestore';
@@ -44,6 +45,7 @@ firebase.initializeApp(config);
   ],
   providers: [
     StatusBar,
+    Firebase,
     SplashScreen,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
   ],

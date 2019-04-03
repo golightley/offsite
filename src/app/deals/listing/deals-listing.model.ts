@@ -20,12 +20,18 @@ export class DealsListingModel {
   constructor(readonly isShell: boolean) { }
 }
 
+export enum QuestionType {
+  input = 'input',
+  multiple = 'multiple'
+}
+
 export class QuestionModel {
   id: string;
   question: string;
   commentsCount = 0;
   avgScore = 0;
   updatedAt: Date;
+  type = QuestionType.input;
 
   constructor(id: string, data: any) {
     this.id = id;
@@ -40,6 +46,9 @@ export class QuestionModel {
       this.updatedAt = data['lastUpdate'].toDate();
     } else {
       this.updatedAt = new Date();
+    }
+    if (data['type']) {
+      this.type = data['type'];
     }
   }
 }
