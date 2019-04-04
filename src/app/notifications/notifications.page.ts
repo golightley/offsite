@@ -29,8 +29,8 @@ export class NotificationsPage implements OnInit {
   ngOnInit(): void {
 
     //get user ID 
-    // let userId: any = firebase.auth().currentUser.uid;
-    let userId: any = "AKfOgVZrSTYsYN01JA0NUTicf703";
+    let userId: any = firebase.auth().currentUser.uid;
+    // let userId: any = "AKfOgVZrSTYsYN01JA0NUTicf703";
 
     console.log("UID"+userId);
 

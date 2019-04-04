@@ -26,8 +26,8 @@ export class FeedbackPage implements OnInit {
   ngOnInit() {
 
       
-      // let userId: any = firebase.auth().currentUser.uid;
-      let userId: any = "AKfOgVZrSTYsYN01JA0NUTicf703";
+      let userId: any = firebase.auth().currentUser.uid;
+      // let userId: any = "AKfOgVZrSTYsYN01JA0NUTicf703";
 
       console.log("NG ONINIT fired in feedback module");
 

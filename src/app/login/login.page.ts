@@ -64,7 +64,6 @@ export class LoginPage implements OnInit {
       this.firebaseCordova.getToken().then((token)=>{
         console.log("Printing token...")
         console.log(token)
-        //save the token to a document 
         this.updateToken(token, firebase.auth().currentUser.uid);
       }).catch((error)=>{
         console.log("Error fired")

@@ -29,8 +29,8 @@ export class FeedbackRequestFriendsPage implements OnInit {
   ) { }
 
   ngOnInit() {
-      // let userId: any = firebase.auth().currentUser.uid;
-      let userId: any = "AKfOgVZrSTYsYN01JA0NUTicf703";
+      let userId: any = firebase.auth().currentUser.uid;
+      // let userId: any = "AKfOgVZrSTYsYN01JA0NUTicf703";
 
       // get the categories from the previous page
       this.category = this.route.snapshot.paramMap.get('categories');
