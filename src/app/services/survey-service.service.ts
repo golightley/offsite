@@ -55,23 +55,18 @@ export class SurveyServiceService {
           }, err => reject(err));
         });
       }
-  
 
-  //pull quesitons
-  getQuestions(selectedSurveyObect){
-    let questions = [];
-    //iterate through list of questions
-    let surveyID = selectedSurveyObect.data().survey;
-    console.log("Survey id... "+surveyID);
+  // pull questions
+  getQuestions(surveyId: string) {
+    const questions = [];
 
-    //pull each question from firebase 
+    // pull each question from firebase
     return new Promise<any>((resolve, reject) => {
-      firebase.firestore().collection("questions").where("surveys", "array-contains", surveyID).get()
-      .then((questionData)=>{
-        questionData.forEach((doc)=>{
+      firebase.firestore().collection('questions').where('surveys', 'array-contains', surveyId).get()
+      .then(questionData => {
+        questionData.forEach(doc => {
           questions.push(doc);
-        })
-        console.log(questions);
+        });
         resolve(questions);
       }, err => reject(err));
     });
@@ -127,54 +122,39 @@ export class SurveyServiceService {
 
     }
 
-    getComments(questionID){
-      let comments = [];
-      //pull each question from firebase 
+    getComments(questionID) {
+      const comments: any[] = [];
+      // pull each question from firebase
       return new Promise<any>((resolve, reject) => {
-
-        let query = firebase.firestore().collection("comments").where("questionId", "==", questionID)
-
-        query.get()
-        .then((commentData)=>{
-          commentData.forEach((doc)=>{
-            comments.push(doc);
-          })
-          console.log("Printing result data for the comments page...")
-          console.log(comments);
-          resolve(comments);
+        firebase.firestore().collection('comments').where('questionId', '==', questionID).get()
+          .then((commentData) => {
+            commentData.forEach((doc) => {
+              comments.push(doc);
+            });
+            resolve(comments);
         }, err => reject(err));
       });
     }
 
-
-
-
-
-
-    //submit survey response 
-    submitSurvey(surveyResponses){
+    // submit survey response
+    submitSurvey(surveyResponses) {
       console.log(Object.entries(surveyResponses));
       this.responses = Object.entries(surveyResponses);
-      this.responses.forEach((response)=>{
-          console.log("for each...")
-          console.log(response);  
-          this.updateDocument(response); 
+      this.responses.forEach((response) => {
+          this.updateDocument(response);
           this.createResponse(response);
-          if(typeof response[1]=="string"){
-            console.log("This is a string")
+          if (typeof response[1] === 'string') {
             console.log(response[1]);
-            //if does not contain a number then save as a comment 
-            if(!((response[1].includes("1") || response[1].includes("2")|| response[1].includes("3")||response[1].includes("4")))){
-              this.createComment(response[0],response[1],"feedback")
+            // if does not contain a number then save as a comment
+            if (!((response[1].includes('1') || response[1].includes('2') || response[1].includes('3') || response[1].includes('4')))) {
+              this.createComment(response[0], response[1], 'feedback', '');
             }
-          } 
-      })
+          }
+      });
     }
 
-
-
-    updateDocument(response){
-      // get data 
+    updateDocument(response) {
+      // get data
       var questionRef = firebase.firestore().collection("questions").doc(response[0]);
 
       questionRef.get().then(function(doc) {
@@ -234,16 +214,16 @@ export class SurveyServiceService {
           console.error('Error adding document: ', error);
         });
     }
-    createComment(surveyId, comment, type){
+    createComment(surveyId: string, comment: string, type: string, action: string) {
       // Add a new document with a generated id.
       firebase.firestore().collection('comments').add({
         questionId: surveyId,
         text: comment,
         name: 'Anonymous',
         type: type,
+        action: action,
         user: firebase.auth().currentUser.uid,
         timestamp: firebase.firestore.FieldValue.serverTimestamp()
-
       }).then(function(docRef) {
         console.log('Document written with ID: ', docRef.id);
       }).catch(function(error) {

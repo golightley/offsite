@@ -85,11 +85,6 @@ export class DealsListingPage implements OnInit {
   viewComments(result) {
     // store question ID in service
     this.surveyService.myParam = result;
-    console.log("result function fired");
-    console.log(result);
-    console.log("result function fired 2");
-    console.log(this.surveyService.myParam);
-    // navigate to [routerLink]="['/app/user/friends']"
     this.router.navigateByUrl('/app/user/friends');
   }
   // like(result) {
