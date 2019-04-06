@@ -1,9 +1,9 @@
-import { Component, OnInit, HostBinding } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { SurveyServiceService } from '../../services/survey-service.service';
-import { UserFriendsModel } from './user-friends.model';
+import {Component, HostBinding} from '@angular/core';
+import {ActivatedRoute} from '@angular/router';
+import {SurveyServiceService} from '../../services/survey-service.service';
+import {CommentActionType, CommentModel, UserFriendsModel} from './user-friends.model';
 import * as firebase from 'firebase/app';
-import { HttpClient } from '@angular/common/http';
+import {HttpClient} from '@angular/common/http';
 
 
 @Component({
@@ -15,178 +15,141 @@ import { HttpClient } from '@angular/common/http';
     './styles/user-friends.md.scss'
   ]
 })
-export class UserFriendsPage implements OnInit {
+export class UserFriendsPage {
   data: UserFriendsModel;
 
-  segmentValue = 'friends';
-  friendsList: Array<any>;
-  followersList: Array<any>;
-  comments: Array<any>;
-  followingList: Array<any>;
-  searchQuery = '';
-  showFilters = false;
-  message: any;
+  comments: CommentModel[] = [];
+  message = 'Our team should keep doing...';
+  messageType = 'keep';
 
   @HostBinding('class.is-shell') get isShell() {
-    return (this.data && this.data.isShell) ? true : false;
+    return this.data && this.data.isShell;
   }
 
   constructor(
-    private route: ActivatedRoute,    
+    private route: ActivatedRoute,
     public surveyService: SurveyServiceService,
-    private http:HttpClient,
-    ) { }
-
-  ngOnInit(): void {
-
-    //log the question id 
-    console.log("Logging param that has been set...")
-    console.log(this.surveyService.myParam)
-    
-    //get the comments 
-    this.getComment();
-    this.updateComment();
-
-  }
-
-  ionViewWillEnter(){
-    console.log("IonViewWillEnter")
-    //get the comments 
-    this.getComment();
+    private http: HttpClient
+    ) {
     this.updateComment();
   }
 
-  getComment(){
-        //gert
-        this.comments = [];
-        this.surveyService.getComments(this.surveyService.myParam.id).then((commentData)=>{
-          this.comments = commentData;
-          console.log(this.comments);
-        })
-
-        
-  }
-
-  updateComment(){
-    let query = firebase.firestore().collection("comments").where("questionId", "==", this.surveyService.myParam.id)
-
-    query.onSnapshot((snapshot)=>{
-      console.log("Changed")
-      console.log(snapshot)
-
-      //retrieve anything that has changed
-      let changedDocs = snapshot.docChanges();
-      changedDocs.forEach((change) => {
-
-        if(change.type == "added"){
-          console.log("added...")
-          console.log(change.doc);
-          this.comments.push(change.doc);       
-        }
-
-        if(change.type == "modified"){
-          
-          let index = 0;
-          for (let i=0; i<this.comments.length; i++) {
-            if(this.comments[i].id == change.doc.id){
-              index = i;
+  updateComment() {
+    if (this.surveyService.myParam && this.surveyService.myParam.id) {
+      const query = firebase.firestore().collection('comments')
+        .where('questionId', '==', this.surveyService.myParam.id)
+        .where('type', '==', 'comment');
+      query.onSnapshot((snapshot) => {
+        console.log(snapshot);
+        // retrieve anything that has changed
+        const changedDocs = snapshot.docChanges();
+        changedDocs.forEach((change) => {
+          if (change.type === 'added') {
+            this.comments.push(new CommentModel(change.doc.id, change.doc.data()));
+          } else if (change.type === 'modified') {
+            let index = 0;
+            for (let i = 0; i < this.comments.length; i++) {
+              if (this.comments[i].uid === change.doc.id) {
+                index = i;
+                break;
+              }
             }
-
+            this.comments[index] = new CommentModel(change.doc.id, change.doc.data());
           }
-          
-          //get the index of the object 
-          console.log("Modified called...");
-          console.log(change.doc);
-          console.log(this.comments)
-          console.log("index" + index);
-          this.comments[index].data().score = change.doc.data().score;
-        }
-        
-        if(change.type == "removed"){
-
-        }
-
-      })
-
-    })
+        });
+      });
+    } else {
+      this.comments = [
+        new CommentModel('1', {
+          name: 'Anonymous',
+          text: 'Text1',
+          score: 3,
+          action: 'keep',
+          type: 'comment'
+        }),
+        new CommentModel('2', {
+          name: 'Anonymous',
+          text: 'Text1',
+          score: 0,
+          action: 'start',
+          type: 'comment'
+        }),
+        new CommentModel('2', {
+          name: 'Anonymous',
+          text: 'This is long long long text test. It really looks good',
+          score: 3,
+          action: 'stop',
+          type: 'comment'
+        })
+      ];
+    }
   }
 
-  createComment(){
-    // create the comment 
-    this.surveyService.createComment(this.surveyService.myParam.id, this.message,"comment");
-    // reset the message 
+  createComment() {
+    // create the comment
+    this.surveyService.createComment(this.surveyService.myParam.id, this.message, 'comment', this.messageType);
+    // reset the message
     this.message = '';
   }
 
-  // segmentChanged(ev): void {
-  //   this.segmentValue = ev.detail.value;
-  //   // Check if there's any filter and apply it
-  //   this.searchList();
-  // }
-  
-  // scrollBottom() {
-  //   var that = this;
-  //   setTimeout(function () {
-  //     that.content.scrollToBottom();    
-  //   }, 300);
-  // }
+  // this should be moved to the service
+  increaseScore(comment: CommentModel) {
+    console.log('Update score function fired...');
+    const body  = {
+      questId: comment.uid,
+      userId: firebase.auth().currentUser.uid,
+      action: 'upvote'
+    };
+    this.http.post('https://us-central1-offsite-9f67c.cloudfunctions.net/updateScore', JSON.stringify(body), {
+      responseType: 'text'
+    }).subscribe((data) => {
+      console.log(data);
+    }, (error) => {
+      console.log(error);
+    });
+  }
 
-    // this should be moved to the service 
-    increaseScore(result){
-      console.log("Update score function fired...");
-      let body  = {
-        questId:result.id,
-        userId: firebase.auth().currentUser.uid,
-        action: "upvote"
-      }
-      this.http.post("https://us-central1-offsite-9f67c.cloudfunctions.net/updateScore", JSON.stringify(body),{
-        responseType:"text"
-      }).subscribe((data) => {
-        console.log(data);
-      }, (error) => {
-        console.log(error)
-      })
-    }
+  // this should be moved to the service
+  decreaseScore(comment: CommentModel) {
+    console.log('Update score function fired...');
+    const body  = {
+      questId: comment.uid,
+      userId: firebase.auth().currentUser.uid,
+      action: 'downvote'
+    };
+    this.http.post('https://us-central1-offsite-9f67c.cloudfunctions.net/updateScore', JSON.stringify(body), {
+      responseType: 'text'
+    }).subscribe((data) => {
+      console.log(data);
+    }, (error) => {
+      console.log(error);
+    });
+  }
 
-        // this should be moved to the service 
-        decreaseScore(result){
-          console.log("Update score function fired...");
-          let body  = {
-            questId:result.id,
-            userId: firebase.auth().currentUser.uid,
-            action: "upvote"
-          }
-          this.http.post("https://us-central1-offsite-9f67c.cloudfunctions.net/updateScore", JSON.stringify(body),{
-            responseType:"text"
-          }).subscribe((data) => {
-            console.log(data);
-          }, (error) => {
-            console.log(error)
-          })
-        }
-
-
-  searchList(): void {
-    const query = (this.searchQuery && this.searchQuery !== null) ? this.searchQuery : '';
-
-    if (this.segmentValue === 'friends') {
-      this.friendsList = this.filterList(this.data.friends, query);
-    } else if (this.segmentValue === 'followers') {
-      this.followersList = this.filterList(this.data.followers, query);
-    } else if (this.segmentValue === 'following') {
-      this.followingList = this.filterList(this.data.following, query);
+  getCommentActionColor(action: CommentActionType) {
+    switch (action) {
+      case CommentActionType.keep:
+        return '#ffae66';
+      case CommentActionType.start:
+        return '#6af951';
+      case CommentActionType.stop:
+        return '#ff6666';
     }
   }
 
-  filterList(list, query): Array<any> {
-    return list.filter(item => item.name.toLowerCase().includes(query.toLowerCase()));
+  segmentChanged() {
+    switch (this.messageType) {
+      case 'keep':
+        this.message = 'Our team should keep doing...';
+        break;
+      case 'stop':
+        this.message = 'Our team should stop doing...';
+        break;
+      case 'start':
+        this.message = 'Our team should start doing...';
+        break;
+    }
   }
-
-  segmentChanged($event){
-    console.log(event);
-    this.message = "Our team should keep doing..."
-  }
-
 
 }
 

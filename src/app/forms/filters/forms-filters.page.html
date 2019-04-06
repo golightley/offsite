@@ -1,61 +1,56 @@
 <ion-header>
   <ion-toolbar color="primary">
     <ion-buttons slot="start">
-      <ion-menu-button></ion-menu-button>
+      <ion-back-button defaultHref="app/notifications"></ion-back-button>
     </ion-buttons>
-    <ion-title>Filters</ion-title>
+    <ion-title>Feedback</ion-title>
   </ion-toolbar>
 </ion-header>
 <ion-content class="filters-content">
-  <ion-item-group class="filters-group">
-    <ng-container *ngFor="let question of questions">
-    <form [formGroup]="radioTagsForm" *ngIf="question.data().type == 'multiple'">
-        <ion-item-divider >
-            <ion-label > 
-                {{ question.data().Question }}    
-            </ion-label>  +
-
-          </ion-item-divider>
-      <ion-radio-group formControlName="selected_option" [(ngModel)]="responses[question.id]">
-        <ion-row class="radio-tags">
-          <ion-item class="radio-tag" lines="none"  >
-            <ion-label class="tag-label">
-              <span>No way</span>
-            </ion-label>
-            <ion-radio value="1"></ion-radio>
-          </ion-item>
-          <ion-item class="radio-tag" lines="none" >
-            <ion-label class="tag-label">
-              <span>No</span>
-            </ion-label>
-            <ion-radio value="2"></ion-radio>
-          </ion-item>
-          <ion-item class="radio-tag" lines="none">
-            <ion-label class="tag-label">
-                <span>Yes</span>
-              </ion-label>
-            <ion-radio value="3" ></ion-radio>
-          </ion-item>
-          <ion-item class="radio-tag" lines="none">
-            <ion-label class="tag-label">
-              <span>Definitely</span>
-            </ion-label>
-            <ion-radio value="4"></ion-radio>
-          </ion-item>
-        </ion-row>
-      </ion-radio-group>
+  <ion-card class="filters-group">
+    <form [formGroup]="radioTagsForm">
+      <div *ngFor="let question of questions">
+        <div class="question-title">{{ question.question }}</div>
+        <div *ngIf="question.type == 'multiple'">
+          <div class="question-description">Choose one</div>
+          <ion-radio-group formControlName="selected_option" [(ngModel)]="responses[question.id]">
+            <ion-row class="radio-tags">
+              <ion-item class="radio-tag" lines="none">
+                <ion-label class="tag-label">
+                  <span>No way</span>
+                </ion-label>
+                <ion-radio value="1"></ion-radio>
+              </ion-item>
+              <ion-item class="radio-tag" lines="none">
+                <ion-label class="tag-label">
+                  <span>No</span>
+                </ion-label>
+                <ion-radio value="2"></ion-radio>
+              </ion-item>
+              <ion-item class="radio-tag" lines="none">
+                <ion-label class="tag-label">
+                  <span>Yes</span>
+                </ion-label>
+                <ion-radio value="3" ></ion-radio>
+              </ion-item>
+              <ion-item class="radio-tag" lines="none">
+                <ion-label class="tag-label">
+                  <span>Definitely</span>
+                </ion-label>
+                <ion-radio value="4"></ion-radio>
+              </ion-item>
+            </ion-row>
+          </ion-radio-group>
+        </div>
+        <div *ngIf="question.type == 'input'">
+          <div class="question-description">Be as clear as possible</div>
+          <ion-input class="text-response" [(ngModel)]="responses[question.id]" type="text" formControlName="selected_option" clearInput required></ion-input>
+        </div>
+        <div class="question-divider"></div>
+      </div>
     </form>
-
-    <form [formGroup]="radioTagsForm"  *ngIf="question.data().type == 'input'" >
-          <ion-item class="input-item">
-              <ion-label position="floating">{{question.data().Question}}</ion-label>
-              <ion-input [(ngModel)]="responses[question.id]" type="text" formControlName="selected_option" clearInput required></ion-input>
-            </ion-item>
-    </form>
-
-
-  </ng-container>
-  </ion-item-group>
-  <ion-button  type="submit" expand="block" (click)="submitSurvey()" >Submit survey</ion-button>
-
+  </ion-card>
 </ion-content>
+<ion-footer>
+  <ion-button class="button-submit" type="submit" expand="block" (click)="submitSurvey()" >Submit</ion-button>
+</ion-footer>
