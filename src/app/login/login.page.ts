@@ -48,51 +48,38 @@ export class LoginPage implements OnInit {
     });
   }
 
-  ngOnInit(): void {
+  ngOnInit() {
     this.menu.enable(false);
   }
 
-  doLogin(): void {
-
-
+  doLogin() {
     console.log('do Log In');
-    firebase.auth().signInWithEmailAndPassword(this.email,this.password)
-    .then((user)=>{
-      console.log("Printing user...")
+    firebase.auth().signInWithEmailAndPassword(this.email, this.password)
+    .then(user => {
       console.log(user);
       // sign the userup for cloud messaging to enable notifications
-      this.firebaseCordova.getToken().then((token)=>{
-        console.log("Printing token...")
-        console.log(token)
-        //save the token to a document 
+      this.router.navigate(['app/notifications']);
+      this.firebaseCordova.getToken().then((token) => {
         this.updateToken(token, firebase.auth().currentUser.uid);
-      }).catch((error)=>{
-        console.log("Error fired")
-        console.log(error)
-      })
-
-    }).catch((err)=>{
+      }).catch((error) => {
+        console.log(error);
+      });
+    }).catch((err) => {
       console.log(err);
-    })
-
-
-    this.router.navigate(['app/notifications']);
+    });
   }
 
-  updateToken(token:string, uid:string):void {
-
-    firebase.firestore().collection("users").doc(uid).set({
-      token:token,
-      tokenUpdated:firebase.firestore.FieldValue.serverTimestamp()
-    },{
-      merge:true
-
-    }).then(()=>{
-      console.log("token saved to cloud firestore")
-    }).catch((error)=>{
-      console.log(error)
-    })
-
+  updateToken(token: string, uid: string) {
+    firebase.firestore().collection('users').doc(uid).set({
+      token: token,
+      tokenUpdated: firebase.firestore.FieldValue.serverTimestamp()
+    }, {
+      merge: true
+    }).then(() => {
+      console.log('token saved to cloud firestore');
+    }).catch((error) => {
+      console.log(error);
+    });
   }
 
 

@@ -134,30 +134,25 @@ export class SurveyServiceService {
       });
     }
 
-    //submit survey response 
-    submitSurvey(surveyResponses){
+    // submit survey response
+    submitSurvey(surveyResponses) {
       console.log(Object.entries(surveyResponses));
       this.responses = Object.entries(surveyResponses);
-      this.responses.forEach((response)=>{
-          console.log("for each...")
-          console.log(response);  
-          this.updateDocument(response); 
+      this.responses.forEach((response) => {
+          this.updateDocument(response);
           this.createResponse(response);
-          if(typeof response[1]=="string"){
-            console.log("This is a string")
+          if (typeof response[1] === 'string') {
             console.log(response[1]);
-            //if does not contain a number then save as a comment 
-            if(!((response[1].includes("1") || response[1].includes("2")|| response[1].includes("3")||response[1].includes("4")))){
-              this.createComment(response[0],response[1],"feedback")
+            // if does not contain a number then save as a comment
+            if (!((response[1].includes('1') || response[1].includes('2') || response[1].includes('3') || response[1].includes('4')))) {
+              this.createComment(response[0], response[1], 'feedback', '');
             }
-          } 
-      })
+          }
+      });
     }
 
-
-
-    updateDocument(response){
-      // get data 
+    updateDocument(response) {
+      // get data
       var questionRef = firebase.firestore().collection("questions").doc(response[0]);
 
       questionRef.get().then(function(doc) {

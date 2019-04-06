@@ -19,7 +19,7 @@ export class UserFriendsPage {
   data: UserFriendsModel;
 
   comments: CommentModel[] = [];
-  message = '';
+  message = 'Our team should keep doing...';
   messageType = 'keep';
 
   @HostBinding('class.is-shell') get isShell() {
@@ -36,7 +36,9 @@ export class UserFriendsPage {
 
   updateComment() {
     if (this.surveyService.myParam && this.surveyService.myParam.id) {
-      const query = firebase.firestore().collection('comments').where('questionId', '==', this.surveyService.myParam.id);
+      const query = firebase.firestore().collection('comments')
+        .where('questionId', '==', this.surveyService.myParam.id)
+        .where('type', '==', 'comment');
       query.onSnapshot((snapshot) => {
         console.log(snapshot);
         // retrieve anything that has changed
