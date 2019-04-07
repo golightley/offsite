@@ -6,6 +6,9 @@
     </p>
   </div>   
   <form id="inviteTeamMembers-form7" class="list">
+      <label class="item item-input" id="inviteTeamMembers-input16">
+          <input type="text" placeholder="Team Name" [(ngModel)]="teamName" [ngModelOptions]="{standalone: true}">
+        </label>
     <div class="invite-member" *ngFor="let member of invite_members; let i = index;">
       <label class="item item-input" id="inviteTeamMembers-input16">
         <input type="text" placeholder="Full name" [(ngModel)]="member.invitedName" [ngModelOptions]="{standalone: true}">
