@@ -57,7 +57,11 @@ export class LoginPage implements OnInit {
     firebase.auth().signInWithEmailAndPassword(this.email, this.password)
     .then(user => {
       console.log(user);
+
       // sign the userup for cloud messaging to enable notifications
+      // this.firebaseCordova.getToken().then((token)=>{
+      //   console.log("Printing token...")
+      //   console.log(token)
       this.router.navigate(['app/notifications']);
       this.firebaseCordova.getToken().then((token) => {
         this.updateToken(token, firebase.auth().currentUser.uid);

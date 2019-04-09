@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import {SurveyServiceService} from '../services/survey-service.service';
 
 @Component({
   selector: 'app-invite-team-mates',
@@ -12,6 +13,7 @@ export class InviteTeamMatesPage implements OnInit {
   public count: number = 1;
   public isAnonymously: boolean; 
   public userId: any;
+
   public roles = [
     { id: 0, value: 'admin'},
     { id: 1, value: 'member'}
@@ -22,15 +24,28 @@ export class InviteTeamMatesPage implements OnInit {
     // public teamService: TeamDataService,
     // public alertController: AlertController,
     // private storage : Storage,
+    public surveyService: SurveyServiceService,
+
   ) {  
        this.invite_members = [{
         invitedEmail: '',
         invitedName : '',
+    
         role: ''
     }];
 }
 
+teamName:string    = "";
+
+
   ngOnInit() {
+
+    this.surveyService.checkIfInvitedtoAteam().then((team) =>{
+      console.log("Invited to a team...")
+      console.log(team)
+      this.teamName = team;
+    })
+
   }
 
   selectRole(role, i){
@@ -47,6 +62,11 @@ export class InviteTeamMatesPage implements OnInit {
     });
 
     this.count = this.invite_members.length;
+  } 
+
+  inviteToTeam(){
+        // create email notifictions for invited team members 
+        this.surveyService.inviteTeamMembers(this.invite_members,this.teamName);
   }
 
 }

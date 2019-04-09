@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Validators, FormGroup, FormControl } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ModalController, MenuController } from '@ionic/angular';
-
+import {SurveyServiceService} from '../services/survey-service.service';
 import { TermsOfServicePage } from '../terms-of-service/terms-of-service.page';
 import { PrivacyPolicyPage } from '../privacy-policy/privacy-policy.page';
 import { PasswordValidator } from '../validators/password.validator';
@@ -47,7 +47,9 @@ export class SignupPage implements OnInit {
   constructor(
     public router: Router,
     public modalController: ModalController,
-    public menu: MenuController
+    public menu: MenuController,
+    public surveyService: SurveyServiceService
+
   ) {
     this.matching_passwords_group = new FormGroup({
       'password': new FormControl('', Validators.compose([
@@ -88,14 +90,22 @@ export class SignupPage implements OnInit {
 
   doSignup(): void {
     console.log('do sign up');
+    // set the user email so that we can use it in the next screen 
+    this.surveyService.email = this.email;
+    console.log("email..signup...");
+    console.log(this.email);
+
     firebase.auth().createUserWithEmailAndPassword(this.email,this.password).then((data)=>{
       console.log(data);
       let newUser:firebase.User = data.user;
+      
       newUser.updateProfile({
         displayName: this.name,
         photoURL: ""
-      }).then(()=>{
+      }).then(()=>{ 
         console.log("Profile updated");
+
+
       }).catch((err)=>{
         console.log(err);
       })

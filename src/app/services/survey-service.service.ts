@@ -7,8 +7,11 @@ import * as firebase from 'firebase/app';
 export class SurveyServiceService {
   
   public myParam: any; 
+  public email: any; 
   public responses: any; 
   public categories: any; 
+  public invites:any;
+  public teamId:any;
 
   constructor() { }
 
@@ -91,6 +94,46 @@ export class SurveyServiceService {
     });
   }
 
+    // pull questions for results tab
+    checkIfInvitedtoAteam() {
+
+      console.log("checking email function");
+      console.log(this.email);
+
+      // pull each question from firebase
+      return new Promise<any>((resolve, reject) => {
+        firebase.firestore().collection('teams')
+        .where('invitedMembers', 'array-contains', this.email)
+        .get()
+        .then((teams) => {
+          teams.forEach((doc) => {
+              resolve(doc.data().teamName);
+          });
+        }, err => reject(err));
+      });
+    }
+        // pull questions for results tab
+    getTeamById(teamId) {
+      return new Promise<any>((resolve, reject) => {
+    console.log("Pulling team with this ID");
+    console.log(teamId);
+    var docRef = firebase.firestore().collection("teams").doc(teamId);
+    docRef.get().then(function(doc) {
+        if (doc.exists) {
+            console.log("Document data:", doc.data());
+            resolve(doc.data());
+
+        } else {
+            // doc.data() will be undefined in this case
+            console.log("No such document!");
+        }
+    }).catch(function(error) {
+        console.log("Error getting document:", error);
+        reject(error);
+    });
+  });
+
+  }
 
     updateComments(questionID){
 
@@ -153,6 +196,40 @@ export class SurveyServiceService {
       });
     }
 
+
+    // creates invite document for each person invited to the team
+    inviteTeamMembers(teamMembersArray,teamName) {
+
+          // holds simple array for dynamic email template 
+          let emails = [];
+          let teamId:string;
+
+          // gets the array from the view 
+          this.invites = Object.entries(teamMembersArray);
+
+          // loops through each invited member to fill the array
+          this.invites.forEach((invite) => {
+            emails.push(invite[1].invitedEmail);
+          });
+
+          // create the team and add the list of invites
+          this.teamId = this.createTeam(emails,teamName).then(docId =>{
+
+            this.invites.forEach((invite) => {
+              // need to replace 
+              this.createEmailInvite(invite[1].invitedName, invite[1].invitedEmail,emails,teamName,docId) 
+          });
+
+          })
+
+        //   // create a document for each person to be invited. Cloud function
+        //   // triggers SendGrid on each document creation and handles on backend 
+        //   this.invites.forEach((invite) => {
+        //         // need to replace 
+        //         this.createEmailInvite(invite[1].invitedName, invite[1].invitedEmail,emails,teamName,this.teamId) 
+        // });
+      }
+
     updateDocument(response) {
       // get data
       var questionRef = firebase.firestore().collection("questions").doc(response[0]);
@@ -214,6 +291,7 @@ export class SurveyServiceService {
           console.error('Error adding document: ', error);
         });
     }
+
     createComment(surveyId: string, comment: string, type: string, action: string) {
       // Add a new document with a generated id.
       firebase.firestore().collection('comments').add({
@@ -229,5 +307,49 @@ export class SurveyServiceService {
       }).catch(function(error) {
         console.error('Error adding document: ', error);
       });
+    }                
+
+
+    createEmailInvite(name:string,email:string,team:any,teamName:string,teamId:string) {
+      // Add a new document with a generated id.
+      firebase.firestore().collection('emailInvites').add({
+        name: name,
+        email: email,
+        team: team,
+        teamId:teamId,
+        teamName: teamName,
+        user: firebase.auth().currentUser.uid,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      }).then(function(docRef) {
+        console.log('Email invite written with ID: ', docRef.id);
+      }).catch(function(error) {
+        console.error('Error adding email invite document: ', error);
+      });
+    }
+
+
+    createTeam(team:any,teamName:string) {
+
+      return new Promise<any>((resolve, reject) => {
+      // Add a new document with a generated id.
+      firebase.firestore().collection('teams').add({
+        teamName: teamName,
+        invitedMembers: team,
+        user: firebase.auth().currentUser.uid,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+        members:[{
+          uid:firebase.auth().currentUser.uid,
+        }]
+
+
+      }).then(function(docRef) {
+        console.log('Email invite written with ID: ', docRef.id);
+        resolve(docRef.id);
+      }).catch(function(error) {
+        console.error('Error adding email invite document: ', error);
+        reject(error)
+      });
+    });
     }
 }
+
