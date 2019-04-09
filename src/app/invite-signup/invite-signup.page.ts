@@ -24,7 +24,7 @@ export class InviteSignupPage implements OnInit {
     this.surveyService.getTeamById(this.id).then(teamData => {
       console.log("Team data has been loaded...");
       console.log(teamData)
-      this.teamName = teamData.name;
+      this.teamName = teamData.teamName;
     })
 
   }
