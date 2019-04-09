@@ -15,13 +15,10 @@ const routes: Routes = [
   { path: 'page-not-found', loadChildren: './page-not-found/page-not-found.module#PageNotFoundModule' },
   { path: 'showcase', loadChildren: './showcase/showcase.module#ShowcasePageModule' },
   // { path: '**', redirectTo: 'page-not-found' },
-  { path: 'feedback', loadChildren: './feedback/feedback.module#FeedbackPageModule' },
   { path: 'contact', loadChildren: './contact/contact.module#ContactPageModule' },
-  { path: 'feedback-request-friends', loadChildren: './feedback-request-friends/feedback-request-friends.module#FeedbackRequestFriendsPageModule' },
   { path: 'invite-team-mates', loadChildren: './invite-team-mates/invite-team-mates.module#InviteTeamMatesPageModule' },
   { path: 'test', loadChildren: './pages/test/test.module#TestPageModule' },
-  { path: 'invite-signup/:id', loadChildren: './invite-signup/invite-signup.module#InviteSignupPageModule' },
-  // { path: 'feedback-request-submitted', loadChildren: './feedback-request-submitted/feedback-request-submitted.module#FeedbackRequestSubmittedPageModule' },
+  { path: 'invite-signup/:id', loadChildren: './invite-signup/invite-signup.module#InviteSignupPageModule' }
 ];
 @NgModule({
   imports: [RouterModule.forRoot(routes)],

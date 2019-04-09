@@ -1,0 +1,29 @@
+ion-content {
+  ion-icon {
+    margin-top: 20%;
+    font-size: 6rem;
+    color: rgb(79, 219, 165);
+  }
+
+  .title {
+    color: rgb(79, 219, 165);
+    margin-top: 10%;
+    font-weight: 500;
+    font-size: 1.3rem;
+  }
+
+  .description {
+    margin: 10% 5%;
+    font-size: 0.9rem;
+    color: rgb(152, 169, 188);
+  }
+}
+
+ion-footer {
+  ion-button {
+    width: 80%;
+    margin: 5% 10%;
+    --background: rgb(79, 219, 165);
+  }
+}
+
