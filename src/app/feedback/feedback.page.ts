@@ -1,10 +1,10 @@
-import { Component, OnInit } from '@angular/core';
-import { AlertController, NavController} from '@ionic/angular';
-import { ActivatedRoute } from '@angular/router';
+import {Component, OnInit} from '@angular/core';
+import {NavController} from '@ionic/angular';
+import {Router} from '@angular/router';
 import * as firebase from 'firebase/app';
-import { SurveyServiceService } from '../services/survey-service.service';
-require('firebase/auth')
-import { Router } from '@angular/router';
+import {SurveyServiceService} from '../services/survey-service.service';
+
+require('firebase/auth');
 
 @Component({
   selector: 'app-feedback',
@@ -12,7 +12,6 @@ import { Router } from '@angular/router';
   styleUrls: ['./feedback.page.scss'],
 })
 export class FeedbackPage implements OnInit {
-  
   categories: any = [];
 
   constructor(

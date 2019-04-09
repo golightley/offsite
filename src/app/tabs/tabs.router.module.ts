@@ -9,16 +9,19 @@ const routes: Routes = [
     path: '',
     component: TabsPage,
     children: [
-      
       {
-    path: 'categories',
-      children: [
-        {
-          path: '',
-          loadChildren: '../deals/listing/deals-listing.module#DealsListingPageModule'
-        }
-      ]
-    },
+      path: 'categories',
+        children: [
+          {
+            path: '',
+            loadChildren: '../deals/listing/deals-listing.module#DealsListingPageModule'
+          },
+          {
+            path: 'friends',
+            loadChildren: '../user/friends/user-friends.module#UserFriendsPageModule'
+          }
+        ]
+      },
       {
         path: 'user',
         children: [
@@ -26,17 +29,13 @@ const routes: Routes = [
             path: '',
             loadChildren: '../feedback/feedback.module#FeedbackPageModule'
           },
-           {
-            path: 'friends',
-            loadChildren: '../user/friends/user-friends.module#UserFriendsPageModule'
+          {
+            path: 'feedback-request-friends',
+            loadChildren: '../feedback-request-friends/feedback-request-friends.module#FeedbackRequestFriendsPageModule'
           },
-          { 
-            path: 'feedback-request-friends', 
-            loadChildren: '../feedback-request-friends/feedback-request-friends.module#FeedbackRequestFriendsPageModule' 
-          },
-          { 
-            path: 'feedback-request-submitted', 
-            loadChildren: '../feedback-request-submitted/feedback-request-submitted.module#FeedbackRequestSubmittedPageModule' 
+          {
+            path: 'feedback-request-submitted',
+            loadChildren: '../feedback-request-submitted/feedback-request-submitted.module#FeedbackRequestSubmittedPageModule'
           },
         ]
       },
