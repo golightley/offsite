@@ -30,6 +30,7 @@ export class InviteTeamMatesPage implements OnInit {
        this.invite_members = [{
         invitedEmail: '',
         invitedName : '',
+    
         role: ''
     }];
 }
@@ -38,6 +39,13 @@ teamName:string    = "";
 
 
   ngOnInit() {
+
+    this.surveyService.checkIfInvitedtoAteam().then((team) =>{
+      console.log("Invited to a team...")
+      console.log(team)
+      this.teamName = team;
+    })
+
   }
 
   selectRole(role, i){
