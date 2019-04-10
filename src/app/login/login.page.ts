@@ -1,10 +1,11 @@
-import { Component, OnInit } from '@angular/core';
-import { Validators, FormGroup, FormControl } from '@angular/forms';
-import { Router } from '@angular/router';
-import { MenuController } from '@ionic/angular';
-import { Firebase } from '@ionic-native/firebase/ngx';
+import {Component, OnInit} from '@angular/core';
+import {FormControl, FormGroup, Validators} from '@angular/forms';
+import {Router} from '@angular/router';
+import {MenuController} from '@ionic/angular';
+import {Firebase} from '@ionic-native/firebase/ngx';
 
 import * as firebase from 'firebase/app';
+
 require('firebase/auth')
 
 @Component({
@@ -17,8 +18,8 @@ require('firebase/auth')
 export class LoginPage implements OnInit {
   loginForm: FormGroup;
 
-  email:string    = "";
-  password:string = "";
+  email = '';
+  password = '';
 
   validation_messages = {
     'email': [
@@ -33,8 +34,7 @@ export class LoginPage implements OnInit {
 
   constructor(
     public router: Router,
-    public menu: MenuController,
-    private firebaseCordova:Firebase,
+    public menu: MenuController
   ) {
     this.loginForm = new FormGroup({
       'email': new FormControl('test@test.com', Validators.compose([
@@ -57,33 +57,22 @@ export class LoginPage implements OnInit {
     firebase.auth().signInWithEmailAndPassword(this.email, this.password)
     .then(user => {
       console.log(user);
-
-      // sign the userup for cloud messaging to enable notifications
-      // this.firebaseCordova.getToken().then((token)=>{
-      //   console.log("Printing token...")
-      //   console.log(token)
-      this.router.navigate(['app/notifications']);
-      this.firebaseCordova.getToken().then((token) => {
-        this.updateToken(token, firebase.auth().currentUser.uid);
-      }).catch((error) => {
-        console.log(error);
-      });
-    }).catch((err) => {
-      console.log(err);
-    });
+      this.updateUsers(firebase.auth().currentUser)
+        .then(() => {
+          // this.router.navigate(['app/notifications']);
+          this.router.navigate(['/invite-team-mates']);
+        }, err => console.error(err));
+    }, err => console.log(err));
   }
 
-  updateToken(token: string, uid: string) {
-    firebase.firestore().collection('users').doc(uid).set({
-      token: token,
-      tokenUpdated: firebase.firestore.FieldValue.serverTimestamp()
-    }, {
-      merge: true
-    }).then(() => {
-      console.log('token saved to cloud firestore');
-    }).catch((error) => {
-      console.log(error);
-    });
+  private updateUsers(user: firebase.User) {
+    const params = {
+      name: user.displayName,
+      email: user.email,
+      phoneNumber: user.phoneNumber,
+      loggedAt: Date.now()
+    };
+    return firebase.firestore().collection('users').doc(user.uid).set(params);
   }
 
 

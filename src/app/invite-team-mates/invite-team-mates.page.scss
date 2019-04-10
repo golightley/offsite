@@ -1,97 +1,43 @@
-#inviteTeamMembers-markdown12{
-    font-size: 30px;
-    margin: 60px 30px -20px 30px;
-    text-align: left !important;
+ion-content {
+  .title {
+    font-weight: 500;
+    font-size: 1.2rem;
   }
-  
-  .item.item-input{
-    padding: 5px;
-    margin: 5px 30px;
-    border-radius: 2px;
-    background-color: #f8f8f8;
-    border: 0px;
-  
-    input{
-      background: #f8f8f8;
+
+  .list-members {
+    margin: 5% 0;
+    padding: 0;
+
+    .component-container {
+      width: 100%;
+      border: lightgray 1px solid;
+      border-radius: 2px;
+
+      ion-input {
+        margin: 0 3%;
+      }
     }
   }
-  
-  #inviteTeamMembers-button11{
-    border-color: #12b93e;
-    background: #12b93e;
-    color: white;
-    margin: 15px 30px;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    bottom: 0px;
-    width: 75%;
-  }
-  
-  #inviteTeamMembers-button10{
-    color: #5a12b9;
-    background: #e6dcf3;
-    margin: 15px 30px;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    line-height: 15px;
-    min-height: 35px;
-    font-size: 15px;
-    width: 150px;
-  }
-  
-  .line-spacer{
-    height: 1px;
-    background: #f3ecec;
-    width: 115%;
-    margin-left: -20px;
-  }
-  
-  #select_role{
-    --padding-start: 32px;
-    font-size: 15px;
-  }
-  
-  .checkbox_input{
-    color: #635e5e;
-    margin-top: 15px;
-  
-    .checkbox_col{
-      text-align: right;
-    }   
-  
-    #send-invite{
-      --background : #e6dcf3;
-      --height : 25px;
-      --width: 25px;
-      --checkmark-color:#5a12b9;
-      --background-checked: #e6dcf3;
-      --border-color: #e6dcf3;
-      --border-color-checked :#e6dcf3;
+
+  .anonymous {
+    margin-top: 10%;
+    margin-bottom: 0;
+    width: 70%;
+    margin-left: 15%;
+
+    ion-checkbox {
+      --size: 1rem;
+      --checkmark-color: white;
     }
-  
-    .checkbox_label{
-      padding-top: 7px;
-    }
-  
-    span{
-      padding-left: 5px;              
-      font-size: 14px;
-    }
-  
-    ion-col {
-        &[width-18] {
-            flex: 0 0 18%;
-            max-width: 18%;
-        }
+    ion-label {
+      color: rgb(152, 169, 188);
+      font-size: 0.8rem;
     }
   }
-  
-  .sc-ion-select-popover.in-list.item{
-    height: 61px;
+
+  .button-invite {
+    width: 90%;
+    margin-left: 5%;
+    --background: rgb(79, 219, 165);
   }
-  
-  #inviteTeamMembers-form7{
-    height: 85%;
-  }
+}

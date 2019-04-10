@@ -1,40 +1,39 @@
-<ion-content padding="true" class="has-header">
-  <div class="spacer" style="width: 300px; height: 12.9961px;"></div>
-  <div id="inviteTeamMembers-markdown12" style="text-align:center;" class="show-list-numbers-and-dots">
-    <p style="color:#000000;">
-      <strong>Invite team</strong>
-    </p>
-  </div>   
-  <form id="inviteTeamMembers-form7" class="list">
-      <label class="item item-input" id="inviteTeamMembers-input16">
-          <input type="text" placeholder="Team Name" [(ngModel)]="teamName" [ngModelOptions]="{standalone: true}">
-        </label>
-    <div class="invite-member" *ngFor="let member of invite_members; let i = index;">
-      <label class="item item-input" id="inviteTeamMembers-input16">
-        <input type="text" placeholder="Full name" [(ngModel)]="member.invitedName" [ngModelOptions]="{standalone: true}">
-      </label>
-      <label class="item item-input" id="inviteTeamMembers-input19">
-        <input type="text" placeholder="Email address" [(ngModel)]="member.invitedEmail" [ngModelOptions]="{standalone: true}">
-      </label>
-      <label class="item item-input" id="inviteTeamMembers-input19">            
-        <ion-select id="select_role" color="dark" interface="popover" [interfaceOptions]="customPopoverOptions" placeholder="Role on your team" [(ngModel)]="member.role" [ngModelOptions]="{standalone: true}" (ionChange)="selectRole(member.role, i);">
-          <ion-select-option *ngFor="let role of roles; let j = index;" lines="none" [selected]="j == 0" value="{{role.value}}" >{{role.value}}</ion-select-option>
-        </ion-select>
-      </label>
-    </div>
-    <div class="line-spacer"></div>
-    <button id="inviteTeamMembers-button10" (click)="addMember()" class="button button-royal button-outline">+ Add another </button>
-    <div class="line-spacer"></div>
-    <div class="checkbox_input">
-      <ion-row>
-        <ion-col class="checkbox_col" width-18>
-          <ion-checkbox id="send-invite" [(ngModel)]="this.isAnonymously" [ngModelOptions]="{standalone: true}" (ionChange)="checkInvite(isChecked);"></ion-checkbox>
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Invite Team</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-card padding>
+    <div class="title">Get even more feedback by inviting all of your co-workers.</div>
+    <ion-list class="list-members" lines="none" inset>
+      <ion-row *ngFor="let member of aryMembers; let i = index" align-items-center>
+        <ion-col size="10">
+          <div class="component-container">
+            <ion-input inputmode="email" placeholder="name@company.com" [(ngModel)]="member.email" autocapitalize="off"></ion-input>
+          </div>
         </ion-col>
-        <ion-col class="checkbox_label">
-          <span>Send invitations anonymously</span>
+        <ion-col size="2">
+          <ion-button class="button-remove" fill="clear" [hidden]="2 > aryMembers.length" (click)="onClickBtnRemoveMember(i)">
+            <ion-icon name="close" slot="icon-only"></ion-icon>
+          </ion-button>
         </ion-col>
       </ion-row>
+    </ion-list>
+    <div text-center style="width: 100%">
+      <ion-button fill="clear" color="success" (click)="onClickBtnAddMember()">
+        + Add another
+      </ion-button>
     </div>
-    <button id="inviteTeamMembers-button11" (click)="inviteToTeam()" class="button button-positive button-block">Invite({{count}})</button>
-  </form>
+  </ion-card>
+  <ion-list lines="none" class="anonymous">
+    <ion-item>
+      <ion-checkbox [(ngModel)]="isAnonymously" color="success"></ion-checkbox>
+      <ion-label>Send invitation anonymously</ion-label>
+    </ion-item>
+  </ion-list>
+  <ion-button class="button-invite" expand="block" (click)="onClickBtnInvite()">
+    Send invites
+  </ion-button>
 </ion-content>
