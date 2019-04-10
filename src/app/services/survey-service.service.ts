@@ -29,35 +29,27 @@ export class SurveyServiceService {
     });
   }
 
-    //get notifcations for tab 1 of interface
-    getFeedbackCategories(userID){
-      let notifications = [];
-      return new Promise<any>((resolve, reject) => {
-        firebase.firestore().collection("feedbackCategories").get()
-        .then((docs)=>{
-          docs.forEach((doc)=>{
-            notifications.push(doc);
-          })
-          resolve(notifications);
-        }, err => reject(err));
-      });
-    }
+  // get notifications for tab 1 of interface
+  getFeedbackCategories() {
+    return new Promise<any>((resolve, reject) => {
+      firebase.firestore().collection('feedbackCategories')
+        .where('active', '==', true).get()
+        .then((docs) => {
+          resolve(docs);
+      }, err => reject(err));
+    });
+  }
 
-       //get notifcations for tab 1 of interface
-       getTeamMembers(userID){
-        let notifications = [];
-        return new Promise<any>((resolve, reject) => {
-          firebase.firestore().collection("teams")
-          .where("members", "array-contains", userID)
-          .get()
-          .then((docs)=>{
-            docs.forEach((doc)=>{
-              notifications.push(doc.data().memberinfo);
-            })
-            resolve(notifications);
-          }, err => reject(err));
-        });
-      }
+  // get notifications for tab 1 of interface
+  getTeamMembers(userId: string) {
+    return new Promise<any>((resolve, reject) => {
+      firebase.firestore().collection('teams')
+        .where('members', 'array-contains', {uid: userId}).get()
+        .then((docs) => {
+          resolve(docs);
+      }, err => reject(err));
+    });
+  }
 
   // pull questions
   getQuestions(surveyId: string) {

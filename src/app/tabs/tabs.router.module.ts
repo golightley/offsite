@@ -23,20 +23,20 @@ const routes: Routes = [
         ]
       },
       {
-        path: 'user',
+        path: 'feedback',
         children: [
           {
             path: '',
-            loadChildren: '../feedback/feedback.module#FeedbackPageModule'
+            loadChildren: '../feedback/feedback-logo/feedback-logo.module#FeedbackLogoPageModule'
           },
           {
-            path: 'feedback-request-friends',
-            loadChildren: '../feedback-request-friends/feedback-request-friends.module#FeedbackRequestFriendsPageModule'
+            path: 'feedback-content',
+            loadChildren: '../feedback/feedback-content/feedback-content.module#FeedbackContentPageModule'
           },
           {
-            path: 'feedback-request-submitted',
-            loadChildren: '../feedback-request-submitted/feedback-request-submitted.module#FeedbackRequestSubmittedPageModule'
-          },
+            path: 'feedback-request',
+            loadChildren: '../feedback/feedback-request/feedback-request.module#FeedbackRequestPageModule'
+          }
         ]
       },
       {
