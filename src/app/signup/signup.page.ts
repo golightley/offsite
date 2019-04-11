@@ -88,31 +88,33 @@ export class SignupPage implements OnInit {
     return await modal.present();
   }
 
-  doSignup(): void {
+  doSignup() {
     console.log('do sign up');
-    // set the user email so that we can use it in the next screen 
     this.surveyService.email = this.email;
-    console.log("email..signup...");
-    console.log(this.email);
 
-    firebase.auth().createUserWithEmailAndPassword(this.email,this.password).then((data)=>{
-      console.log(data);
-      let newUser:firebase.User = data.user;
-      
+    firebase.auth().createUserWithEmailAndPassword(this.email, this.password).then(data => {
+      const newUser = data.user;
+
       newUser.updateProfile({
-        displayName: this.name,
-        photoURL: ""
-      }).then(()=>{ 
-        console.log("Profile updated");
+        displayName: this.name
+      }).then(() => {
+        newUser.displayName = this.name;
+        this.updateUsers(newUser)
+          .then(() => {
+            this.router.navigate(['/invite-team-mates']);
+          }, err => console.error(err));
+      }, err => console.log(err));
+    }, err => console.log(err));
+  }
 
-
-      }).catch((err)=>{
-        console.log(err);
-      })
-    }).catch((err)=>{
-      console.log(err)
-    })
-    this.router.navigate(['/invite-team-mates']);
+  private updateUsers(user: firebase.User) {
+    const params = {
+      name: user.displayName,
+      email: user.email,
+      phoneNumber: user.phoneNumber,
+      loggedAt: Date.now()
+    };
+    return firebase.firestore().collection('users').doc(user.uid).set(params);
   }
 
   doFacebookSignup(): void {

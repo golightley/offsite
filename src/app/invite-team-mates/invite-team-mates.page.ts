@@ -1,72 +1,35 @@
-import { Component, OnInit } from '@angular/core';
-import {SurveyServiceService} from '../services/survey-service.service';
+import {Component} from '@angular/core';
+import {InviteTeamMatesModel} from './invite-team-mates.model';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-invite-team-mates',
   templateUrl: './invite-team-mates.page.html',
   styleUrls: ['./invite-team-mates.page.scss'],
 })
-export class InviteTeamMatesPage implements OnInit {
- 
-  public invite_members: any;
-  public selected_role: any;
-  public count: number = 1;
-  public isAnonymously: boolean; 
-  public userId: any;
+export class InviteTeamMatesPage {
 
-  public roles = [
-    { id: 0, value: 'admin'},
-    { id: 1, value: 'member'}
-  ];
+  aryMembers: InviteTeamMatesModel[];
+  isAnonymously = false;
 
   constructor(
-    // private router: Router,
-    // public teamService: TeamDataService,
-    // public alertController: AlertController,
-    // private storage : Storage,
-    public surveyService: SurveyServiceService,
-
-  ) {  
-       this.invite_members = [{
-        invitedEmail: '',
-        invitedName : '',
-    
-        role: ''
-    }];
-}
-
-teamName:string    = "";
-
-
-  ngOnInit() {
-
-    this.surveyService.checkIfInvitedtoAteam().then((team) =>{
-      console.log("Invited to a team...")
-      console.log(team)
-      this.teamName = team;
-    })
-
+    private router: Router
+  ) {
+    this.aryMembers = [
+      new InviteTeamMatesModel()
+    ];
   }
 
-  selectRole(role, i){
-    this.selected_role = role;
-    this.invite_members[i].role = role;
+  onClickBtnAddMember() {
+    this.aryMembers.push(new InviteTeamMatesModel());
   }
 
+  onClickBtnRemoveMember(index) {
+    this.aryMembers.splice(index, 1);
+  }
 
-  addMember(){
-    this.invite_members.push({
-      invitedEmail: '',
-      invitedName : '',
-      role: ''
-    });
-
-    this.count = this.invite_members.length;
-  } 
-
-  inviteToTeam(){
-        // create email notifictions for invited team members 
-        this.surveyService.inviteTeamMembers(this.invite_members,this.teamName);
+  onClickBtnInvite() {
+    this.router.navigateByUrl('app/categories');
   }
 
 }

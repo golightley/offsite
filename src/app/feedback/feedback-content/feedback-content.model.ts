@@ -8,10 +8,12 @@ export class FeedbackCategoryModel {
 }
 
 export class TeammatesModel {
+  uid: string;
   name: string;
   checked = false;
 
-  constructor(data: any) {
-    this.name = data['teamName'];
+  constructor(uid: string, data: any) {
+    this.uid = uid;
+    this.name = data['name'];
   }
 }

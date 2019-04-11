@@ -43,9 +43,7 @@ export class FeedbackContentPage {
 
     this.surveyService.getTeamMembers(userId)
       .then(docs => {
-        docs.forEach(doc => {
-          this.teammates.push(new TeammatesModel(doc.data()));
-        });
+        this.teammates = docs;
         console.log(this.teammates);
     });
   }
