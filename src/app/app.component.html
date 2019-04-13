@@ -5,15 +5,15 @@
         <ion-row class="user-details-wrapper">
           <ion-col size="4">
             <app-aspect-ratio [ratio]="{w: 1, h: 1}">
-              <app-image-shell class="user-avatar add-spinner" [src]="'https://pbs.twimg.com/profile_images/722153095761903616/WjIKQ7Wm_400x400.jpg'"></app-image-shell>
+              <!-- <app-image-shell class="user-avatar add-spinner" [src]="'https://pbs.twimg.com/profile_images/722153095761903616/WjIKQ7Wm_400x400.jpg'"></app-image-shell> -->
             </app-aspect-ratio>
           </ion-col>
           <ion-col class="user-info-wrapper" size="8">
-            <h3 class="user-name">Ionic Themes</h3>
-            <h5 class="user-handle">@IonicThemes</h5>
+            <h3 class="user-name">Offsite</h3>
+            <!-- <h5 class="user-handle">@IonicThemes</h5> -->
           </ion-col>
         </ion-row>
-        <ion-row class="user-stats-wrapper user-details-wrapper">
+        <!-- <ion-row class="user-stats-wrapper user-details-wrapper">
           <ion-col>
             <span class="user-stat-value">1553</span>
             <span class="user-stat-name">Following</span>
@@ -22,8 +22,8 @@
             <span class="user-stat-value">537</span>
             <span class="user-stat-name">Followers</span>
           </ion-col>
-        </ion-row>
-        <ion-list>
+        </ion-row> -->
+        <!-- <ion-list>
           <ion-list-header>Layouts</ion-list-header>
           <ion-menu-toggle auto-hide="false" *ngFor="let p of appPages; let i = index">
             <ion-item [routerLink]="p.url">
@@ -33,8 +33,8 @@
               </ion-label>
             </ion-item>
           </ion-menu-toggle>
-        </ion-list>
-        <ion-list>
+        </ion-list> -->
+        <!-- <ion-list>
           <ion-list-header>Forms</ion-list-header>
           <ion-menu-toggle auto-hide="false">
             <ion-item [routerLink]="['/forms-and-validations']">
@@ -50,7 +50,7 @@
               </ion-label>
             </ion-item>
           </ion-menu-toggle>
-        </ion-list>
+        </ion-list> -->
         <ion-list>
           <ion-list-header>Account</ion-list-header>
           <ion-menu-toggle auto-hide="false" *ngFor="let p of accountPages; let i = index">
@@ -62,7 +62,7 @@
             </ion-item>
           </ion-menu-toggle>
         </ion-list>
-        <ion-list>
+        <!-- <ion-list>
           <ion-list-header>Showcase</ion-list-header>
           <ion-menu-toggle auto-hide="false">
             <ion-item [routerLink]="['/showcase/app-shell']">
@@ -84,7 +84,7 @@
               </ion-label>
             </ion-item>
           </ion-menu-toggle>
-        </ion-list>
+        </ion-list> -->
       </ion-content>
     </ion-menu>
     <!-- Main app content get's rendered in this router-outlet -->

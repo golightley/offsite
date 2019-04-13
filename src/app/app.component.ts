@@ -43,8 +43,13 @@ export class AppComponent {
       icon: './assets/sample-icons/side-menu/login.svg'
     },
     {
-      title: 'Sign Up',
-      url: '/auth/signup',
+      title: 'Invite team members',
+      url: '/invite-team-mates',
+      icon: './assets/sample-icons/side-menu/signup.svg'
+    },
+    {
+      title: 'Manage Team',
+      url: '/invite-team-mates',
       icon: './assets/sample-icons/side-menu/signup.svg'
     },
     {
@@ -52,16 +57,6 @@ export class AppComponent {
       url: '/walkthrough',
       icon: './assets/sample-icons/side-menu/tutorial.svg'
     },
-    {
-      title: 'Getting Started',
-      url: '/getting-started',
-      icon: './assets/sample-icons/side-menu/getting-started.svg'
-    },
-    {
-      title: '404 page',
-      url: '/page-not-found',
-      icon: './assets/sample-icons/side-menu/warning.svg'
-    }
   ];
 
   constructor(
