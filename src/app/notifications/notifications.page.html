@@ -12,25 +12,47 @@
 <ion-content class="notifications-content">
   <ng-container *ngIf="notifications">
     <ion-item-group>
-      <ion-item-divider sticky>
-        <ion-label>Today</ion-label>
-      </ion-item-divider>
       <ion-item class="notification-item" lines="none" *ngFor="let notification of notifications" (click)=teamSurvey(notification);>
-        <ion-row class="notification-item-wrapper">
+        <ion-row  *ngIf="notification.data().type == 'feedback'" class="notification-item-wrapper">
           <ion-col size="2">
-            <app-aspect-ratio [ratio]="{w: 1, h: 1}">
-              <!-- <app-image-shell class="notification-image" [src]="notification.image" [alt]="'user image'"></app-image-shell> -->
-            </app-aspect-ratio>
+              <ion-icon name="leaf" class = "custom-icon"></ion-icon>
           </ion-col>
           <ion-col class="details-wrapper">
-            <h2 class="details-name">{{ notification.data().name }}</h2>
-            <p class="details-description">{{ notification.data().owner_name }}</p>
-          </ion-col>
-          <ion-col size="2" class="date-wrapper">
-            <!-- <h3 class="notification-date">{{ notification.data().created }}</h3> -->
+            <h2 class="details-name"><b>{{ notification.data().name }} </b>requested feedback on <b>{{ notification.data().category }}</b> </h2>
+            <!-- <p class="details-description">{{ notification.data().owner_name }}</p> -->
           </ion-col>
         </ion-row>
+        <ion-row  *ngIf="notification.data().type == 'pulse'" class="notification-item-wrapper">
+          <ion-col size="2">
+              <ion-icon name="thermometer" class = "custom-icon"></ion-icon>
+          </ion-col>
+          <ion-col class="details-wrapper">
+            <h2 class="details-name"><b>{{ notification.data().team }} </b> pulse check request for <b> {{ notification.data().month }} </b></h2>
+            <!-- <p class="details-description">{{ notification.data().owner_name }}</p> -->
+          </ion-col>
+        </ion-row>
+        <ion-col  *ngIf="notification.data().type == 'feedback'" class="radio-tags">
+          <ion-item class="radio-tag" lines="none">
+            <ion-label class="tag-label">
+              <span> Feedback</span>
+            </ion-label>
+          </ion-item>
+        </ion-col>
+
+        <ion-col  *ngIf="notification.data().type == 'pulse'" class="radio-tags">
+          <ion-item class="radio-tag" lines="none">
+            <ion-label class="tag-label">
+              <span> Take Pulse</span>
+            </ion-label>
+          </ion-item>
+        </ion-col>
       </ion-item>
+
     </ion-item-group>
   </ng-container>
 </ion-content>
+
+
+          <!-- <ion-col size="2" class="date-wrapper">
+            <h3 class="notification-date">{{ notification.data().created }}</h3>
+          </ion-col> -->

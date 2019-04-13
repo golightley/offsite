@@ -1,0 +1,39 @@
+ion-content {
+    .title {
+      margin-top: 5%;
+      font-weight: 500;
+      font-size: 1.3rem;
+    }
+  
+    .notification-item {
+      margin-top: 3%;
+      font-size: 0.8rem;
+      color: rgb(152, 169, 188);
+    }
+  
+    ion-list {
+      margin-top: 5%;
+  
+      ion-item {
+        ion-checkbox {
+          --checkmark-color: white;
+          --border-color: var(--ion-color-success);
+        }
+  
+        ion-label {
+          margin-left: 3%;
+        }
+      }
+    }
+  }
+  
+  ion-footer {
+    background-color: white;
+  
+    .button-submit {
+      margin: 5%;
+      width: 90%;
+      --background: #4fdba5;
+    }
+  }
+  

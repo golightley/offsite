@@ -1,15 +1,46 @@
+@import "../../../theme/mixins/inputs/radio-tag";
+
+
+
 // Custom variables
 // Note:  These ones were added by us and have nothing to do with Ionic CSS Custom Properties
-:host {
-  --page-margin: var(--app-narrow-margin);
+// :host {
+//   --page-margin: var(--app-narrow-margin);
+// }
+.radio-tags {
+  padding: 2% calc(var(--page-margin) - var(--page-tags-gutter));
+  // justify-content: space-between;
+
+  @include radio-tag();
+
+  // Add a deeper selector to override default colors
+  .radio-tag {
+    --radio-tag-color: rgb(79, 219, 165);
+    --radio-tag-background: var(--ion-color-lightest);
+    --radio-tag-active-color: var(--ion-color-lightest);
+    --radio-tag-active-background: rgb(79, 219, 165);
+
+    padding: 0 var(--page-tags-gutter);
+    margin: var(--page-tags-gutter) 0;
+  }
 }
 
-// Note:  All the CSS variables defined below are overrides of Ionic elements CSS Custom Properties
+.custom-icon {
+  font-size: 30px;
+  color :rgb(79, 219, 165);
+  margin-top: 40%;
+
+}
+
+// // Note:  All the CSS variables defined below are overrides of Ionic elements CSS Custom Properties
 .notifications-content {
-  ion-item-divider {
-    --background: var(--ion-color-light);
-    --padding-start: var(--page-margin);
-  }
+  // ion-item-divider {
+  //   --background:  rgb(152, 169, 188);
+  //   --padding-start: var(--page-margin);
+  // }
+
+
+
 
   .notification-item {
     --padding-start: 0px;
@@ -23,38 +54,24 @@
       --ion-grid-column-padding: 0px;
 
       width: 100%;
-      align-items: center;
     }
 
     .details-wrapper {
-      display: flex;
-      flex-direction: column;
-      justify-content: space-around;
-      padding-left: var(--page-margin);
+      margin-left: 3%;
 
       .details-name {
-        margin-top: 0px;
-        margin-bottom: 5px;
-        font-size: 16px;
-      	font-weight: 400;
-      	letter-spacing: 0.2px;
-      	color: var(--ion-color-secondary);
-      }
-
-      .details-description {
-        font-size: 12px;
-        margin: 0px;
+        color: rgb(152, 169, 188);
+        margin: 0 1%;
+        margin-top: 5%;
+        font-weight: 100;
+        font-size: 1.0rem;
       }
     }
-
-    .date-wrapper {
-      align-self: flex-start;
-
       .notification-date {
-        margin: 0px;
-        font-size: 12px;
-        text-align: end;
+        color: rgb(152, 169, 188);
+        margin: 0 5%;
+        // text-align: end;
       }
-    }
+    
   }
 }

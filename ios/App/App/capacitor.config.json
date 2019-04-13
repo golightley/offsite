@@ -1,6 +1,6 @@
 {
-  "appId": "com.offsite.www",
-  "appName": "Offsite",
+  "appId": "com.offsiteapp.www",
+  "appName": "offsite",
   "bundledWebRuntime": false,
   "webDir": "www"
 }
