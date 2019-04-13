@@ -14,6 +14,7 @@ export class SurveyServiceService {
   public categories: any; 
   public invites:any;
   public teamId:any;
+  public team:any;
 
   constructor() { }
 
@@ -208,6 +209,29 @@ export class SurveyServiceService {
     }
 
 
+    createFeedbackNotifications(teamMates){
+      console.log("in create feedback notificatino")
+      console.log(teamMates)
+
+      this.team = Object.entries(teamMates);
+
+      // cycle through team mates array
+     this.team.forEach(member => {
+            // if selected is true 
+            console.log("Looping...")
+            console.log(member)
+            if(member.checked){
+              this.createNotification("1BsIxYQ3I9QZHw59FNl8",member.uid,"pulse",member.name)
+            }
+
+        
+      });
+      // send notification 
+
+
+
+    }
+
     // creates invite document for each person invited to the team
     inviteTeamMembers(teamMembersArray,teamName) {
 
@@ -318,7 +342,28 @@ export class SurveyServiceService {
       }).catch(function(error) {
         console.error('Error adding document: ', error);
       });
-    }                
+    }   
+    
+    
+    createNotification(surveyId: string, user: string, type: string,name:string) {
+
+      console.log("creating notitfication")
+      // Add a new document with a generated id.
+      firebase.firestore().collection('surveynotifications').add({
+        active:true,
+        category: "Communication",
+        name: name,
+        user:"AKfOgVZrSTYsYN01JA0NUTicf703",
+        type: type,
+        month:"May",
+        from: firebase.auth().currentUser.uid,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      }).then(function(docRef) {
+        console.log('Document written with ID: ', docRef.id);
+      }).catch(function(error) {
+        console.error('Error adding document: ', error);
+      });
+    } 
 
 
     createEmailInvite(name:string,email:string,team:any,teamName:string,teamId:string) {
