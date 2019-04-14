@@ -262,18 +262,18 @@ export class SurveyServiceService {
               questions = templates.data().Questions;
               
               questions.forEach(question => {
-              let questionText:string = ""
+              let questionText:string = "";
 
                 if(question.type == "input"){
-                  questionText = "Please provide an example   "
+                  questionText = "What are examples of "+ name + "'s " + question.question;
                 }else{
-
+                  questionText = "Would you recommend "+ name +" 's "+ question.question;
                 }
 
                 console.log(question)
                 firebase.firestore().collection('questions').add({
                   active:true,
-                  Question: "Please rate " + name + "'s "  + question.question,
+                  Question: questionText,
                   type: question.type,
                   users:[user],
                   surveys:[surveyId],
