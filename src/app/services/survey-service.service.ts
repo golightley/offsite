@@ -219,7 +219,7 @@ export class SurveyServiceService {
       this.categories.forEach(category =>{
         return new Promise<any>((resolve, reject) => {
           // Add a new document with a generated id.
-          firebase.firestore().collection('surceys').add({
+          firebase.firestore().collection('surveys').add({
             active:true,
             category: category.name,
             type: "feedback",
