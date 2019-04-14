@@ -58,7 +58,10 @@ export class FeedbackContentPage {
   }
 
   submitFeedback() {
-    this.surveyService.createSurvey(this.teammates);
+    console.log("Submitted...")
+    console.log(this.categories)
+    console.log(this.teammates)
+    this.surveyService.createSurvey(this.teammates, this.categories);
     this.router.navigateByUrl('app/feedback/feedback-request');
   }
 }

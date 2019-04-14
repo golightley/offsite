@@ -16,6 +16,7 @@ export class SurveyServiceService {
   public teamId:any;
   public team:any;
 
+
   constructor() { }
 
   //get notifcations for tab 1 of interface
@@ -210,63 +211,112 @@ export class SurveyServiceService {
 
 
 
-    createSurvey(teamMates) {
+    createSurvey(teamMates, categories) {
 
       var that = this;
+      this.categories = categories;
 
-
-      return new Promise<any>((resolve, reject) => {
-      // Add a new document with a generated id.
-      firebase.firestore().collection('surceys').add({
-        active:true,
-        category: "Communication",
-        type: "feedback",
-        month:"May",
-        from: firebase.auth().currentUser.uid,
-        timestamp: firebase.firestore.FieldValue.serverTimestamp()
-      }).then(function(docRef) {
-        console.log(' Survey written with ID: ', docRef.id);
-
-        // create the corresponding notitifcations
-        that.createFeedbackNotifications(teamMates,docRef.id)
-
-
-        resolve(docRef.id);
-      }).catch(function(error) {
-        console.error('Error creating sruvey document: ', error);
-        reject(error)
+      this.categories.forEach(category =>{
+        return new Promise<any>((resolve, reject) => {
+          // Add a new document with a generated id.
+          firebase.firestore().collection('surceys').add({
+            active:true,
+            category: category.name,
+            type: "feedback",
+            month:"May",
+            from: firebase.auth().currentUser.uid,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+          }).then(function(docRef) {
+            console.log(' Survey written with ID: ', docRef.id);
+    
+            // create the corresponding notitifcations
+            that.createFeedbackNotifications(teamMates,docRef.id,category)
+    
+    
+            resolve(docRef.id);
+          }).catch(function(error) {
+            console.error('Error creating sruvey document: ', error);
+            reject(error)
+          });
+        });
       });
-    });
+
     }
 
-    createSurveyQuestions(surveyId: string, user: string) {
+    createSurveyQuestions(surveyId: string, user: string,categoryName:string,name:string) {
 
-      console.log("creating survey questions")
-      // Add a new document with a generated id.
-      firebase.firestore().collection('questions').add({
-        active:true,
-        Question: "Please rate Liam's communication skills",
-        type: "multiple",
-        users:[user],
-        surveys:[surveyId],
-        from: firebase.auth().currentUser.uid,
-        timestamp: firebase.firestore.FieldValue.serverTimestamp()
-      }).then(function(docRef) {
-        console.log('Survey question written with ID: ', docRef.id);
-      }).catch(function(error) {
-        console.error('Error adding document: ', error);
-      });
-    } 
+      // look up the teamplate 
+      const questionTemplates: any[] = [];
+      let that = this;
+
+      // pull each question from firebase
+        firebase.firestore().collection('questionTemplate').where('category', '==', categoryName).get()
+          .then((questionTemplate) => {
+            questionTemplate.forEach((templates) => {
+              console.log("Create question template function")
+              console.log(templates)
+              console.log("Create question template data function")
+              console.log(templates.data().Questions)
+              let questions: any[] = [];
+
+              questions = templates.data().Questions;
+              
+              questions.forEach(question => {
+              let questionText:string = ""
+
+                if(question.type == "input"){
+                  questionText = "Please provide an example   "
+                }else{
+
+                }
+
+                console.log(question)
+                firebase.firestore().collection('questions').add({
+                  active:true,
+                  Question: "Please rate " + name + "'s "  + question.question,
+                  type: question.type,
+                  users:[user],
+                  surveys:[surveyId],
+                  from: firebase.auth().currentUser.uid,
+                  timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                }).then(function(docRef) {
+                  console.log('Survey question written with ID: ', docRef.id);
+                }).catch(function(error) {
+                  console.error('Error adding document: ', error);
+                });
+              });
+              // templates.questions.forEach(template => {
+
+                
+              // });
+
+            });
+        })
+      }
 
 
-    createNotification(surveyId: string, user: string, type: string,name:string) {
+      // add a question for each one in the template 
+
+
+      // console.log("creating survey questions")
+      // // Add a new document with a generated id.
+
+    // } 
+
+    // createQuestion(){
+
+    // }
+
+
+    createNotification(surveyId: string, user: string, type: string,name:string,category:string) {
 
       console.log("creating notitfication")
       // Add a new document with a generated id.
       firebase.firestore().collection('surveynotifications').add({
         active:true,
-        category: "Communication",
+        category: category,
         name: name,
+        survey:surveyId,
         user:"AKfOgVZrSTYsYN01JA0NUTicf703",
         type: type,
         month:"May",
@@ -437,22 +487,30 @@ export class SurveyServiceService {
     });
     }
 
-    createFeedbackNotifications(teamMates,surveyId){
+    createFeedbackNotifications(teamMates,surveyId,category){
       console.log("in create feedback notificatino")
       console.log(teamMates)
-      this.team = teamMates;
+      this.team       = teamMates;
       // this.team = Object.entries(teamMates);
 
       // cycle through team mates array
      this.team.forEach(member => {
+       // loop through each category
+      //  this.categories.forEach(category =>{
             // if selected is true 
             console.log("Looping...")
             console.log(member)
+            console.log(category)
             if(member.checked){
-              //create survey 
-              this.createNotification(surveyId,member.uid,"pulse",member.name)
-              this.createSurveyQuestions(surveyId,member.uid);
+              if(category.checked){
+                //create survey 
+                this.createNotification(surveyId,member.uid,"feedback",member.name,category.name)
+                this.createSurveyQuestions(surveyId,member.uid,category.name,member.name);
+              }
+
             }
+      //  });
+
       });
       // send notification 
     }
