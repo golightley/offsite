@@ -58,7 +58,7 @@ export class FeedbackContentPage {
   }
 
   submitFeedback() {
-    this.surveyService.createFeedbackNotifications(this.teammates);
+    this.surveyService.createSurvey(this.teammates);
     this.router.navigateByUrl('app/feedback/feedback-request');
   }
 }
