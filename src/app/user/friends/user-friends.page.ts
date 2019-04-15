@@ -19,6 +19,7 @@ export class UserFriendsPage {
   data: UserFriendsModel;
 
   comments: CommentModel[] = [];
+  showBottom:boolean = true;
   message = 'Our team should keep doing...';
   messageType = 'keep';
 
@@ -35,10 +36,13 @@ export class UserFriendsPage {
   }
 
   updateComment() {
+
+    this.showBottom = this.surveyService.showBottom;
+    
     if (this.surveyService.myParam && this.surveyService.myParam.id) {
       const query = firebase.firestore().collection('comments')
         .where('questionId', '==', this.surveyService.myParam.id)
-        .where('type', '==', 'comment');
+        // .where('type', '==', 'comment');
       query.onSnapshot((snapshot) => {
         console.log(snapshot);
         // retrieve anything that has changed

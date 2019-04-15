@@ -10,17 +10,17 @@
 <ion-content class="user-friends-content">
   <ion-card *ngFor="let comment of comments">
       <ion-row>
-          <ion-col size="auto">
+          <ion-col  *ngIf="comment.type != 'feedback'" size="auto">
               <div class="action-mark" [ngStyle]="{'background-color': getCommentActionColor(comment.action)}"></div>
           </ion-col>
           <ion-col>
               <div class="comment-content">
                   <ion-row align-items-center>
-                      <ion-col size="auto">
+                      <ion-col *ngIf="comment.type != 'feedback'" size="auto">
                           <div class="comment-name">{{comment.name}}</div>
                       </ion-col>
-                      <ion-col>
-                          <ion-badge class="comment-action" [ngStyle]="{'background-color': getCommentActionColor(comment.action)}">
+                      <ion-col >
+                          <ion-badge *ngIf="comment.type != 'feedback'" class="comment-action" [ngStyle]="{'background-color': getCommentActionColor(comment.action)}">
                               {{comment.action}}
                           </ion-badge>
                       </ion-col>
@@ -28,7 +28,7 @@
                   <div class="comment-text">{{comment.text}}</div>
               </div>
           </ion-col>
-          <ion-col size="auto">
+          <ion-col *ngIf="comment.type != 'feedback'" size="auto">
               <ion-button fill="clear" (click)="increaseScore(comment)">
                   <ion-icon slot="icon-only" name="arrow-up" mode="ios"></ion-icon>
               </ion-button>
@@ -41,7 +41,7 @@
   </ion-card>
 </ion-content>
 
-<ion-footer>
+<ion-footer *ngIf="showBottom">
     <ion-toolbar class="message-form">
       <ion-segment [(ngModel)]="messageType" (ionChange)="segmentChanged()">
         <ion-segment-button value="keep">

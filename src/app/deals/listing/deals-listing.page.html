@@ -9,11 +9,14 @@
 
 <ion-content class="deals-listing-content">
   <ion-card *ngFor="let question of results">
-    <div class="question-content">
+    <div class="question-content" (click)="viewComments(question)">
       <ion-row>
-        <ion-col text-start class="question-type">
-          Team
+        <ion-col *ngIf= "question.goal == 'pulse'" text-start class="question-type">
+          Team Results
         </ion-col>
+        <ion-col *ngIf="question.goal == 'feedback'" text-start class="question-type">
+            My Feedback
+          </ion-col>
         <ion-col text-end class="question-date">
           {{question.updatedAt | date: 'd MMM yyyy'}}
         </ion-col>
@@ -21,8 +24,8 @@
       <div class="question-title" text-wrap>
         {{question.question}}
       </div>
-      <div class="question-divider"></div>
-      <ion-row align-items-center>
+      <div *ngIf= "question.goal != 'feedback' && question.type != 'input'" class="question-divider"></div>
+      <ion-row *ngIf= "question.goal != 'feedback' && question.type != 'input'" align-items-center>
         <ion-col class="question-chat" (click)="viewComments(question)">
           <ion-row align-items-center>
             <ion-col size="auto">
@@ -40,12 +43,12 @@
               <ion-icon name="star"></ion-icon>
             </ion-col>
             <ion-col align-self-start>
-              <span>{{question.avgScore}}</span> /5
+              <span>{{question.avgScore | number : '1.2-2'}}</span> /4
             </ion-col>
           </ion-row>
         </ion-col>
       </ion-row>
     </div>
-    <div class="question-marker" [ngStyle]="{'background-color': getMarkColorStyle(question)}"></div>
+    <div *ngIf= "question.goal != 'feedback' && question.type != 'input'" class="question-marker" [ngStyle]="{'background-color': getMarkColorStyle(question)}"></div>
   </ion-card>
 </ion-content>

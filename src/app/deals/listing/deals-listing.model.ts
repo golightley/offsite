@@ -32,9 +32,11 @@ export class QuestionModel {
   avgScore = 0;
   updatedAt: Date;
   type = QuestionType.input;
+  goal:string;
 
   constructor(id: string, data: any) {
     this.id = id;
+    this.goal = data['goal'];
     this.question = data['Question'];
     if (data['commentsCount']) {
       this.commentsCount = data['commentsCount'];

@@ -9,6 +9,7 @@ import {TeammatesModel} from '../feedback/feedback-content/feedback-content.mode
 export class SurveyServiceService {
   
   public myParam: any; 
+  public showBottom: any; 
   public email: any; 
   public responses: any; 
   public categories: any; 
@@ -276,6 +277,7 @@ export class SurveyServiceService {
                   Question: questionText,
                   type: question.type,
                   users:[user],
+                  goal:"feedback",
                   surveys:[surveyId],
                   from: firebase.auth().currentUser.uid,
                   timestamp: firebase.firestore.FieldValue.serverTimestamp()
@@ -369,10 +371,16 @@ export class SurveyServiceService {
       questionRef.get().then(function(doc) {
         if (doc.exists) {
             console.log("Document data:", doc.data());
-            let oldTotal  = (doc.data().averagescore * doc.data().numresponses);
+            let oldTotal  = (doc.data().averagescore * doc.data().numresponses)
             let newTotal  = parseInt(response[1], 10) + oldTotal;
             let newNumRes = doc.data().numresponses +1;
             let newAvg    = newTotal / newNumRes;
+
+            // if Nan then first time 
+            if(isNaN(newAvg))   { newAvg       = parseInt(response[1], 10);}
+            if(isNaN(newNumRes)){ newNumRes    = 1}
+
+            
 
             console.log("Old total:"+oldTotal + "new total:"+newTotal + "new responses #"+newNumRes + "New average"+ newAvg)
 

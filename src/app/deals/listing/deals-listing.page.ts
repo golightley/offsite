@@ -73,18 +73,27 @@ export class DealsListingPage implements OnInit {
     this.surveyService.getResults(firebase.auth().currentUser.uid).then((resultsData: firebase.firestore.QueryDocumentSnapshot[]) => {
       resultsData.forEach(data => {
         this.results.push(new QuestionModel(data.id, data.data()));
+
       });
       console.log(this.results);
     });
   }
 
   getMarkColorStyle(question: QuestionModel) {
-    return 3 < question.avgScore ? '#20dc6a' : '#ff1a72';
+    return 2.5 < question.avgScore ? '#20dc6a' : '#ff1a72';
   }
 
   viewComments(result) {
     // store question ID in service
-    this.surveyService.myParam = result;
+    this.surveyService.myParam    = result;
+
+    if(result.goal == 'feedback' && result.type == 'input'){
+        this.surveyService.showBottom = false;
+    }else{
+      this.surveyService.showBottom = true;
+
+    }
+
     this.router.navigateByUrl('/app/categories/friends');
   }
   // like(result) {
