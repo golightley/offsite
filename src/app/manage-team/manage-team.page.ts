@@ -17,7 +17,6 @@ export class ManageTeamPage implements OnInit {
 
   ngOnInit() {
     this.getTeamMembers();
-
   }
 
 

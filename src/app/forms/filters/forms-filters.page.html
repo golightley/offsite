@@ -15,25 +15,25 @@
           <div class="question-description">Choose one</div>
           <ion-radio-group formControlName="selected_option" [(ngModel)]="responses[question.id]">
             <ion-row class="radio-tags">
-              <ion-item class="radio-tag" lines="none">
+              <ion-item class="radio-tag" lines="none" (click)="vibrate()">
                 <ion-label class="tag-label">
                   <span>No way</span>
                 </ion-label>
                 <ion-radio value="1"></ion-radio>
               </ion-item>
-              <ion-item class="radio-tag" lines="none">
+              <ion-item class="radio-tag" lines="none" (click)="vibrate()">
                 <ion-label class="tag-label">
                   <span>No</span>
                 </ion-label>
                 <ion-radio value="2"></ion-radio>
               </ion-item>
-              <ion-item class="radio-tag" lines="none">
+              <ion-item class="radio-tag" lines="none" (click)="vibrate()">
                 <ion-label class="tag-label">
                   <span>Yes</span>
                 </ion-label>
                 <ion-radio value="3" ></ion-radio>
               </ion-item>
-              <ion-item class="radio-tag" lines="none">
+              <ion-item class="radio-tag" lines="none" (click)="vibrate()">
                 <ion-label class="tag-label">
                   <span>Definitely</span>
                 </ion-label>

@@ -1,6 +1,7 @@
 import {Component} from '@angular/core';
 import {InviteTeamMatesModel} from './invite-team-mates.model';
 import {Router} from '@angular/router';
+import {SurveyServiceService} from '../services/survey-service.service';
 
 @Component({
   selector: 'app-invite-team-mates',
@@ -13,7 +14,9 @@ export class InviteTeamMatesPage {
   isAnonymously = false;
 
   constructor(
-    private router: Router
+    private router: Router,
+    public surveyService: SurveyServiceService,
+
   ) {
     this.aryMembers = [
       new InviteTeamMatesModel()
@@ -29,7 +32,13 @@ export class InviteTeamMatesPage {
   }
 
   onClickBtnInvite() {
+    // get the team we are inviting them to
+    // for each invite save a team invite object 
+    this.aryMembers.forEach(member =>{
+      this.surveyService.createEmailInvite("Liam",member.email,"macys","Macys Cynhtia","E4ZWxJbFoDE29ywISRQY")
+    })
     this.router.navigateByUrl('app/categories');
   }
+  
 
 }

@@ -3,6 +3,7 @@ import {FormControl, FormGroup} from '@angular/forms';
 import {SurveyServiceService} from '../../services/survey-service.service';
 import {AlertController, NavController} from '@ionic/angular';
 import {QuestionModel, QuestionType} from '../../deals/listing/deals-listing.model';
+import { Vibration } from '@ionic-native/vibration/ngx';
 
 @Component({
   selector: 'forms-filters-page',
@@ -19,7 +20,8 @@ export class FormsFiltersPage implements OnInit {
   constructor(
     public surveyService: SurveyServiceService,
     private navCtrl: NavController,
-    public alertController: AlertController
+    public alertController: AlertController,
+    private vibration: Vibration
     ) {
     this.radioTagsForm = new FormGroup({
       selected_option: new FormControl('any')
@@ -52,6 +54,13 @@ export class FormsFiltersPage implements OnInit {
     this.surveyService.submitSurvey(this.responses);
     // this.presentAlert();
     this.navCtrl.navigateBack('app/categories');
+  }
+
+  vibrate(){
+    // Vibrate the device for a second
+    // Duration is ignored on iOS.
+    this.vibration.vibrate(1000);
+    console.log("Vibrate");
   }
 
   async presentAlert() {
