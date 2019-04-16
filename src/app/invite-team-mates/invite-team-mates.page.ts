@@ -2,7 +2,9 @@ import {Component} from '@angular/core';
 import {InviteTeamMatesModel} from './invite-team-mates.model';
 import {Router} from '@angular/router';
 import {SurveyServiceService} from '../services/survey-service.service';
+import * as firebase from 'firebase/app';
 
+require('firebase/auth');
 @Component({
   selector: 'app-invite-team-mates',
   templateUrl: './invite-team-mates.page.html',
@@ -12,6 +14,9 @@ export class InviteTeamMatesPage {
 
   aryMembers: InviteTeamMatesModel[];
   isAnonymously = false;
+  teamName: string;
+  teamData: any;
+
 
   constructor(
     private router: Router,
@@ -33,10 +38,20 @@ export class InviteTeamMatesPage {
 
   onClickBtnInvite() {
     // get the team we are inviting them to
-    // for each invite save a team invite object 
+    this.surveyService.getTeamByUserId(firebase.auth().currentUser.uid).then(teamData => {
+      console.log("Team data has been loaded...");
+      console.log(teamData)
+      this.teamData = teamData;
+      this.teamName = teamData.data().teamName;
+
+          // for each invite save a team invite object 
     this.aryMembers.forEach(member =>{
-      this.surveyService.createEmailInvite("Liam",member.email,"macys","Macys Cynhtia","E4ZWxJbFoDE29ywISRQY")
+      this.surveyService.createEmailInvite("Liam",member.email,this.teamName,this.teamName,this.teamData.id)
     })
+
+
+    })
+
     this.router.navigateByUrl('app/categories');
   }
   

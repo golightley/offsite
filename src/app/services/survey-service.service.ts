@@ -149,6 +149,27 @@ export class SurveyServiceService {
 
   }
 
+  getTeamByUserId(userId) {
+
+    return new Promise<any>((resolve, reject) => {
+      console.log("Pulling team with this User ID");
+      console.log(userId)
+      var docRef = firebase.firestore().collection("teams").where('membersids', 'array-contains',userId);
+      docRef.get().then(function(doc) {
+        doc.forEach(team=>{
+          console.log("Team found")
+          console.log(team)
+          resolve(team);
+        })
+
+  }).catch(function(error) {
+      console.log("Error getting document:", error);
+      reject(error);
+  });
+});
+
+}
+
     updateComments(questionID){
 
       let query = firebase.firestore().collection("comments").where("questionId", "==", questionID)
