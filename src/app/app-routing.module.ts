@@ -18,7 +18,8 @@ const routes: Routes = [
   { path: 'contact', loadChildren: './contact/contact.module#ContactPageModule' },
   { path: 'invite-team-mates', loadChildren: './invite-team-mates/invite-team-mates.module#InviteTeamMatesPageModule' },
   { path: 'test', loadChildren: './pages/test/test.module#TestPageModule' },
-  { path: 'invite-signup/:id', loadChildren: './invite-signup/invite-signup.module#InviteSignupPageModule' }
+  { path: 'invite-signup/:id', loadChildren: './invite-signup/invite-signup.module#InviteSignupPageModule' },
+  { path: 'manage-team', loadChildren: './manage-team/manage-team.module#ManageTeamPageModule' }
 ];
 @NgModule({
   imports: [RouterModule.forRoot(routes)],

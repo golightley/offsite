@@ -49,7 +49,7 @@ export class AppComponent {
     },
     {
       title: 'Manage Team',
-      url: '/invite-team-mates',
+      url: '/manage-team',
       icon: './assets/sample-icons/side-menu/signup.svg'
     },
     {

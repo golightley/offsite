@@ -24,8 +24,8 @@
       <div class="question-title" text-wrap>
         {{question.question}}
       </div>
-      <div *ngIf= "question.goal != 'feedback' && question.type != 'input'" class="question-divider"></div>
-      <ion-row *ngIf= "question.goal != 'feedback' && question.type != 'input'" align-items-center>
+      <div *ngIf= "question.goal != 'feedback' || question.type != 'input'" class="question-divider"></div>
+      <ion-row *ngIf= "question.goal != 'feedback' || question.type != 'input'" align-items-center>
         <ion-col class="question-chat" (click)="viewComments(question)">
           <ion-row align-items-center>
             <ion-col size="auto">
@@ -49,6 +49,6 @@
         </ion-col>
       </ion-row>
     </div>
-    <div *ngIf= "question.goal != 'feedback' && question.type != 'input'" class="question-marker" [ngStyle]="{'background-color': getMarkColorStyle(question)}"></div>
+    <div *ngIf= "question.goal != 'feedback' || question.type != 'input'" class="question-marker" [ngStyle]="{'background-color': getMarkColorStyle(question)}"></div>
   </ion-card>
 </ion-content>

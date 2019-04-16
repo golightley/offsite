@@ -1,0 +1,26 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>manage-team</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="notifications-content">
+      <ion-item-group>
+        <ion-item class="notification-item" lines="none" *ngFor="let member of teammates" (click)=teamSurvey(notification);>
+            <ion-col size="2">
+                <ion-icon name="person" class = "custom-icon"></ion-icon>
+            </ion-col>
+            <ion-col class="details-wrapper">
+              <h2 class="details-name"><b>{{ member.name }}</b> </h2>
+            </ion-col>
+          <ion-col class="radio-tags">
+            <ion-item class="radio-tag" lines="none">
+              <ion-label class="tag-label">
+                <span> Feedback</span>
+              </ion-label>
+            </ion-item>
+          </ion-col>
+        </ion-item>
+
+      </ion-item-group>
+  </ion-content>
