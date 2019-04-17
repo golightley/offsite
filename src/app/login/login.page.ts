@@ -34,7 +34,8 @@ export class LoginPage implements OnInit {
 
   constructor(
     public router: Router,
-    public menu: MenuController
+    public menu: MenuController,
+    private firebaseCordova:Firebase,
   ) {
     this.loginForm = new FormGroup({
       'email': new FormControl('test@test.com', Validators.compose([
@@ -66,6 +67,18 @@ export class LoginPage implements OnInit {
   }
 
   private updateUsers(user: firebase.User) {
+
+    this.firebaseCordova.grantPermission();
+
+    this.firebaseCordova.getToken().then((token)=>{
+      console.log("Printing token...")
+      console.log(token)
+      this.updateToken(token, firebase.auth().currentUser.uid);
+    }).catch((error)=>{
+      console.log("Error fired")
+      console.log(error)
+    })
+    
     const params = {
       name: user.displayName,
       email: user.email,
@@ -93,5 +106,17 @@ export class LoginPage implements OnInit {
   doTwitterLogin(): void {
     console.log('twitter login');
     this.router.navigate(['app/categories']);
+  }
+
+  updateToken(token:string, uid:string):void {
+
+    firebase.firestore().collection("users").doc(uid).update({
+      "token": token,
+      "tokenUpdated":firebase.firestore.FieldValue.serverTimestamp()
+    }).then(()=>{
+      console.log("token saved to cloud firestore")
+    }).catch((error)=>{
+      console.log(error)
+    })
   }
 }

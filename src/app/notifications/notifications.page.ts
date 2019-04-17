@@ -25,6 +25,8 @@ export class NotificationsPage implements OnInit {
     ) { }
 
   ngOnInit() {
+
+    console.log("ngOnInit fired in notifications page ")
     let userId = 'AKfOgVZrSTYsYN01JA0NUTicf703';
     if (firebase.auth().currentUser && firebase.auth().currentUser.uid) {
       userId = firebase.auth().currentUser.uid;
