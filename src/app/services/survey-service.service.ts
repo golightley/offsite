@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import * as firebase from 'firebase/app';
 import {TeamMemberRole} from '../invite-team-mates/invite-team-mates.model';
 import {TeammatesModel} from '../feedback/feedback-content/feedback-content.model';
+// import {NotificationsPage} from '../notifications/notifications.page';
 
 @Injectable({
   providedIn: 'root'
@@ -34,6 +35,31 @@ export class SurveyServiceService {
     });
   }
 
+    //get notifcations for tab 1 of interface
+    // getNotificationsListener(userID){
+    //     let notifications = [];
+    //     firebase.firestore().collection("surveynotifications").where("user", "==",userID).where("active", "==", true)
+    //     .onSnapshot((snapshot) => {
+    //       console.log("Listener attached");
+    //       console.log(snapshot);
+    //       // retrieve anything that has changed
+    //       const changedDocs = snapshot.docChanges();
+    //       changedDocs.forEach((change) => {
+    //         if (change.type === 'added') {
+    //           console.log("Added in listener")
+    //           this.notifications.updateListener(change.doc)
+    //         } else if (change.type === 'modified') {
+    //           console.log("Modified")
+    //           console.log(change)            
+    //         }
+    //       });
+    
+    //       // this.notifications = notifications;
+    
+    //     });
+      
+    // }
+
   // get notifications for tab 1 of interface
   getFeedbackCategories() {
     return new Promise<any>((resolve, reject) => {
@@ -62,8 +88,10 @@ export class SurveyServiceService {
             if (userId !== memberId && 0 === aryMembers.filter(member => {
               return member.uid === userId;
             }).length) {
-              const docUser = await firebase.firestore().collection('users').doc(memberId).get();
-              aryMembers.push(new TeammatesModel(docUser.id, docUser.data()));
+              firebase.firestore().collection('users').doc(memberId).get().then(docUser => {
+                aryMembers.push(new TeammatesModel(docUser.id, docUser.data()));
+
+              })
             }
           }
         });

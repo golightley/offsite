@@ -39,7 +39,8 @@ export class DealsListingPage implements OnInit {
       const promiseObservable = this.route.data;
       console.log('Route Resolve Observable => promiseObservable: ', promiseObservable);
       // Get results to show for each card
-      this.getResults();
+      // this.getResults();
+      this.attachResultListener();
 
       if (promiseObservable) {
         promiseObservable.subscribe(promiseValue => {
@@ -76,6 +77,36 @@ export class DealsListingPage implements OnInit {
 
       });
       console.log(this.results);
+    });
+  
+  
+  
+  }
+
+
+  attachResultListener(){
+
+
+    const questions = [];
+    firebase.firestore().collection('questions').orderBy('lastUpdate', 'desc')
+    .onSnapshot((snapshot) => {
+      const changedDocs = snapshot.docChanges();
+      changedDocs.forEach((change) => {
+        if (change.type === 'added') {
+          console.log("Added in listener")
+          this.results.push(new QuestionModel(change.doc.id, change.doc.data()));
+        } else if (change.type === 'modified') {
+          console.log("Modified")
+          console.log(change)
+          let index = change.oldIndex;
+          this.results[change.oldIndex] = new QuestionModel(change.doc.id, change.doc.data());
+          // this.results.push(new QuestionModel(change.doc.id, change.doc));
+
+        }
+      });
+
+      // this.notifications = notifications;
+
     });
   }
 

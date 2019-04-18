@@ -16,13 +16,14 @@ require('firebase/auth');
 export class NotificationsPage implements OnInit {
 
   notifications: any = [];
+  unsubscribe:any;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     public surveyService: SurveyServiceService,
 
-    ) { }
+    ) {}
 
   ngOnInit() {
 
@@ -32,10 +33,63 @@ export class NotificationsPage implements OnInit {
       userId = firebase.auth().currentUser.uid;
     }
 
+    // this.attachNotificationListener(firebase.auth().currentUser.uid);
+
+
     // get notification data from the survey service
-    this.surveyService.getNotifications(userId).then(notificationData => {
-      this.notifications = notificationData;
-      console.log(this.notifications);
+    // this.surveyService.getNotifications(userId).then(notificationData => {
+    //   this.notifications = notificationData;
+    //   console.log(this.notifications);
+    // });
+
+
+    // attach listener 
+    // this.attachNotificationListener(userId);
+
+
+  }
+
+  ionViewWillEnter(){
+    console.log("view entered")
+    this.notifications =[];
+    this.attachNotificationListener(firebase.auth().currentUser.uid);
+  }
+
+  ionViewWillLeave(){
+    this.unsubscribe();
+    console.log("Detach listner")
+  }
+
+    
+
+  updateListener(notificationData){
+    this.notifications =[];
+    this.notifications = notificationData;
+  }
+
+  attachNotificationListener(userID){
+
+    let notifications = [];
+    this.unsubscribe = firebase.firestore().collection("surveynotifications").where("user", "==",userID).where("active", "==", true)
+    .onSnapshot((snapshot) => {
+      console.log("Listener attached");
+      console.log(snapshot);
+      // retrieve anything that has changed
+      const changedDocs = snapshot.docChanges();
+      changedDocs.forEach((change) => {
+        if (change.type === 'added') {
+          console.log("Added in listener")
+          this.notifications.push(change.doc);
+        } else if (change.type === 'modified') {
+          console.log("Modified")
+          console.log(change)  
+          // this.notifications.push(change.doc);
+
+        }
+      });
+
+      // this.notifications = notifications;
+
     });
   }
 

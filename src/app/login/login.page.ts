@@ -70,7 +70,7 @@ export class LoginPage implements OnInit {
 
     this.firebaseCordova.grantPermission();
 
-    this.firebaseCordova.getToken().then((token)=>{
+     this.firebaseCordova.getToken().then((token)=>{
       console.log("Printing token...")
       console.log(token)
       this.updateToken(token, firebase.auth().currentUser.uid);
