@@ -43,7 +43,7 @@
 
 <ion-footer *ngIf="showBottom">
     <ion-toolbar class="message-form">
-      <ion-segment [(ngModel)]="messageType" (ionChange)="segmentChanged()">
+      <!-- <ion-segment [(ngModel)]="messageType" (ionChange)="segmentChanged()">
         <ion-segment-button value="keep">
           <ion-label>Keep</ion-label>
         </ion-segment-button>
@@ -53,10 +53,10 @@
         <ion-segment-button value="start">
           <ion-label>Start</ion-label>
         </ion-segment-button>
-      </ion-segment>
+      </ion-segment> -->
       <ion-row>
         <ion-col>
-          <ion-textarea class="toolbar-content"  placeholder="Write a suggestion..." [(ngModel)]="message" (keyup.enter)="createComment();" autofocus></ion-textarea>
+          <ion-textarea (ionFocus)= "inputFocus()" class="toolbar-content"  placeholder="Type a suggestion" [(ngModel)]="message" (keyup.enter)="createComment();"></ion-textarea>
         </ion-col>
         <ion-col size="auto">
           <ion-button fill="clear" [disabled]="0 == message.length" class="bar-button" (click)="createComment()">

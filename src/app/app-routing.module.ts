@@ -19,7 +19,9 @@ const routes: Routes = [
   { path: 'invite-team-mates', loadChildren: './invite-team-mates/invite-team-mates.module#InviteTeamMatesPageModule' },
   { path: 'test', loadChildren: './pages/test/test.module#TestPageModule' },
   { path: 'invite-signup/:id', loadChildren: './invite-signup/invite-signup.module#InviteSignupPageModule' },
-  { path: 'manage-team', loadChildren: './manage-team/manage-team.module#ManageTeamPageModule' }
+  { path: 'manage-team', loadChildren: './manage-team/manage-team.module#ManageTeamPageModule' },
+  // { path: 'modal-page', loadChildren: './modal-page/modal-page.module#ModalPagePageModule' },
+  // { path: 'modal', loadChildren: './modal/modal.module#ModalPageModule' }
 ];
 @NgModule({
   imports: [RouterModule.forRoot(routes)],

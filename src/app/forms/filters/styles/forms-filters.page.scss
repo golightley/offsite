@@ -33,7 +33,7 @@
   }
 
   .radio-tags {
-    padding: 5% calc(var(--page-margin) - var(--page-tags-gutter));
+    padding: 1% calc(var(--page-margin) - var(--page-tags-gutter));
     justify-content: space-between;
 
     @include radio-tag();

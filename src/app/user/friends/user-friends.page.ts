@@ -4,7 +4,8 @@ import {SurveyServiceService} from '../../services/survey-service.service';
 import {CommentActionType, CommentModel, UserFriendsModel} from './user-friends.model';
 import * as firebase from 'firebase/app';
 import {HttpClient} from '@angular/common/http';
-
+import { ModalController } from '@ionic/angular';
+import { ModalPage } from '../../modal/modal.page';
 
 @Component({
   selector: 'app-user-friends',
@@ -20,7 +21,7 @@ export class UserFriendsPage {
 
   comments: CommentModel[] = [];
   showBottom:boolean = true;
-  message = 'Our team should keep doing...';
+  message = '';
   messageType = 'keep';
 
   @HostBinding('class.is-shell') get isShell() {
@@ -30,10 +31,25 @@ export class UserFriendsPage {
   constructor(
     private route: ActivatedRoute,
     public surveyService: SurveyServiceService,
-    private http: HttpClient
+    private http: HttpClient,
+    public modalController: ModalController
     ) {
     this.updateComment();
   }
+
+  async inputFocus(){
+    console.log("Ion focus...")
+    const modal = await this.modalController.create({
+      component: ModalPage,
+      componentProps: {
+        'prop1': "test",
+        'prop2': "test2"
+      }
+    });
+
+    await modal.present();
+  } 
+
 
   updateComment() {
 
@@ -88,6 +104,8 @@ export class UserFriendsPage {
       ];
     }
   }
+
+
 
   createComment() {
     // create the comment

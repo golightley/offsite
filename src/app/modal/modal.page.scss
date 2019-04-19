@@ -1,0 +1,40 @@
+@import "../../theme/mixins/inputs/radio-tag";
+
+.question-divider {
+    margin: 2% 0;
+    width: 100%;
+    height: 2px;
+    background-color: rgb(232, 236, 239);
+  }
+  .suggest-button {
+    --background: white;
+    --color: green;
+    --border:grey;
+    // --box-shadow: 0 0 10px rgba(0,0,0,0.8);  
+    --box-shadow: 0 0 7px rgba(66, 66, 66, 0.8);  
+}
+  .radio-tags {
+    padding: 5% calc(var(--page-margin) - var(--page-tags-gutter));
+    justify-content: space-between;
+
+    @include radio-tag();
+
+    // Add a deeper selector to override default colors
+    .radio-tag {
+      --radio-tag-color: rgb(79, 219, 165);
+      --radio-tag-background: var(--ion-color-lightest);
+      --radio-tag-active-color: var(--ion-color-lightest);
+      --radio-tag-active-background: rgb(79, 219, 165);
+
+      padding: 0 var(--page-tags-gutter);
+      margin: var(--page-tags-gutter) 0;
+    }
+  }
+  ion-card{
+    display: flex;
+    flex-direction: column;
+    margin: 0 !important;   
+  }
+ion-content ion-card{
+width: 100%;
+}

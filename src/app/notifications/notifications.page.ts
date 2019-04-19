@@ -68,8 +68,7 @@ export class NotificationsPage implements OnInit {
   }
 
   attachNotificationListener(userID){
-
-    let notifications = [];
+ 
     this.unsubscribe = firebase.firestore().collection("surveynotifications").where("user", "==",userID).where("active", "==", true)
     .onSnapshot((snapshot) => {
       console.log("Listener attached");

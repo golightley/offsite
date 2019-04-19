@@ -19,7 +19,12 @@ const routes: Routes = [
           {
             path: 'friends',
             loadChildren: '../user/friends/user-friends.module#UserFriendsPageModule'
+          },
+          { 
+            path: 'modal', 
+            loadChildren: '../modal/modal.module#ModalPageModule' 
           }
+
         ]
       },
       {

@@ -1,0 +1,42 @@
+<ion-header>
+
+</ion-header>
+
+<ion-content padding>
+  <!-- {{val}} -->
+  <p>Question: I woudl recommend this team to a friend</p><hr>
+  <div class="question-divider"></div>
+
+  <ion-textarea (ionFocus)= "inputFocus()" class="toolbar-content"  placeholder="Type your suggestion" [(ngModel)]="message" (keyup.enter)="createComment();"></ion-textarea>
+
+  <ion-button (click)="dismiss()">Send</ion-button>
+</ion-content>
+
+<ion-footer>
+    <ion-card>
+        <ion-card-header>
+          <ion-card-subtitle>Suggestions for you</ion-card-subtitle>
+          <!-- <ion-card-title>Card Title</ion-card-title> -->
+        </ion-card-header>
+        <!-- <ion-radio-group formControlName="selected_option" > -->
+            <ion-row class="radio-tags">
+              <ion-col>
+                  <ion-button class ="suggest-button" (click)="makeSuggestion()">Team dinner</ion-button>
+              </ion-col>
+              <ion-col>
+                  <ion-button class ="suggest-button" (click)="makeSuggestion()" >Post 7pm break</ion-button>
+              </ion-col>         
+              <ion-col>
+                  <ion-button class ="suggest-button" (click)="makeSuggestion()" >Listen to each other more</ion-button>
+              </ion-col>     
+              <ion-col>
+                  <ion-button class ="suggest-button" (click)="makeSuggestion()" >Give feedback more often</ion-button>
+              </ion-col> 
+            </ion-row>
+          <!-- </ion-radio-group> -->
+        <!-- <ion-card-content>
+          Keep close to Nature's heart... and break clear away, once in awhile,
+          and climb a mountain or spend a week in the woods. Wash your spirit clean.
+        </ion-card-content> -->
+      </ion-card>
+</ion-footer>
