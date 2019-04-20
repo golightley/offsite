@@ -6,13 +6,61 @@
     height: 2px;
     background-color: rgb(232, 236, 239);
   }
-  .suggest-button {
+  .suggest-button-start {
     --background: white;
     --color: green;
     --border:grey;
+    padding: 4px;
     // --box-shadow: 0 0 10px rgba(0,0,0,0.8);  
     --box-shadow: 0 0 7px rgba(66, 66, 66, 0.8);  
 }
+.suggest-button-stop {
+    --background: white;
+    --color: red;
+    --border:black;
+    padding: 4px;
+
+    // --box-shadow: 0 0 10px rgba(0,0,0,0.8);  
+    --box-shadow: 0 0 7px rgba(66, 66, 66, 0.8);  
+}
+
+// div[scrollx=true], div[scrolly=true] {
+//     position: relative;
+//     overflow: hidden;
+  
+//     ::-webkit-scrollbar {
+//       display: none;
+//     }
+//   }
+  
+//   div[scrollx=true] {
+//     overflow-x: auto;
+//   }
+  
+
+
+  div[scrollx=true] {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    &::-webkit-scrollbar {
+       display: none;
+    }
+     .scroll-item {
+       flex: 0 0 auto;
+    }
+  }
+//   div[scrolly=true] {
+//     overflow-y: auto;
+//   }
+    #myFixZone {
+        height: 65px;
+
+    }
+  .foo{
+    height: 175px !important;
+    }
+
   .radio-tags {
     padding: 5% calc(var(--page-margin) - var(--page-tags-gutter));
     justify-content: space-between;

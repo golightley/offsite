@@ -497,6 +497,23 @@ export class SurveyServiceService {
         console.error('Error adding document: ', error);
       });
     }   
+
+    createIdea(team: string, comment: string, type: string, action: string) {
+      // Add a new document with a generated id.
+      firebase.firestore().collection('ideas').add({
+        team: team,
+        text: comment,
+        name: 'Anonymous',
+        type: type,
+        action: type,
+        user: firebase.auth().currentUser.uid,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      }).then(function(docRef) {
+        console.log('Document written with ID: ', docRef.id);
+      }).catch(function(error) {
+        console.error('Error adding document: ', error);
+      });
+    }   
     
     
  

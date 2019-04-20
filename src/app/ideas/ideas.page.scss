@@ -1,0 +1,93 @@
+ion-footer {
+    background: #EBF1F5;
+  
+    .message-form {
+      ion-segment {
+        margin-top: 2%;
+      }
+    }
+  }
+
+
+  
+div[scrollx=true] {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    &::-webkit-scrollbar {
+       display: none;
+    }
+     .scroll-item {
+       flex: 0 0 auto;
+    }
+  }
+  //   div[scrolly=true] {
+  //     overflow-y: auto;
+  //   }
+    #myFixZone {
+        height: 65px;
+  
+    }
+  
+    .suggest-button-start {
+      --background: white;
+    //   --color: green;
+      --border:grey;
+      padding: 4px;
+      // --box-shadow: 0 0 10px rgba(0,0,0,0.8);  
+      --box-shadow: 0 0 7px rgba(66, 66, 66, 0.8);  
+  }
+  
+  .suggest-button-stop {
+    --background: white;
+    // --color: red;
+    --border:black;
+    padding: 4px;
+  
+    // --box-shadow: 0 0 10px rgba(0,0,0,0.8);  
+    --box-shadow: 0 0 7px rgba(66, 66, 66, 0.8);  
+  }
+
+  .startStop{
+      width:100%;
+  }
+
+ .stop-start-chip{
+     width: 100px;
+     vertical-align: middle;
+
+ }
+
+ .user-friends-content {
+    ion-col {
+      padding: 0;
+    }
+  
+    .action-mark {
+      width: 5px;
+      height: 100%;
+    }
+  
+    .comment-content {
+      padding: 5%;
+      
+      .comment-name {
+        color: #9aaabd;
+        font-size: 1rem;
+      }
+  
+      .comment-action {
+        margin-left: 5%;
+        --color: white;
+        font-size: 0.7rem;
+        padding: 2% 5%;
+      }
+  
+      .comment-text {
+        margin-top: 3%;
+        color: #272a2c;
+        font-size: 0.9rem;
+      }
+    }
+  }
+  

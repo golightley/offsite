@@ -50,6 +50,7 @@ export class UserFriendsPage {
     await modal.present();
   } 
 
+  
 
   updateComment() {
 

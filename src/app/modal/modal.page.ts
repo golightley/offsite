@@ -13,6 +13,10 @@ export class ModalPage implements OnInit {
     this.val = navParams.get('prop1');
 
   }
+  
+  inputFocus(){
+
+  }
 
   ngOnInit() {
   }

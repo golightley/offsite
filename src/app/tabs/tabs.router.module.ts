@@ -53,6 +53,15 @@ const routes: Routes = [
           }
         ]
       },
+      {
+        path: 'ideas',
+        children: [
+          {
+            path: '',
+            loadChildren: '../ideas/ideas.module#IdeasPageModule'
+          }
+        ]
+      },
     ]
   },
   // /app/ redirect

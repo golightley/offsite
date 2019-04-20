@@ -3,7 +3,7 @@
       <ion-buttons slot="start">
         <ion-back-button defaultHref="app/categories"></ion-back-button>
       </ion-buttons>
-      <ion-title>Comments</ion-title>
+      <ion-title>Ideas</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -41,8 +41,7 @@
   </ion-card>
 </ion-content>
 
-<ion-footer *ngIf="showBottom">
-    <ion-toolbar class="message-form">
+
       <!-- <ion-segment [(ngModel)]="messageType" (ionChange)="segmentChanged()">
         <ion-segment-button value="keep">
           <ion-label>Keep</ion-label>
@@ -54,9 +53,20 @@
           <ion-label>Start</ion-label>
         </ion-segment-button>
       </ion-segment> -->
+      <ion-row >
+          <div scrollX="true" id="myFixZone">
+                <ion-button class ="suggest-button-start" (click)="makeSuggestion()"></ion-button>
+                <ion-button class ="suggest-button-start" (click)="makeSuggestion()" >Listen to each other more</ion-button>
+                <ion-button class ="suggest-button-start" (click)="makeSuggestion()" >Post 7pm break</ion-button>
+                <ion-button class ="suggest-button-start" (click)="makeSuggestion()" >Post 7pm break</ion-button>
+                <ion-button class ="suggest-button-start" (click)="makeSuggestion()" >Post 7pm break</ion-button>
+          </div>
+      </ion-row>
+      <ion-footer *ngIf="showBottom">
+          <ion-toolbar class="message-form">
       <ion-row>
         <ion-col>
-          <ion-textarea (ionFocus)= "inputFocus()" class="toolbar-content"  placeholder="Type a suggestion" [(ngModel)]="message" (keyup.enter)="createComment();"></ion-textarea>
+          <ion-textarea  class="toolbar-content"  placeholder="Suggest an idea" [(ngModel)]="message" (keyup.enter)="createComment();"></ion-textarea>
         </ion-col>
         <ion-col size="auto">
           <ion-button fill="clear" [disabled]="0 == message.length" class="bar-button" (click)="createComment()">
