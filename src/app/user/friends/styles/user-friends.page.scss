@@ -8,6 +8,9 @@
   --page-segment-indicator-height: 2px;
 }
 
+h3 {
+  text-align: center;
+}
 // Note:  All the CSS variables defined below are overrides of Ionic elements CSS Custom Properties
 .user-friends-segment {
   position: sticky;
@@ -42,6 +45,9 @@
     width: 5px;
     height: 100%;
   }
+  h3 {
+    text-align: center;
+  }
 
   .comment-content {
     padding: 5%;
@@ -61,7 +67,7 @@
     .comment-text {
       margin-top: 3%;
       color: #272a2c;
-      font-size: 0.9rem;
+      font-size: 1.2rem;
     }
   }
 }

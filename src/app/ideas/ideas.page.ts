@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import * as firebase from 'firebase/app';
 import { timingSafeEqual } from 'crypto';
-import {IdeaModel} from './ideas.model';
+import {IdeaModel,CommentActionType} from './ideas.model';
 import {SurveyServiceService} from '../services/survey-service.service';
+import {HttpClient} from '@angular/common/http';
 
 @Component({
   selector: 'app-ideas',
@@ -13,12 +14,16 @@ export class IdeasPage implements OnInit {
 
   message = ""
   suggestions= [];
-  color = "success";
+  color = "green";
   ideas: IdeaModel[] = [];
   type = ""
 
 
-  constructor(public surveyService: SurveyServiceService,) {this.loadSuggestions("start"), this.loadIdeas("start") }
+  constructor(
+    public surveyService: SurveyServiceService,
+    private http: HttpClient,
+
+    ) {this.loadSuggestions("start"), this.loadIdeas("start") }
 
   ngOnInit() {
     // this.loadIdeas("start");
@@ -47,7 +52,7 @@ export class IdeasPage implements OnInit {
     this.ideas = [];
     const query = firebase.firestore().collection('ideas')
       .where('team', '==', "E4ZWxJbFoDE29ywISRQY")
-      .where("type", "==", type)
+      // .where("type", "==", type)
       query.onSnapshot((snapshot) => {
       console.log("ideas...")
       console.log(snapshot);
@@ -58,7 +63,14 @@ export class IdeasPage implements OnInit {
           this.ideas.push(new IdeaModel(change.doc.id, change.doc.data()));
           console.log(this.ideas)
         } else if (change.type === 'modified') {
-
+          let index = 0;
+          for (let i = 0; i < this.ideas.length; i++) {
+            if (this.ideas[i].uid === change.doc.id) {
+              index = i;
+              break;
+            }
+          }
+          this.ideas[index] = new IdeaModel(change.doc.id, change.doc.data());
         }
       });
     });
@@ -73,11 +85,31 @@ export class IdeasPage implements OnInit {
     else if(type =="stop"){this.color="red"; this.type = "stop"}
     else{this.color="black"; this.type = "keep"}
     this.loadSuggestions(type);
-    this.loadIdeas(type);
+    // this.loadIdeas(type);
 
   }
   getCommentActionColor(){
     return this.color; 
+  }
+
+
+  getCardActionColor(action: CommentActionType) {
+    console.log(action)
+    switch (action) {
+      case CommentActionType.keep:
+        return '#ffae66';
+      case CommentActionType.start:
+        return '#6af951';
+      case CommentActionType.stop:
+        return '#ff6666';
+    }
+  }
+
+  makeSuggestion(suggestion){
+    console.log("Make suggestion")
+    console.log(suggestion)
+    this.message = suggestion.text;
+
   }
 
   createIdea() {
@@ -86,6 +118,41 @@ export class IdeasPage implements OnInit {
     // reset the message
     this.message = '';
   }
+
+
+    // this should be moved to the service
+    increaseScore(idea: IdeaModel) {
+      console.log('Update score function fired...');
+      const body  = {
+        team: idea.uid,
+        userId: firebase.auth().currentUser.uid,
+        action: 'upvote'
+      };
+      this.http.post('https://us-central1-offsite-9f67c.cloudfunctions.net/updateIdeaScore', JSON.stringify(body), {
+        responseType: 'text'
+      }).subscribe((data) => {
+        console.log(data);
+      }, (error) => {
+        console.log(error);
+      });
+    }
+  
+    // this should be moved to the service
+    decreaseScore(idea: IdeaModel) {
+      console.log('Update score function fired...');
+      const body  = {
+        team: idea.uid,
+        userId: firebase.auth().currentUser.uid,
+        action: 'downvote'
+      };
+      this.http.post('https://us-central1-offsite-9f67c.cloudfunctions.net/updateIdeaScore', JSON.stringify(body), {
+        responseType: 'text'
+      }).subscribe((data) => {
+        console.log(data);
+      }, (error) => {
+        console.log(error);
+      });
+    }
 
 }
 

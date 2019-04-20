@@ -4,35 +4,23 @@
         <ion-title>Ideas</ion-title>
     </ion-toolbar>
   </ion-header>
-
-<ion-content padding>
   <h3>How can our team improve?</h3>
-  <ion-row>
-    <div id="startStop">
-        <ion-chip color="primary" outline="true" class="stop-start-chip" (click)="improvementTypeChipSelected('keep')">
-            <ion-label >Keep</ion-label>
-        </ion-chip>
-        <ion-chip color="danger" outline="true" class ="stop-start-chip" (click)="improvementTypeChipSelected('stop')"> 
-            <ion-label>Stop</ion-label>
-        </ion-chip>     
-        <ion-chip color="success" outline="true" class ="stop-start-chip" (click)="improvementTypeChipSelected('start')" >
-            <ion-label>Start</ion-label>
-        </ion-chip>
-    </div>
-  </ion-row>
+
+<ion-content class="user-friends-content">
+
   <ion-card *ngFor="let idea of ideas">
       <ion-row>
           <ion-col size="auto">
-              <div class="action-mark" [ngStyle]="{'background-color': getCommentActionColor()}"></div>
+              <div class="action-mark" [ngStyle]="{'background-color': getCardActionColor(idea.type)}"></div>
           </ion-col>
           <ion-col>
               <div class="comment-content">
                   <ion-row align-items-center>
                       <ion-col size="auto">
-                          <div class="comment-name">{{idea.name}}</div>
+                          <div class="comment-name">Anonymous</div>
                       </ion-col>
                       <ion-col >
-                          <ion-badge  class="comment-action" [ngStyle]="{'background-color': getCommentActionColor()}">
+                          <ion-badge  class="comment-action" [ngStyle]="{'background-color': getCardActionColor(idea.type)}">
                               {{idea.type}}
                           </ion-badge>
                       </ion-col>
@@ -40,22 +28,22 @@
                   <div class="comment-text">{{idea.text}}</div>
               </div>
           </ion-col>
-          <!-- <ion-col size="auto">
-              <ion-button fill="clear" (click)="increaseScore(comment)">
+          <ion-col size="auto">
+              <ion-button fill="clear" (click)="increaseScore(idea)">
                   <ion-icon slot="icon-only" name="arrow-up" mode="ios"></ion-icon>
               </ion-button>
-              <div text-center class="comment-score">{{comment.score}}</div>
-              <ion-button fill="clear" [disabled]="0 == comment.score" (click)="decreaseScore(comment)">
+              <div text-center class="comment-score">{{idea.score}}</div>
+              <ion-button fill="clear" [disabled]="0 == idea.score" (click)="decreaseScore(idea)">
                   <ion-icon slot="icon-only" name="arrow-down" mode="ios"></ion-icon>
               </ion-button>
-          </ion-col> -->
+          </ion-col>
       </ion-row>
   </ion-card>
 </ion-content>
 
 <ion-row >
     <div scrollX="true" id="myFixZone">
-          <ion-button  [ngStyle]="{'color': getCommentActionColor()}" *ngFor="let suggestion of suggestions" class ="suggest-button-start" (click)="makeSuggestion()">
+          <ion-button  [ngStyle]="{'color': getCommentActionColor()}" *ngFor="let suggestion of suggestions" class ="suggest-button-start" (click)="makeSuggestion(suggestion)">
             {{suggestion.text}}
           </ion-button>
 
@@ -63,6 +51,19 @@
 </ion-row>
 <ion-footer>
     <ion-toolbar class="message-form">
+        <ion-row>
+            <div id="startStop">
+                <ion-chip color="primary" outline="true" class="stop-start-chip" (click)="improvementTypeChipSelected('keep')">
+                    <ion-label >Keep</ion-label>
+                </ion-chip>
+                <ion-chip color="danger" outline="true" class ="stop-start-chip" (click)="improvementTypeChipSelected('stop')"> 
+                    <ion-label>Stop</ion-label>
+                </ion-chip>     
+                <ion-chip color="success" outline="true" class ="stop-start-chip" (click)="improvementTypeChipSelected('start')" >
+                    <ion-label>Start</ion-label>
+                </ion-chip>
+            </div>
+          </ion-row>
 <ion-row>
   <ion-col>
     <ion-textarea placeholder="Suggest an anonymous idea" [(ngModel)]="message" (keyup.enter)="createIdea();"></ion-textarea>

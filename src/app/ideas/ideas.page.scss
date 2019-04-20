@@ -42,10 +42,10 @@ div[scrollx=true] {
     --background: white;
     // --color: red;
     --border:black;
-    padding: 4px;
+    padding: 1px;
   
     // --box-shadow: 0 0 10px rgba(0,0,0,0.8);  
-    --box-shadow: 0 0 7px rgba(66, 66, 66, 0.8);  
+    --box-shadow: 0 0 5px rgba(66, 66, 66, 0.8);  
   }
 
   .startStop{
@@ -54,40 +54,41 @@ div[scrollx=true] {
 
  .stop-start-chip{
      width: 100px;
-     vertical-align: middle;
 
  }
 
  .user-friends-content {
-    ion-col {
-      padding: 0;
+  ion-col {
+    padding: 0;
+  }
+
+  .action-mark {
+    width: 5px;
+    height: 100%;
+  }
+
+  .comment-content {
+    padding: 5%;
+    
+    .comment-name {
+      color: #9aaabd;
+      font-size: 1rem;
     }
-  
-    .action-mark {
-      width: 5px;
-      height: 100%;
+
+    .comment-action {
+      margin-left: 5%;
+      --color: white;
+      font-size: 0.7rem;
+      padding: 2% 5%;
     }
-  
-    .comment-content {
-      padding: 5%;
-      
-      .comment-name {
-        color: #9aaabd;
-        font-size: 1rem;
-      }
-  
-      .comment-action {
-        margin-left: 5%;
-        --color: white;
-        font-size: 0.7rem;
-        padding: 2% 5%;
-      }
-  
-      .comment-text {
-        margin-top: 3%;
-        color: #272a2c;
-        font-size: 0.9rem;
-      }
+
+    .comment-text {
+      margin-top: 3%;
+      color: #272a2c;
+      font-size: 1.2rem;
     }
   }
+}
+  
+
   
