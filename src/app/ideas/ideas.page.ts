@@ -4,6 +4,9 @@ import { timingSafeEqual } from 'crypto';
 import {IdeaModel,CommentActionType} from './ideas.model';
 import {SurveyServiceService} from '../services/survey-service.service';
 import {HttpClient} from '@angular/common/http';
+import { ModalPage } from '../modal/modal.page';
+import { ModalController } from '@ionic/angular';
+
 
 @Component({
   selector: 'app-ideas',
@@ -22,6 +25,7 @@ export class IdeasPage implements OnInit {
   constructor(
     public surveyService: SurveyServiceService,
     private http: HttpClient,
+    public modalController: ModalController,
 
     ) {this.loadSuggestions("start"), this.loadIdeas("start") }
 
@@ -94,7 +98,7 @@ export class IdeasPage implements OnInit {
 
 
   getCardActionColor(action: CommentActionType) {
-    console.log(action)
+    // console.log("Get action color"+action)
     switch (action) {
       case CommentActionType.keep:
         return '#ffae66';
@@ -153,6 +157,20 @@ export class IdeasPage implements OnInit {
         console.log(error);
       });
     }
+
+
+  async inputFocus(){
+    console.log("Ion focus...")
+    const modal = await this.modalController.create({
+      component: ModalPage,
+      componentProps: {
+        'prop1': "test",
+        'prop2': "test2"
+      }
+    });
+
+    await modal.present();
+  } 
 
 }
 

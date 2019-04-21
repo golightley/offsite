@@ -1,9 +1,10 @@
 ion-footer {
-    background: #EBF1F5;
-  
+    background: rgb(201, 225, 241);
+
     .message-form {
       ion-segment {
         margin-top: 2%;
+        background: rgb(201, 225, 241);
       }
     }
   }
@@ -25,7 +26,12 @@ div[scrollx=true] {
   //     overflow-y: auto;
   //   }
     #myFixZone {
-        height: 65px;
+        height: 75px;
+        // min-height: 10em;
+        // display: table-cell;
+        // vertical-align: middle
+        vertical-align: middle
+
   
     }
   
@@ -34,6 +40,8 @@ div[scrollx=true] {
     //   --color: green;
       --border:grey;
       padding: 4px;
+      position: relative;
+      padding-top: 7px;
       // --box-shadow: 0 0 10px rgba(0,0,0,0.8);  
       --box-shadow: 0 0 7px rgba(66, 66, 66, 0.8);  
   }
@@ -63,7 +71,7 @@ div[scrollx=true] {
   }
 
   .action-mark {
-    width: 5px;
+    width: 3px;
     height: 100%;
   }
 
@@ -85,7 +93,7 @@ div[scrollx=true] {
     .comment-text {
       margin-top: 3%;
       color: #272a2c;
-      font-size: 1.2rem;
+      font-size: 1.0  rem;
     }
   }
 }

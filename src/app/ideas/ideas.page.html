@@ -4,8 +4,6 @@
         <ion-title>Ideas</ion-title>
     </ion-toolbar>
   </ion-header>
-  <h3>How can our team improve?</h3>
-
 <ion-content class="user-friends-content">
 
   <ion-card *ngFor="let idea of ideas">
@@ -41,17 +39,17 @@
   </ion-card>
 </ion-content>
 
-<ion-row >
+<!-- <ion-row >
     <div scrollX="true" id="myFixZone">
           <ion-button  [ngStyle]="{'color': getCommentActionColor()}" *ngFor="let suggestion of suggestions" class ="suggest-button-start" (click)="makeSuggestion(suggestion)">
             {{suggestion.text}}
           </ion-button>
 
-    </div>
-</ion-row>
+</div>
+</ion-row> -->
 <ion-footer>
     <ion-toolbar class="message-form">
-        <ion-row>
+        <!-- <ion-row>
             <div id="startStop">
                 <ion-chip color="primary" outline="true" class="stop-start-chip" (click)="improvementTypeChipSelected('keep')">
                     <ion-label >Keep</ion-label>
@@ -64,11 +62,11 @@
                 </ion-chip>
             </div>
           </ion-row>
-<ion-row>
+        <ion-row> -->
   <ion-col>
-    <ion-textarea placeholder="Suggest an anonymous idea" [(ngModel)]="message" (keyup.enter)="createIdea();"></ion-textarea>
+    <ion-textarea (ionFocus)= "inputFocus()" placeholder="Suggest an anonymous idea" [(ngModel)]="message" (keyup.enter)="createIdea();"></ion-textarea>
   </ion-col>
 
-</ion-row>    
+<!-- </ion-row>     -->
 </ion-toolbar>
 </ion-footer>
