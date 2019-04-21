@@ -16,7 +16,9 @@ import { ModalController } from '@ionic/angular';
 export class IdeasPage implements OnInit {
 
   message = ""
-  suggestions= [];
+  startSuggestions = [];
+  stopSuggestions  = [];
+
   color = "green";
   ideas: IdeaModel[] = [];
   type = ""
@@ -34,7 +36,7 @@ export class IdeasPage implements OnInit {
   }
 
   loadSuggestions(type){
-      this.suggestions = [];
+      this.startSuggestions = [];
       const query = firebase.firestore().collection('suggestionBank')
         .where('type', '==', type)
         // .where('type', '==', 'comment');
@@ -44,7 +46,7 @@ export class IdeasPage implements OnInit {
         const changedDocs = snapshot.docChanges();
         changedDocs.forEach((change) => {
           if (change.type === 'added') {
-            this.suggestions.push(change.doc.data());
+            this.startSuggestions.push(change.doc.data());
           } else if (change.type === 'modified') {
 
           }
