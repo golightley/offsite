@@ -41,7 +41,8 @@ export class IdeasPage implements OnInit {
         .where('type', '==', type)
         // .where('type', '==', 'comment');
       query.onSnapshot((snapshot) => {
-        // console.log(snapshot);
+        console.log("loaded suggestion bank")
+        console.log(snapshot);
         // retrieve anything that has changed
         const changedDocs = snapshot.docChanges();
         changedDocs.forEach((change) => {

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { ModalController, NavParams } from '@ionic/angular';
 import * as firebase from 'firebase/app';
 import {SurveyServiceService} from '../services/survey-service.service';
@@ -11,6 +11,11 @@ import {SurveyServiceService} from '../services/survey-service.service';
 export class ModalPage implements OnInit {
   val;
   suggestions= [];
+  startSuggestions = [];
+  stopSuggestions  = [];
+  color = "grey";
+  array = [];
+  @ViewChild('inputToFocus') inputToFocus;
 
   message = "";
   constructor(
@@ -20,20 +25,36 @@ export class ModalPage implements OnInit {
     ) { 
     this.val = navParams.get('prop1');
     this.loadSuggestions("start");
+    this.loadSuggestions("stop");
+
+  }
+
+  getCommentActionColor(){
+    return this.color; 
   }
 
   loadSuggestions(type){
-    this.suggestions = [];
+
+    // clear both arrays 
+    this.startSuggestions = [];
+    this.stopSuggestions  = [];
+
     const query = firebase.firestore().collection('suggestionBank')
       .where('type', '==', type)
       // .where('type', '==', 'comment');
     query.onSnapshot((snapshot) => {
       // console.log(snapshot);
+      console.log("loaded suggestion bank")
+      console.log(snapshot);
       // retrieve anything that has changed
       const changedDocs = snapshot.docChanges();
       changedDocs.forEach((change) => {
         if (change.type === 'added') {
-          this.suggestions.push(change.doc.data());
+
+          // determine which array to add suggesitons to
+          if(type == "start"){this.startSuggestions.push(change.doc.data());}
+          else{this.stopSuggestions.push(change.doc.data())}
+
         } else if (change.type === 'modified') {
 
         }
@@ -41,7 +62,21 @@ export class ModalPage implements OnInit {
     });
 }
 
-makeSuggestion(type) {
+ngAfterViewChecked() {
+  this.inputToFocus.setFocus()
+}
+
+makeSuggestion(suggestion){
+  console.log("Make suggestion")
+  console.log(suggestion)
+  this.message = suggestion.text;
+  this.inputToFocus.setFocus();
+
+
+
+}
+
+createIdea(type) {
   // create the comment
   this.surveyService.createIdea("E4ZWxJbFoDE29ywISRQY", this.message,type,type);
   // reset the message

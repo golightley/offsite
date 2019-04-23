@@ -1,25 +1,30 @@
 <ion-header>
-
+    <ion-toolbar color="primary">
+        <ion-title>Ideas</ion-title>
+    </ion-toolbar>
 </ion-header>
 
 <ion-content padding>
   <!-- {{val}} -->
   <!-- <p><b>What should the team keep doing?</b> </p><hr> -->
   <ion-row>
-    <ion-col>
-        <ion-chip  color="dark" (click)="dismiss()">
-            <ion-label>cancel</ion-label>
-          </ion-chip>
-    </ion-col>
-<ion-col class ="left-move">
-    <ion-chip  color="success" (click)="createIdea('start')">
+    <div style="clear: both;">    
+      <ion-chip class="alignleft" item-start color="dark" (click)="dismiss()">
+        <ion-label>cancel</ion-label>
+      </ion-chip>
+      <ion-chip   class="alignright" color="success" (click)="createIdea('start')">
         <ion-label>Send</ion-label>
       </ion-chip>
-</ion-col> 
+
+    </div>
+
+  </ion-row>
+  <ion-row>
+
   </ion-row>
 
 <ion-row>
-    <ion-textarea rows="6" cols="20" autofocus="true" (ionFocus)= "inputFocus()" class="toolbar-content"  placeholder="Type your suggestion" [(ngModel)]="message" (keyup.enter)="createComment();"></ion-textarea>
+    <ion-textarea #inputToFocus rows="10" cols="20" autofocus="true" (ionFocus)= "inputFocus()" class="toolbar-content"  placeholder="Type your suggestion" [(ngModel)]="message" (keyup.enter)="createComment();"></ion-textarea>
 </ion-row>
   
   <div class="question-divider"></div>
@@ -30,59 +35,22 @@
       </ion-list-header>
         <ion-row>
           <div scrollX="true" id="myFixZone">
-
-              <ion-button  class ="suggest-button-start" [ngStyle]="{'color': getCommentActionColor()}" *ngFor="let suggestion of startSuggestions" class ="suggest-button-start" (click)="makeSuggestion('start')">
+              <ion-button  class ="suggest-button-start" [ngStyle]="{'color': getCommentActionColor()}" *ngFor="let suggestion of startSuggestions" class ="suggest-button-start" (click)="makeSuggestion(suggestion)">
                   {{suggestion.text}}
               </ion-button>
-             
           </div>
         </ion-row>  
         <ion-list-header>
             <ion-label>Ideas to stop</ion-label>
           </ion-list-header>
-          <div scrollX="true" id="myFixZone">
-              <ion-button class ="suggest-button-stop " (click)="makeSuggestion('stop')">Team dinner</ion-button>
-              <ion-button class ="suggest-button-stop" (click)="makeSuggestion('stop')" >Listen to each other more</ion-button>
-              <ion-button class ="suggest-button-stop" (click)="makeSuggestion('stop')" >Post 7pm break</ion-button>
-              <ion-button class ="suggest-button-stop" (click)="makeSuggestion('stop')" >Post 7pm break</ion-button>
-              <ion-button class ="suggest-button-stop" (click)="makeSuggestion('stop')" >Post 7pm break</ion-button>
-        </div>
+          <ion-row>
+              <div scrollX="true" id="myFixZone">
+                  <ion-button  class ="suggest-button-stop" [ngStyle]="{'color': getCommentActionColor()}" *ngFor="let suggestion of stopSuggestions" class ="suggest-button-start" (click)="makeSuggestion(suggestion)">
+                      {{suggestion.text}}
+                  </ion-button>
+              </div>
+            </ion-row> 
     </ion-list>
-
-
-
-
-
-  <!-- </ion-row> -->
-  <!-- <ion-button (click)="dismiss()">Send</ion-button> -->
 </ion-content>
 
-<!-- <ion-footer class ="foo">
-    <ion-card>
-        <ion-card-header>
-          <ion-card-subtitle>Suggestions for you</ion-card-subtitle>
-        </ion-card-header> -->
-            <!-- <ion-row >
-            <div scrollX="true" id="myFixZone">
-                  <ion-button class ="suggest-button-start " (click)="makeSuggestion()">Team dinner</ion-button>
-                  <ion-button class ="suggest-button-start" (click)="makeSuggestion()" >Listen to each other more</ion-button>
-                  <ion-button class ="suggest-button-start" (click)="makeSuggestion()" >Post 7pm break</ion-button>
-                  <ion-button class ="suggest-button-start" (click)="makeSuggestion()" >Post 7pm break</ion-button>
-                  <ion-button class ="suggest-button-start" (click)="makeSuggestion()" >Post 7pm break</ion-button>
-            </div>
-
-            <div scrollX="true" id="myFixZone">
-                <ion-button class ="suggest-button-sstoptart " (click)="makeSuggestion()">Team dinner</ion-button>
-                <ion-button class ="suggest-button-stop" (click)="makeSuggestion()" >Listen to each other more</ion-button>
-                <ion-button class ="suggest-button-stop" (click)="makeSuggestion()" >Post 7pm break</ion-button>
-                <ion-button class ="suggest-button-stop" (click)="makeSuggestion()" >Post 7pm break</ion-button>
-                <ion-button class ="suggest-button-stop" (click)="makeSuggestion()" >Post 7pm break</ion-button>
-          </div>
-        </ion-row> -->
-          <!-- </ion-radio-group> -->
-        <!-- <ion-card-content>
-          Keep close to Nature's heart... and break clear away, once in awhile,
-          and climb a mountain or spend a week in the woods. Wash your spirit clean.
-        </ion-card-content> -->
-      <!-- </ion-card> -->
-<!-- </ion-footer> --> -->
+<

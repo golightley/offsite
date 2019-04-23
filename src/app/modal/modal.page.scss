@@ -19,7 +19,7 @@
     padding: 4px;
 
     // --box-shadow: 0 0 10px rgba(0,0,0,0.8);  
-    --box-shadow: 0 0 2px rgba(66, 66, 66, 0.8);  
+    --box-shadow: 0 0 2px rgba(218, 50, 50, 0.8);  
 }
 
 .left-move{
@@ -29,6 +29,12 @@
   float:right;
 }
 
+.alignleft {
+	float: left;
+}
+.alignright {
+	float: right;
+}
 
 // div[scrollx=true], div[scrolly=true] {
 //     position: relative;
