@@ -62,9 +62,9 @@ export class ModalPage implements OnInit {
     });
 }
 
-ngAfterViewChecked() {
-  this.inputToFocus.setFocus()
-}
+// ngAfterViewChecked() {
+//   this.inputToFocus.setFocus()
+// }
 
 makeSuggestion(suggestion){
   console.log("Make suggestion")

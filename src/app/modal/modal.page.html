@@ -1,56 +1,221 @@
-<ion-header>
-    <ion-toolbar color="primary">
-        <ion-title>Ideas</ion-title>
-    </ion-toolbar>
-</ion-header>
+  <ion-header>
+      <ion-toolbar color="primary">
+          <ion-title>Ideas</ion-title>
+      </ion-toolbar>
+  </ion-header>
 
-<ion-content padding>
-  <!-- {{val}} -->
-  <!-- <p><b>What should the team keep doing?</b> </p><hr> -->
-  <ion-row>
-    <div style="clear: both;">    
-      <ion-chip class="alignleft" item-start color="dark" (click)="dismiss()">
-        <ion-label>cancel</ion-label>
-      </ion-chip>
-      <ion-chip   class="alignright" color="success" (click)="createIdea('start')">
-        <ion-label>Send</ion-label>
-      </ion-chip>
-
-    </div>
-
-  </ion-row>
-  <ion-row>
-
-  </ion-row>
-
-<ion-row>
-    <ion-textarea #inputToFocus rows="10" cols="20" autofocus="true" (ionFocus)= "inputFocus()" class="toolbar-content"  placeholder="Type your suggestion" [(ngModel)]="message" (keyup.enter)="createComment();"></ion-textarea>
-</ion-row>
-  
-  <div class="question-divider"></div>
-
-  <ion-list>
-      <ion-list-header>
-        <ion-label>Popular ideas to start</ion-label>
-      </ion-list-header>
+  <ion-content text-center padding >
+      <!-- <img src="assets/images/undraw_artificial_intelligence_upfn.svg" alt="Feedback Logo"/>
+      <div class="title">Feedback Assistant Bot</div> -->
+      <ion-grid>
         <ion-row>
-          <div scrollX="true" id="myFixZone">
-              <ion-button  class ="suggest-button-start" [ngStyle]="{'color': getCommentActionColor()}" *ngFor="let suggestion of startSuggestions" class ="suggest-button-start" (click)="makeSuggestion(suggestion)">
-                  {{suggestion.text}}
-              </ion-button>
-          </div>
-        </ion-row>  
-        <ion-list-header>
-            <ion-label>Ideas to stop</ion-label>
-          </ion-list-header>
-          <ion-row>
-              <div scrollX="true" id="myFixZone">
-                  <ion-button  class ="suggest-button-stop" [ngStyle]="{'color': getCommentActionColor()}" *ngFor="let suggestion of stopSuggestions" class ="suggest-button-start" (click)="makeSuggestion(suggestion)">
-                      {{suggestion.text}}
-                  </ion-button>
+          <ion-col size="11" >
+            <div class="talk-bubble tri-right round border ">
+              <div class="talktext">
+                <p>Hi. I'm your facilitator bot, here to help you structure your feedback for your team.</p>
               </div>
-            </ion-row> 
-    </ion-list>
-</ion-content>
+            </div>
+          </ion-col>
+          <ion-col size="1">
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col size="11">
+              <div class="talk-bubble tri-right round border">
+                  <div class="talktext">
+                    <p>To start, what type of suggestion do you have?</p>
+                  </div>
+                </div>
+          </ion-col>
+          <ion-col size="1">
+            </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col>
+           <ion-card>
+              <ion-card-header>
+                  <ion-card-subtitle>Pick your suggestion category</ion-card-subtitle>
+                </ion-card-header>
+                <ion-grid>
+                  <ion-row>
+                    <ion-col>
+                        <ion-chip color="success">
+                            <ion-label>Start</ion-label>
+                          </ion-chip>  
+                    </ion-col>
+                    <ion-col>
+                        <ion-chip color="danger">
+                            <ion-label>Stop</ion-label>
+                          </ion-chip>  
+                    </ion-col>
+                    <ion-col>
+                        <ion-chip color="grey">
+                            <ion-label>Keep</ion-label>
+                          </ion-chip>  
+                    </ion-col>
+                  </ion-row>
+                </ion-grid>
 
-<
+           </ion-card>
+         
+
+          </ion-col>
+        </ion-row>
+        <ion-row>
+            <ion-col size="11">
+                <div class="talk-bubble tri-right round border">
+                    <div class="talktext">
+                      <p>Great. What would you like your team to start doing?</p>
+                    </div>
+                  </div>
+            </ion-col>
+            <ion-col size="1">
+              </ion-col>
+          </ion-row>
+          <ion-row>
+              <ion-col>
+
+                  <ion-card>
+                        <ion-grid>
+                          <ion-row>
+                              <ion-card-content>
+                                  <ion-textarea #inputToFocus autofocus="true" (ionFocus)= "inputFocus()" class="toolbar-content"  placeholder="Type your suggestion" [(ngModel)]="message" (keyup.enter)="createComment();"></ion-textarea>
+                                </ion-card-content>
+                          </ion-row>
+                          <ion-row>
+                            <ion-col >
+                                <ion-chip color="success">
+                                    <ion-label>Send</ion-label>
+                                  </ion-chip>  
+                            </ion-col>
+                          </ion-row>
+                        </ion-grid>
+                   </ion-card>
+              </ion-col>
+          </ion-row>
+        </ion-grid>
+        <ion-footer>
+            <ion-row>
+                <ion-list>
+                    <ion-list-header>
+                      <ion-label>Popular ideas to start</ion-label>
+                    </ion-list-header>
+                      <ion-row>
+                        <div scrollX="true" id="myFixZone">
+                            <ion-button  class ="suggest-button-start" [ngStyle]="{'color': getCommentActionColor()}" *ngFor="let suggestion of startSuggestions" class ="suggest-button-start" (click)="makeSuggestion(suggestion)">
+                                {{suggestion.text}}
+                            </ion-button>
+                        </div>
+                      </ion-row> 
+                      </ion-list>
+            </ion-row>
+        </ion-footer>
+
+
+
+  </ion-content> 
+
+
+  
+
+
+
+
+    <!-- <ion-row>
+        <ion-chip   class="alignright" color="success">
+            <ion-label>Start</ion-label>
+        </ion-chip>
+        <ion-chip   class="alignright" color="danger">
+            <ion-label>Stop</ion-label>
+        </ion-chip>
+        <ion-chip   class="alignright" color="grey">
+          <ion-label>Stop</ion-label>
+      </ion-chip>
+    </ion-row> -->
+
+    <!-- <div class="talk-bubble tri-right round btm-left">
+      <div class="talktext">
+        <p>What would you like to write? Suggestions are below...</p>
+      </div>
+    </div> -->
+
+
+
+  <!-- <ion-grid no-lines class="msgbubble">
+    <ion-col col-9>
+        <div class="talktext">
+            Welcome. I will help you structure your ideas for your team.
+           </div>
+           <div class="innermsg left">
+               To get started, what type of feedback do you want to give?
+              </div>
+
+    </ion-col>
+
+  </ion-grid> -->
+  <!-- <ion-list no-lines class="msgbubble"> -->
+
+      <!-- <div class="innermsg right" *ngIf="userId == msg.id">
+          {{ msg.reply }}
+      </div> -->
+  <!-- </ion-list> -->
+
+  
+    <!-- <ion-row  class="radio-tags">
+    <ion-item class="radio-tag" lines="none" (click)="vibrate()">
+        <ion-label radio-tag class="tag-label ion-text-wrap">
+          Welcome. I will help you structure feedback for your team. 
+        </ion-label>
+      </ion-item>
+    </ion-row>
+    <ion-row  class="radio-tags">
+        <ion-item class="radio-tag" lines="none" (click)="vibrate()">
+            <ion-label radio-tag class="tag-label ion-text-wrap">
+              To start, lets pick a type of idea you want to give.
+            </ion-label>
+          </ion-item>
+        </ion-row> -->
+
+
+        
+
+    <!-- <ion-row>
+        <ion-chip   class="alignright" color="success">
+            <ion-label>Start</ion-label>
+        </ion-chip>
+        <ion-chip   class="alignright" color="danger">
+            <ion-label>Stop</ion-label>
+        </ion-chip>
+    </ion-row> -->
+
+  <!-- <ion-row>
+      <ion-textarea #inputToFocus rows="5" cols="20" autofocus="true" (ionFocus)= "inputFocus()" class="toolbar-content"  placeholder="Type your suggestion" [(ngModel)]="message" (keyup.enter)="createComment();"></ion-textarea>
+  </ion-row> -->
+  <!--   
+    <div class="question-divider"></div>
+
+    <ion-list>
+        <ion-list-header>
+          <ion-label>Popular ideas to start</ion-label>
+        </ion-list-header>
+          <ion-row>
+            <div scrollX="true" id="myFixZone">
+                <ion-button  class ="suggest-button-start" [ngStyle]="{'color': getCommentActionColor()}" *ngFor="let suggestion of startSuggestions" class ="suggest-button-start" (click)="makeSuggestion(suggestion)">
+                    {{suggestion.text}}
+                </ion-button>
+            </div>
+          </ion-row>  
+        <ion-list-header>
+              <ion-label>Ideas to stop</ion-label>
+            </ion-list-header>
+            <ion-row>
+                <div scrollX="true" id="myFixZone">
+                    <ion-button  class ="suggest-button-stop" [ngStyle]="{'color': getCommentActionColor()}" *ngFor="let suggestion of stopSuggestions" class ="suggest-button-start" (click)="makeSuggestion(suggestion)">
+                        {{suggestion.text}}
+                    </ion-button>
+                </div>
+              </ion-row>  -->
+      <!-- </ion-list>  -->
+  <!-- </ion-content> -->
+
+  
