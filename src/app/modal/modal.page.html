@@ -4,12 +4,28 @@
       </ion-toolbar>
   </ion-header>
 
-  <ion-content text-center padding >
+  <ion-content #chatScroll text-center padding >
       <!-- <img src="assets/images/undraw_artificial_intelligence_upfn.svg" alt="Feedback Logo"/>
       <div class="title">Feedback Assistant Bot</div> -->
-      <ion-grid>
+      <ion-grid >
         <ion-row>
-          <ion-col size="11" >
+          <ion-col>
+            <p>Cancel</p>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col  *ngIf= "step == '1'" size="4">
+            <!-- <div class="talk-bubble round border "> -->
+              <div class="spinner">
+                  <div class="bounce1"></div>
+                  <div class="bounce2"></div>
+                  <div class="bounce3"></div>
+                </div>                
+              <!-- </div> -->
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col *ngIf= "step >= '2'" size="11" >
             <div class="talk-bubble tri-right round border ">
               <div class="talktext">
                 <p>Hi. I'm your facilitator bot, here to help you structure your feedback for your team.</p>
@@ -20,7 +36,7 @@
           </ion-col>
         </ion-row>
         <ion-row>
-          <ion-col size="11">
+          <ion-col *ngIf= "step >= '3'" size="11">
               <div class="talk-bubble tri-right round border">
                   <div class="talktext">
                     <p>To start, what type of suggestion do you have?</p>
@@ -31,7 +47,7 @@
             </ion-col>
         </ion-row>
         <ion-row>
-          <ion-col>
+          <ion-col *ngIf= "step >= '4'">
            <ion-card>
               <ion-card-header>
                   <ion-card-subtitle>Pick your suggestion category</ion-card-subtitle>
@@ -39,19 +55,19 @@
                 <ion-grid>
                   <ion-row>
                     <ion-col>
-                        <ion-chip color="success">
+                        <ion-chip  (click)="categoryselected('start')" color="success">
                             <ion-label>Start</ion-label>
-                          </ion-chip>  
+                        </ion-chip>  
                     </ion-col>
                     <ion-col>
-                        <ion-chip color="danger">
+                        <ion-chip  (click)="categoryselected('stop')" color="danger">
                             <ion-label>Stop</ion-label>
-                          </ion-chip>  
+                        </ion-chip>  
                     </ion-col>
                     <ion-col>
-                        <ion-chip color="grey">
+                        <ion-chip  (click)="categoryselected('keep')" color="grey">
                             <ion-label>Keep</ion-label>
-                          </ion-chip>  
+                        </ion-chip>  
                     </ion-col>
                   </ion-row>
                 </ion-grid>
@@ -62,10 +78,10 @@
           </ion-col>
         </ion-row>
         <ion-row>
-            <ion-col size="11">
+            <ion-col *ngIf= "step >= '5'" size="11">
                 <div class="talk-bubble tri-right round border">
                     <div class="talktext">
-                      <p>Great. What would you like your team to start doing?</p>
+                      <p>{{prompt}}</p>
                     </div>
                   </div>
             </ion-col>
@@ -73,18 +89,19 @@
               </ion-col>
           </ion-row>
           <ion-row>
-              <ion-col>
-
+              <ion-col *ngIf= "step >= '6'">
                   <ion-card>
                         <ion-grid>
                           <ion-row>
-                              <ion-card-content>
-                                  <ion-textarea #inputToFocus autofocus="true" (ionFocus)= "inputFocus()" class="toolbar-content"  placeholder="Type your suggestion" [(ngModel)]="message" (keyup.enter)="createComment();"></ion-textarea>
-                                </ion-card-content>
+                            <ion-col *ngIf= "step >= '6'">
+                                <ion-card-content>
+                                    <ion-textarea #inputToFocus autofocus="true" (ionFocus)= "inputFocus()" class="toolbar-content"  placeholder="Type your suggestion" [(ngModel)]="message" (keyup.enter)="createComment();"></ion-textarea>
+                                  </ion-card-content>
+                            </ion-col>
                           </ion-row>
                           <ion-row>
-                            <ion-col >
-                                <ion-chip color="success">
+                            <ion-col *ngIf= "step >= '6'">
+                                <ion-chip (click)="createIdea();" color="success">
                                     <ion-label>Send</ion-label>
                                   </ion-chip>  
                             </ion-col>
@@ -95,7 +112,7 @@
           </ion-row>
         </ion-grid>
         <ion-footer>
-            <ion-row>
+            <ion-row *ngIf= "step >= '6'">
                 <ion-list>
                     <ion-list-header>
                       <ion-label>Popular ideas to start</ion-label>

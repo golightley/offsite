@@ -2,6 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { ModalController, NavParams } from '@ionic/angular';
 import * as firebase from 'firebase/app';
 import {SurveyServiceService} from '../services/survey-service.service';
+import { timer } from 'rxjs/observable/timer';
 
 @Component({
   selector: 'app-modal',
@@ -15,7 +16,13 @@ export class ModalPage implements OnInit {
   stopSuggestions  = [];
   color = "grey";
   array = [];
+  step = 1;
+  type = "start";
+  prompt = "Great. What would you like your team to start doing?";
+
+
   @ViewChild('inputToFocus') inputToFocus;
+  @ViewChild('chatScroll') chatScroll;
 
   message = "";
   constructor(
@@ -71,16 +78,31 @@ makeSuggestion(suggestion){
   console.log(suggestion)
   this.message = suggestion.text;
   this.inputToFocus.setFocus();
+}
 
+categoryselected(type){
+  timer(500).subscribe(() => this.step = 5) // <-- hide animation after 3s
+  timer(1500).subscribe(() => this.step = 6) // <-- hide animation after 3s
+  this.chatScroll.scrollToBottom();
+  this.type = type;
 
+  if(type == "stop"){
+    this.prompt = "Great. What would you like your team to stop doing?";
+  }
+  if(type == "keep"){
+    this.prompt = "Great. What would you like your team to keep doing?";
+  }
+  // this.contentAreaReference.scrollToBottom();
 
 }
 
-createIdea(type) {
+
+createIdea() {
   // create the comment
-  this.surveyService.createIdea("E4ZWxJbFoDE29ywISRQY", this.message,type,type);
+  this.surveyService.createIdea("E4ZWxJbFoDE29ywISRQY", this.message,this.type,this.type);
   // reset the message
   this.message = '';
+  this.dismiss();
 
 }
   
@@ -89,6 +111,11 @@ createIdea(type) {
   }
 
   ngOnInit() {
+
+    timer(1500).subscribe(() => this.step = 2) // <-- hide animation after 3s
+    timer(2000).subscribe(() => this.step = 3) // <-- hide animation after 3s
+    timer(3000).subscribe(() => this.step = 4) // <-- hide animation after 3s
+
   }
 
   dismiss(){
