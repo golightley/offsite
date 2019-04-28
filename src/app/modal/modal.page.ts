@@ -1,5 +1,7 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { ModalController, NavParams } from '@ionic/angular';
+import { Component, OnInit, ViewChild, ElementRef, ViewChildren, ContentChildren } from '@angular/core';
+import { ModalController, NavParams, IonContent  } from '@ionic/angular';
+import { Keyboard } from '@ionic-native/keyboard/ngx';
+
 import * as firebase from 'firebase/app';
 import {SurveyServiceService} from '../services/survey-service.service';
 import { timer } from 'rxjs/observable/timer';
@@ -10,6 +12,8 @@ import { timer } from 'rxjs/observable/timer';
   styleUrls: ['./modal.page.scss'],
 })
 export class ModalPage implements OnInit {
+  private mutationObserver: MutationObserver;
+
   val;
   suggestions= [];
   startSuggestions = [];
@@ -22,19 +26,55 @@ export class ModalPage implements OnInit {
 
 
   @ViewChild('inputToFocus') inputToFocus;
-  @ViewChild('chatScroll') chatScroll;
+  // @ViewChild(IonContent) contentArea: IonContent;
+  @ViewChild('chatList', {read: ElementRef}) chatList: ElementRef;
+  // @ViewChildren('myContent') contentArea: IonContent;
+  @ViewChild('content') private content: any;
+
 
   message = "";
   constructor(
     public modalController: ModalController, 
     public navParams:NavParams,
     public surveyService: SurveyServiceService,
+    private keyboard: Keyboard
     ) { 
     this.val = navParams.get('prop1');
     this.loadSuggestions("start");
     this.loadSuggestions("stop");
 
+    window.addEventListener('keyboardWillShow', (event) => {
+      console.log("Keyboard showing")
+      this.content.scrollToBottom(300);
+  });
+
+  window.addEventListener('keyboardDidShow', (event) => {
+    console.log("Keyboard showing")
+    this.content.scrollToBottom(300);
+    // Describe your logic which will be run each time when keyboard is about to be shown.
+});
+
   }
+
+
+  ionViewDidLoad(){
+
+    this.keyBoardShow();
+
+    this.mutationObserver = new MutationObserver((mutations) => {
+        console.log("mutation")
+        // this.contentArea.scrollToBottom();
+    });
+
+    this.mutationObserver.observe(this.chatList.nativeElement, {
+      childList: true
+  });
+
+}
+
+keyBoardShow(){
+
+}
 
   getCommentActionColor(){
     return this.color; 
@@ -83,14 +123,19 @@ makeSuggestion(suggestion){
 categoryselected(type){
   timer(500).subscribe(() => this.step = 5) // <-- hide animation after 3s
   timer(1500).subscribe(() => this.step = 6) // <-- hide animation after 3s
-  this.chatScroll.scrollToBottom();
   this.type = type;
 
   if(type == "stop"){
     this.prompt = "Great. What would you like your team to stop doing?";
+    // this.contentArea.scrollToBottom();
+    window.scrollTo(0,document.body.scrollHeight);
+
   }
   if(type == "keep"){
     this.prompt = "Great. What would you like your team to keep doing?";
+    // this.contentArea.scrollToBottom();
+    window.scrollTo(0,document.body.scrollHeight);
+
   }
   // this.contentAreaReference.scrollToBottom();
 
@@ -107,6 +152,13 @@ createIdea() {
 }
   
   inputFocus(){
+    // this.contentArea.scrollToBottom();
+    console.log("Ion-Focus")
+
+    // window.scrollTo(0,document.body.scrollHeight);
+    // this.contentArea.el.scrollToBottom();
+    // this.contentArea.ionScrollEnd();
+    this.content.scrollToBottom(300);
 
   }
 
@@ -115,6 +167,7 @@ createIdea() {
     timer(1500).subscribe(() => this.step = 2) // <-- hide animation after 3s
     timer(2000).subscribe(() => this.step = 3) // <-- hide animation after 3s
     timer(3000).subscribe(() => this.step = 4) // <-- hide animation after 3s
+    // this.contentArea.scrollToBottom();
 
   }
 

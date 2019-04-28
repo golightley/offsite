@@ -18,6 +18,7 @@ import {HttpClientModule} from '@angular/common/http';
 
 import { Firebase } from '@ionic-native/firebase/ngx';
 import { Vibration } from '@ionic-native/vibration/ngx';
+import { Keyboard } from '@ionic-native/keyboard/ngx';
 
 import * as firebase from 'firebase/app';
 import 'firebase/firestore';
@@ -48,6 +49,7 @@ firebase.initializeApp(config);
     StatusBar,
     Firebase,
     SplashScreen,
+    Keyboard,
     Vibration,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
   ],
