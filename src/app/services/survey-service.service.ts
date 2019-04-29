@@ -118,11 +118,11 @@ export class SurveyServiceService {
   }
 
   // pull questions for results tab
-  getResults(userID) {
+  getResults(userID,goal) {
     const questions = [];
     // pull each question from firebase
     return new Promise<any>((resolve, reject) => {
-      firebase.firestore().collection('questions').orderBy('lastUpdate', 'desc').get()
+      firebase.firestore().collection('questions').where("goal", "==",goal).orderBy('lastUpdate', 'desc').get()
 
       // firebase.firestore().collection('questions').where('users', 'array-contains', userID).orderBy('lastUpdate', 'desc').get()
         .then((questionData) => {

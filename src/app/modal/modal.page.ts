@@ -150,6 +150,10 @@ createIdea() {
   this.dismiss();
 
 }
+
+cancel() {
+  this.dismiss();
+}
   
   inputFocus(){
     // this.contentArea.scrollToBottom();

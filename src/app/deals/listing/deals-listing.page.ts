@@ -5,6 +5,7 @@ import { SurveyServiceService } from '../../services/survey-service.service';
 import * as firebase from 'firebase/app';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { attachEmbeddedView } from '@angular/core/src/view';
 
 require('firebase/auth');
 
@@ -20,7 +21,9 @@ require('firebase/auth');
 export class DealsListingPage implements OnInit {
   listing: DealsListingModel;
   results: QuestionModel[] = [];
-
+  message = "what";
+  page = "what"
+  unsubscribe:any;
 
   @HostBinding('class.is-shell') get isShell() {
     return this.listing && this.listing.isShell;
@@ -40,7 +43,7 @@ export class DealsListingPage implements OnInit {
       console.log('Route Resolve Observable => promiseObservable: ', promiseObservable);
       // Get results to show for each card
       // this.getResults();
-      this.attachResultListener();
+      this.attachResultListener("pulse");
 
       if (promiseObservable) {
         promiseObservable.subscribe(promiseValue => {
@@ -70,8 +73,8 @@ export class DealsListingPage implements OnInit {
     }
   }
 
-  getResults() {
-    this.surveyService.getResults(firebase.auth().currentUser.uid).then((resultsData: firebase.firestore.QueryDocumentSnapshot[]) => {
+  getResults(goal) {
+    this.surveyService.getResults(firebase.auth().currentUser.uid,goal).then((resultsData: firebase.firestore.QueryDocumentSnapshot[]) => {
       resultsData.forEach(data => {
         this.results.push(new QuestionModel(data.id, data.data()));
 
@@ -83,12 +86,19 @@ export class DealsListingPage implements OnInit {
   
   }
 
+  updateListner(goal){
+    
+    this.unsubscribe();
+    this.results = [];
+    this.attachResultListener(goal);
 
-  attachResultListener(){
+  }
+
+  attachResultListener(goal){
 
 
     const questions = [];
-    firebase.firestore().collection('questions').orderBy('lastUpdate', 'desc')
+    this.unsubscribe = firebase.firestore().collection('questions').where("goal", "==",goal).orderBy('lastUpdate', 'desc')
     .onSnapshot((snapshot) => {
       const changedDocs = snapshot.docChanges();
       changedDocs.forEach((change) => {

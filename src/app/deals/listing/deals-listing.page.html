@@ -7,8 +7,19 @@
   </ion-toolbar>
 </ion-header>
 
+
 <ion-content class="deals-listing-content">
-  <ion-card *ngFor="let question of results">
+
+    <ion-segment mode="md" color="success" [(ngModel)]="page">
+        <ion-segment-button (click) = "updateListner('pulse')" value="what" mode="md">
+            <ion-label>Team dashboard</ion-label>
+        </ion-segment-button>
+        <ion-segment-button (click) = "updateListner('feedback')" value="who" mode="md">
+            <ion-label>My dashboard</ion-label>
+        </ion-segment-button>
+    </ion-segment>
+    <div [ngSwitch]="page">
+  <ion-card  *ngFor="let question of results">
     <div class="question-content" (click)="viewComments(question)">
       <ion-row>
         <ion-col *ngIf= "question.goal == 'pulse'" text-start class="question-type">
@@ -28,12 +39,12 @@
       <ion-row *ngIf= "question.goal != 'feedback' || question.type != 'input'" align-items-center>
         <ion-col class="question-chat" (click)="viewComments(question)">
           <ion-row align-items-center>
-            <ion-col size="auto">
+            <!-- <ion-col size="auto">
               <ion-icon name="chatbubbles" mode="ios"></ion-icon>
             </ion-col>
             <ion-col>
               <span>{{question.commentsCount}}</span>
-            </ion-col>
+            </ion-col> -->
           </ion-row>
         </ion-col>
         <ion-col></ion-col>
@@ -51,4 +62,5 @@
     </div>
     <div *ngIf= "question.goal != 'feedback' || question.type != 'input'" class="question-marker" [ngStyle]="{'background-color': getMarkColorStyle(question)}"></div>
   </ion-card>
+  </div>
 </ion-content>

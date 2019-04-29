@@ -10,8 +10,8 @@
       <ion-grid #chatList>
         <ion-row>
           <ion-col>
-            <p>Cancel</p>
-          </ion-col>
+              <ion-button (click) = "cancel();" color="light">Cancel</ion-button>
+            </ion-col>
         </ion-row>
         <ion-row>
           <ion-col  *ngIf= "step == '1'" size="4">
@@ -28,7 +28,7 @@
           <ion-col *ngIf= "step >= '2'" size="11" >
             <div class="talk-bubble tri-right round border ">
               <div class="talktext">
-                <p>Hi. I'm your facilitator bot, here to help you structure your feedback for your team.</p>
+                <p>Hi. I'm your team facilitator, here to help you structure your feedback for your team.</p>
               </div>
             </div>
           </ion-col>
@@ -101,9 +101,7 @@
                           </ion-row>
                           <ion-row>
                             <ion-col *ngIf= "step >= '6'">
-                                <ion-chip (click)="createIdea();" color="success">
-                                    <ion-label>Send</ion-label>
-                                  </ion-chip>  
+                                <ion-button (click) = "cancel();" color="success">Send</ion-button>
                             </ion-col>
                           </ion-row>
                         </ion-grid>
@@ -111,23 +109,32 @@
               </ion-col>
           </ion-row>
         </ion-grid>
+
+        <ion-row *ngIf= "step >= '6'">
+          <ion-col>
+              <ion-list>
+                  <ion-list-header>
+                    <ion-label>Popular ideas to start</ion-label>
+                  </ion-list-header>
+                    <ion-row>
+                      <ion-col>
+                          <div scrollX="true" id="myFixZone">
+                              <ion-button  class ="suggest-button-start" [ngStyle]="{'color': getCommentActionColor()}" *ngFor="let suggestion of startSuggestions" class ="suggest-button-start" (click)="makeSuggestion(suggestion)">
+                                  {{suggestion.text}}
+                              </ion-button>
+                          </div>
+                      </ion-col>
+
+                    </ion-row> 
+              </ion-list>
+          </ion-col>
+
+        </ion-row>
         <ion-footer>
-            <ion-row *ngIf= "step >= '6'">
-                <ion-list>
-                    <ion-list-header>
-                      <ion-label>Popular ideas to start</ion-label>
-                    </ion-list-header>
-                      <ion-row>
-                        <div scrollX="true" id="myFixZone">
-                            <ion-button  class ="suggest-button-start" [ngStyle]="{'color': getCommentActionColor()}" *ngFor="let suggestion of startSuggestions" class ="suggest-button-start" (click)="makeSuggestion(suggestion)">
-                                {{suggestion.text}}
-                            </ion-button>
-                        </div>
-                      </ion-row> 
-                      </ion-list>
-            </ion-row>
+
         </ion-footer>
 
+        
 
 
   </ion-content> 
