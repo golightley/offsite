@@ -1,4 +1,4 @@
-import { Component, OnInit, HostBinding } from '@angular/core';
+import { Component, OnInit, HostBinding, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import {DealsListingModel, QuestionModel} from './deals-listing.model';
 import { SurveyServiceService } from '../../services/survey-service.service';
@@ -6,7 +6,7 @@ import * as firebase from 'firebase/app';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { attachEmbeddedView } from '@angular/core/src/view';
-
+import { Chart } from 'chart.js';
 require('firebase/auth');
 
 @Component({
@@ -24,7 +24,9 @@ export class DealsListingPage implements OnInit {
   message = "what";
   page = "what"
   unsubscribe:any;
-
+  @ViewChild('valueBarsCanvas') valueBarsCanvas;
+  valueBarsChart:any;
+  chartData = null;
   @HostBinding('class.is-shell') get isShell() {
     return this.listing && this.listing.isShell;
   }
@@ -44,7 +46,6 @@ export class DealsListingPage implements OnInit {
       // Get results to show for each card
       // this.getResults();
       this.attachResultListener("pulse");
-
       if (promiseObservable) {
         promiseObservable.subscribe(promiseValue => {
           const dataObservable = promiseValue['data'];
@@ -91,11 +92,12 @@ export class DealsListingPage implements OnInit {
     this.unsubscribe();
     this.results = [];
     this.attachResultListener(goal);
+    this.createChart("1")
+
 
   }
 
   attachResultListener(goal){
-
 
     const questions = [];
     this.unsubscribe = firebase.firestore().collection('questions').where("goal", "==",goal).orderBy('lastUpdate', 'desc')
@@ -144,6 +146,38 @@ export class DealsListingPage implements OnInit {
       return '#ff1a72';
     }
     // return 2.5 < question.avgScore ? '#20dc6a' : '#ff1a72';
+  }
+
+  ionViewDidLoad(){
+    //download the data here
+    this.createChart("1")
+  }
+  createChart(dataa){
+
+    var data: [{
+      x: 10,
+      y: 20
+     }, {
+      x: 15,
+      y: 10
+    }]
+
+    this.valueBarsChart = new Chart(this.valueBarsCanvas.nativeElement,{
+    type: 'line',
+    data: data,
+    options: {
+        scales: {
+            yAxes: [{
+                stacked: true
+            }]
+        }
+    }
+
+    });
+
+  }
+  updateChart(data){
+
   }
 
   viewComments(result) {

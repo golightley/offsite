@@ -44,6 +44,7 @@
     "@ionic/ng-toolkit": "1.0.1",
     "@ionic/schematics-angular": "1.0.2",
     "angular-pipes": "^9.0.2",
+    "chart.js": "^2.8.0",
     "cordova-android": "8.0.0",
     "cordova-ios": "5.0.1",
     "cordova-plugin-device": "^2.0.2",

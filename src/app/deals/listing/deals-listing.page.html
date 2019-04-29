@@ -39,8 +39,12 @@
       <ion-row *ngIf= "question.goal != 'feedback' || question.type != 'input'" align-items-center>
         <ion-col class="question-chat" (click)="viewComments(question)">
           <ion-row align-items-center>
+            <ion-col size="auto">
+              <ion-icon name="trending-up" mode="ios"></ion-icon>
+            </ion-col>
+            <!-- <canvas #valueBarsCanvas></canvas> -->
             <!-- <ion-col size="auto">
-              <ion-icon name="chatbubbles" mode="ios"></ion-icon>
+              <ion-icon name="trending-up" mode="ios"></ion-icon>
             </ion-col>
             <ion-col>
               <span>{{question.commentsCount}}</span>
