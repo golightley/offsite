@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import {ChartsModule} from 'ng2-charts';
 
 import { UserFriendsPage } from './user-friends.page';
 import { UserService } from '../user.service';
@@ -26,6 +27,7 @@ const routes: Routes = [
     CommonModule,
     FormsModule,
     ComponentsModule,
+    ChartsModule,
     RouterModule.forChild(routes),
   ],
   declarations: [UserFriendsPage,ModalPage],

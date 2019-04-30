@@ -24,6 +24,20 @@ export class UserFriendsPage {
   message = '';
   messageType = 'keep';
 
+  public doughnutChartLabels:string[] = ["Me","Myself","Irene"];
+  public doughnutChartData:number[]    = [1200,1500,2000];
+  public doughnutChartType:string     = "doughnut"
+
+  public lineChartLabels:string[] = ['January', 'February', 'Mars', 'April'];
+
+  public lineChartType:string     = "line"
+  
+  public lineChartData   = [
+    // { data: [330, 600, 260, 700], label: 'Account A' },
+    // { data: [120, 455, 100, 340], label: 'Account B' },
+    { data: [4.5, 4.4, 4.0, 3.8], label: 'Macys team' }
+  ];
+
   @HostBinding('class.is-shell') get isShell() {
     return this.data && this.data.isShell;
   }
@@ -32,8 +46,13 @@ export class UserFriendsPage {
     private route: ActivatedRoute,
     public surveyService: SurveyServiceService,
     private http: HttpClient,
-    public modalController: ModalController
+    public modalController: ModalController,
+    
+
     ) {
+
+    // charts.js
+
     this.updateComment();
   }
 

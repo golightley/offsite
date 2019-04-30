@@ -60,6 +60,7 @@
     "firebase": "^5.8.5",
     "google-libphonenumber": "^3.2.1",
     "ionic": "^4.10.3",
+    "ng2-charts": "^2.2.2",
     "node-sass": "^4.11.0",
     "rxjs": "~6.3.3",
     "rxjs-compat": "^6.5.1",

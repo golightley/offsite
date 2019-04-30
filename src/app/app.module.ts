@@ -19,7 +19,7 @@ import {HttpClientModule} from '@angular/common/http';
 import { Firebase } from '@ionic-native/firebase/ngx';
 import { Vibration } from '@ionic-native/vibration/ngx';
 import { Keyboard } from '@ionic-native/keyboard/ngx';
-
+import {ChartsModule} from 'ng2-charts';
 import * as firebase from 'firebase/app';
 import 'firebase/firestore';
 
@@ -43,6 +43,7 @@ firebase.initializeApp(config);
     AppRoutingModule,
     ComponentsModule,
     HttpClientModule,
+    ChartsModule,
     ServiceWorkerModule.register('/ngsw-worker.js', { enabled: environment.production })
   ],
   providers: [

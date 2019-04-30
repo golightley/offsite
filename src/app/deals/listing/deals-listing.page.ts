@@ -150,30 +150,30 @@ export class DealsListingPage implements OnInit {
 
   ionViewDidLoad(){
     //download the data here
-    this.createChart("1")
+    // this.createChart("1")
   }
   createChart(dataa){
 
-    var data: [{
-      x: 10,
-      y: 20
-     }, {
-      x: 15,
-      y: 10
-    }]
+    // var data: [{
+    //   x: 10,
+    //   y: 20
+    //  }, {
+    //   x: 15,
+    //   y: 10
+    // }]
 
-    this.valueBarsChart = new Chart(this.valueBarsCanvas.nativeElement,{
-    type: 'line',
-    data: data,
-    options: {
-        scales: {
-            yAxes: [{
-                stacked: true
-            }]
-        }
-    }
+    // this.valueBarsChart = new Chart(this.valueBarsCanvas.nativeElement,{
+    // type: 'line',
+    // data: data,
+    // options: {
+    //     scales: {
+    //         yAxes: [{
+    //             stacked: true
+    //         }]
+    //     }
+    // }
 
-    });
+    // });
 
   }
   updateChart(data){
