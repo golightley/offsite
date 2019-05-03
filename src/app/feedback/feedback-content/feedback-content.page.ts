@@ -15,6 +15,7 @@ export class FeedbackContentPage {
   page = 'what';
   categories: FeedbackCategoryModel[] = [];
   teammates: TeammatesModel[] = [];
+  toggle:string;
 
   constructor(private surveyService: SurveyServiceService,
               private router: Router) {
@@ -64,4 +65,11 @@ export class FeedbackContentPage {
     this.surveyService.createSurvey(this.teammates, this.categories);
     this.router.navigateByUrl('app/feedback/feedback-request');
   }
+
+  segmentChanged(ev: any) {
+    console.log('Segment changed', ev);
+    this.toggle = ev.detail.value;
+    console.log("Value is "+this.toggle);
+  }
+
 }
