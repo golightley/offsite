@@ -20,15 +20,15 @@
         <ion-card *ngSwitchCase="'what'" padding>
             <div class="title">What would you like to ask feedback on?</div>
             <!-- Default Segment -->
-            <ion-segment (ionChange)="segmentChanged($event)" color="green">
+            <ion-segment (ionChange)="segmentChanged($event)" color="success">
                     <ion-segment-button value="category">
                     <ion-label>A category</ion-label>
                     </ion-segment-button>
                     <ion-segment-button value="event">
                     <ion-label>A specific event</ion-label>
                     </ion-segment-button>
-                </ion-segment>
-            <div class="instruction">You may choose multiple options</div>
+            </ion-segment>
+            <!-- <div class="instruction">You may choose multiple options</div> -->
             <ion-list *ngIf="toggle == 'category'" lines="none">
                 <ion-item *ngFor="let category of categories">
                     <ion-checkbox mode="md" [(ngModel)]="category.checked" color="success"></ion-checkbox>
@@ -38,8 +38,16 @@
             </ion-list>
             <div  *ngIf="toggle == 'event'">
                     <ion-item>
-                             <ion-textarea class = "textArea" placeholder="Write you own topic" [(ngModel)]="message" (keyup.enter)="createIdea();"></ion-textarea>
+                             <ion-textarea #inputToFocus autofocus="true" class = "textArea" placeholder="Type a specific event or topic" [(ngModel)]="message" (keyup.enter)="createIdea();"></ion-textarea>
                     </ion-item>
+                    <ion-list-header>
+                            <ion-label></ion-label>
+                    </ion-list-header>
+                    <div scrollX="true" id="myFixZone">
+                            <ion-button  class ="suggest-button-start" *ngFor="let suggestion of startSuggestions" class ="suggest-button-start" (click)="makeSuggestion(suggestion)">
+                                {{suggestion.text}}
+                            </ion-button>
+                    </div>
             </div>
         </ion-card>
         <ion-card *ngSwitchCase="'who'" padding>
@@ -56,5 +64,6 @@
     </div>
 </ion-content>
 <ion-footer>
-    <ion-button class="button-submit" type="submit" expand="block" [disabled]="checkSubmitStatus()" (click)="submitFeedback()">Submit</ion-button>
+    <ion-button *ngIf="page == 'what'" class="button-submit" type="submit" expand="block" (click)="goToWho()">Next</ion-button>
+    <ion-button *ngIf="page == 'who'"  class="button-submit" type="submit" expand="block" [disabled]="checkSubmitStatus()" (click)="submitFeedback()">Submit</ion-button>
 </ion-footer>

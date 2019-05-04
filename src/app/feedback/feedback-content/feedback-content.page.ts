@@ -1,8 +1,9 @@
-import {Component} from '@angular/core';
+import {Component,ViewChild} from '@angular/core';
 import {Router} from '@angular/router';
 import {SurveyServiceService} from '../../services/survey-service.service';
 import {FeedbackCategoryModel, TeammatesModel} from './feedback-content.model';
 import * as firebase from 'firebase/app';
+import { MessageChannel } from 'worker_threads';
 
 require('firebase/auth');
 
@@ -15,7 +16,17 @@ export class FeedbackContentPage {
   page = 'what';
   categories: FeedbackCategoryModel[] = [];
   teammates: TeammatesModel[] = [];
+  message = "";
+
   toggle:string;
+  startSuggestions = [
+    {text:'How did the presentation go?'},
+    {text:'How did I lead that meeting?'},
+  ];
+
+  @ViewChild('inputToFocus') inputToFocus;
+
+
 
   constructor(private surveyService: SurveyServiceService,
               private router: Router) {
@@ -49,11 +60,17 @@ export class FeedbackContentPage {
     });
   }
 
+  // checkSubmitStatus() {
+  //   return 0 === this.categories.filter(category => {
+  //            return category.checked;
+  //          }).length
+  //          || 0 === this.teammates.filter(teammate => {
+  //            return teammate.checked;
+  //          }).length;
+  // }
+
   checkSubmitStatus() {
-    return 0 === this.categories.filter(category => {
-             return category.checked;
-           }).length
-           || 0 === this.teammates.filter(teammate => {
+    return 0 === this.teammates.filter(teammate => {
              return teammate.checked;
            }).length;
   }
@@ -62,14 +79,30 @@ export class FeedbackContentPage {
     console.log("Submitted...")
     console.log(this.categories)
     console.log(this.teammates)
-    this.surveyService.createSurvey(this.teammates, this.categories);
+    this.surveyService.createSurvey(this.teammates, this.categories,this.message,this.toggle);
     this.router.navigateByUrl('app/feedback/feedback-request');
+  }
+
+  makeSuggestion(suggestion){
+    console.log("Make suggestion")
+    console.log(suggestion)
+    this.message = suggestion.text;
+    this.inputToFocus.setFocus();
   }
 
   segmentChanged(ev: any) {
     console.log('Segment changed', ev);
     this.toggle = ev.detail.value;
     console.log("Value is "+this.toggle);
+  }
+
+  goToWho(){
+    this.page = 'who';
+
+  }
+
+  getCommentActionColor(){
+    return "grey";
   }
 
 }

@@ -261,17 +261,46 @@ export class SurveyServiceService {
 
 
 
-    createSurvey(teamMates, categories) {
+    createSurvey(teamMates, categories,inputText,toggle) {
 
       var that = this;
       this.categories = categories;
 
-      this.categories.forEach(category =>{
+      // people can either ask about a general cateogry 
+      if(toggle == "category"){
+        this.categories.forEach(category =>{
+          return new Promise<any>((resolve, reject) => {
+            // Add a new document with a generated id.
+            firebase.firestore().collection('surveys').add({
+              active:true,
+              category: category.name,
+              type: "feedback",
+              month:"May",
+              from: firebase.auth().currentUser.uid,
+              timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            }).then(function(docRef) {
+              console.log(' Survey written with ID: ', docRef.id);
+      
+              // create the corresponding notitifcations
+              that.createFeedbackNotifications(teamMates,docRef.id,category,toggle)
+      
+      
+              resolve(docRef.id);
+            }).catch(function(error) {
+              console.error('Error creating sruvey document: ', error);
+              reject(error)
+            });
+          });
+        });
+      }
+      // or a specific event
+      else{
+
         return new Promise<any>((resolve, reject) => {
           // Add a new document with a generated id.
           firebase.firestore().collection('surveys').add({
             active:true,
-            category: category.name,
+            category: inputText,
             type: "feedback",
             month:"May",
             from: firebase.auth().currentUser.uid,
@@ -280,7 +309,7 @@ export class SurveyServiceService {
             console.log(' Survey written with ID: ', docRef.id);
     
             // create the corresponding notitifcations
-            that.createFeedbackNotifications(teamMates,docRef.id,category)
+            that.createFeedbackNotifications(teamMates,docRef.id,inputText,toggle)
     
     
             resolve(docRef.id);
@@ -289,9 +318,50 @@ export class SurveyServiceService {
             reject(error)
           });
         });
-      });
+
+
+
+      }
+
+
 
     }
+    createFeedbackQuestion(surveyId: string, user: string,categoryName:string,name:string) {
+
+      // look up the teamplate 
+      let that = this;
+                firebase.firestore().collection('questions').add({
+                  active:true,
+                  Question: "What is one thing that "+name + " did well?",
+                  type: 'input',
+                  users:[user],
+                  goal:"feedback",
+                  surveys:[surveyId],
+                  from: firebase.auth().currentUser.uid,
+                  timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                }).then(function(docRef) {
+                  console.log('Survey question written with ID: ', docRef.id);
+                }).catch(function(error) {
+                  console.error('Error adding document: ', error);
+                });
+
+
+                firebase.firestore().collection('questions').add({
+                  active:true,
+                  Question: "What is one thing that "+name + " could have done better?",
+                  type: 'input',
+                  users:[user],
+                  goal:"feedback",
+                  surveys:[surveyId],
+                  from: firebase.auth().currentUser.uid,
+                  timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                }).then(function(docRef) {
+                  console.log('Survey question written with ID: ', docRef.id);
+                }).catch(function(error) {
+                  console.error('Error adding document: ', error);
+                });
+      }
+
 
     createSurveyQuestions(surveyId: string, user: string,categoryName:string,name:string) {
 
@@ -561,7 +631,7 @@ export class SurveyServiceService {
     });
     }
 
-    createFeedbackNotifications(teamMates,surveyId,category){
+    createFeedbackNotifications(teamMates,surveyId,category,toggle){
       console.log("in create feedback notificatino")
       console.log(teamMates)
       this.team       = teamMates;
@@ -576,10 +646,14 @@ export class SurveyServiceService {
             console.log(member)
             console.log(category)
             if(member.checked){
-              if(category.checked){
+              if(category.checked || toggle =='event'){
                 //create survey 
                 this.createNotification(surveyId,member.uid,"feedback",member.name,category.name)
-                this.createSurveyQuestions(surveyId,member.uid,category.name,member.name);
+                if(toggle == 'category'){
+                  this.createSurveyQuestions(surveyId,member.uid,category.name,member.name);
+                }else{
+                  this.createFeedbackQuestion(surveyId,member.uid,category.name,member.name);
+                }
               }
 
             }
