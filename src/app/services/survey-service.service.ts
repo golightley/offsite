@@ -265,6 +265,7 @@ export class SurveyServiceService {
 
       var that = this;
       this.categories = categories;
+      console.log("Input text ==>"+inputText);
 
       // people can either ask about a general cateogry 
       if(toggle == "category"){
@@ -310,11 +311,11 @@ export class SurveyServiceService {
     
             // create the corresponding notitifcations
             that.createFeedbackNotifications(teamMates,docRef.id,inputText,toggle)
-    
+            console.log("Created survey");
     
             resolve(docRef.id);
           }).catch(function(error) {
-            console.error('Error creating sruvey document: ', error);
+            console.error('Error creating survey document: ', error);
             reject(error)
           });
         });
@@ -326,7 +327,14 @@ export class SurveyServiceService {
 
 
     }
+
     createFeedbackQuestion(surveyId: string, user: string,categoryName:string,name:string) {
+
+      console.log("Id: "+surveyId );
+      console.log("User: "+user );
+      console.log("Name: "+name );
+      console.log("categoryName: "+categoryName );
+
 
       // look up the teamplate 
       let that = this;
@@ -438,7 +446,8 @@ export class SurveyServiceService {
         category: category,
         name: name,
         survey:surveyId,
-        user:"AKfOgVZrSTYsYN01JA0NUTicf703",
+        // user:"AKfOgVZrSTYsYN01JA0NUTicf703",
+        user:user,
         type: type,
         month:"May",
         from: firebase.auth().currentUser.uid,
@@ -648,11 +657,14 @@ export class SurveyServiceService {
             if(member.checked){
               if(category.checked || toggle =='event'){
                 //create survey 
-                this.createNotification(surveyId,member.uid,"feedback",member.name,category.name)
                 if(toggle == 'category'){
                   this.createSurveyQuestions(surveyId,member.uid,category.name,member.name);
+                  this.createNotification(surveyId,member.uid,"feedback",member.name,category.name)
+
                 }else{
-                  this.createFeedbackQuestion(surveyId,member.uid,category.name,member.name);
+                  this.createFeedbackQuestion(surveyId,member.uid,category,member.name);
+                  this.createNotification(surveyId,member.uid,"feedback",member.name,category)
+
                 }
               }
 
