@@ -22,6 +22,7 @@ import { Keyboard } from '@ionic-native/keyboard/ngx';
 import {ChartsModule} from 'ng2-charts';
 import * as firebase from 'firebase/app';
 import 'firebase/firestore';
+import { PopoverComponentComponent } from './popover-component/popover-component.component';
 
 const config = {
   apiKey: 'AIzaSyD7_p-5IpsI1LY76bz8zvteCi00KvoMP18',
@@ -35,8 +36,8 @@ const config = {
 firebase.initializeApp(config);
 
 @NgModule({
-  declarations: [AppComponent],
-  entryComponents: [],
+  declarations: [AppComponent, PopoverComponentComponent],
+  entryComponents: [PopoverComponentComponent],
   imports: [
     BrowserModule,
     IonicModule.forRoot(),

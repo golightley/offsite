@@ -9,11 +9,6 @@
       <div class="title">Feedback Assistant Bot</div> -->
       <ion-grid #chatList>
         <ion-row>
-          <ion-col>
-              <ion-button (click) = "cancel();" color="light">Cancel</ion-button>
-            </ion-col>
-        </ion-row>
-        <ion-row>
           <ion-col  *ngIf= "step == '1'" size="4">
             <!-- <div class="talk-bubble round border "> -->
               <div class="spinner">
@@ -101,7 +96,7 @@
                           </ion-row>
                           <ion-row>
                             <ion-col *ngIf= "step >= '6'">
-                                <ion-button (click) = "cancel();" color="success">Send</ion-button>
+                                <ion-button (click) = "createIdea();" color="success">Send</ion-button>
                             </ion-col>
                           </ion-row>
                         </ion-grid>
@@ -129,8 +124,13 @@
           </ion-col>
 
         </ion-row>
-        <ion-footer>
 
+        <ion-footer>
+            <ion-row *ngIf= "step >= '6'">
+                <ion-col>
+                    <ion-button (click) = "cancel();" fill="clear">Cancel</ion-button>
+                  </ion-col>
+              </ion-row>
         </ion-footer>
 
         

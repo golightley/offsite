@@ -5,7 +5,7 @@ import { Routes, RouterModule } from '@angular/router';
 import { ComponentsModule } from '../components/components.module';
 import { ModalPage } from '../modal/modal.page';
 import { IonicModule } from '@ionic/angular';
-
+import { PopoverController } from '@ionic/angular';
 import { IdeasPage } from './ideas.page';
 
 const routes: Routes = [

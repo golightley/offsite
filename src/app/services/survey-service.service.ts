@@ -585,6 +585,7 @@ export class SurveyServiceService {
         name: 'Anonymous',
         type: type,
         action: type,
+        reported:false,
         user: firebase.auth().currentUser.uid,
         timestamp: firebase.firestore.FieldValue.serverTimestamp()
       }).then(function(docRef) {
@@ -593,6 +594,25 @@ export class SurveyServiceService {
         console.error('Error adding document: ', error);
       });
     }   
+
+    reportIdea(id: string) {
+
+      var ref = firebase.firestore().collection("ideas").doc(id);
+      // Set the "capital" field of the city 'DC'
+      return ref.update({
+        reported: true
+      })
+      .then(function() {
+          console.log("Document successfully updated!");
+      })
+      .catch(function(error) {
+          // The document probably doesn't exist.
+          console.error("Error updating document: ", error);
+      });
+    }
+
+    
+    
     
     
  

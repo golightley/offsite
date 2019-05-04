@@ -6,6 +6,8 @@ import {SurveyServiceService} from '../services/survey-service.service';
 import {HttpClient} from '@angular/common/http';
 import { ModalPage } from '../modal/modal.page';
 import { ModalController } from '@ionic/angular';
+import { PopoverComponentComponent } from '../popover-component/popover-component.component';
+import { PopoverController } from '@ionic/angular';
 
 
 @Component({
@@ -18,7 +20,7 @@ export class IdeasPage implements OnInit {
   message = ""
   startSuggestions = [];
   stopSuggestions  = [];
-
+  currentIdea;
   color = "green";
   ideas: IdeaModel[] = [];
   type = ""
@@ -28,12 +30,32 @@ export class IdeasPage implements OnInit {
     public surveyService: SurveyServiceService,
     private http: HttpClient,
     public modalController: ModalController,
+    public popoverController: PopoverController,
 
     ) {this.loadSuggestions("start"), this.loadIdeas("start") }
 
   ngOnInit() {
     // this.loadIdeas("start");
   }
+
+  async setPopover(ev:Event, idea){
+    this.currentIdea = idea;
+    console.log("Idea...")
+    console.log(idea);
+
+    const popover = await this.popoverController.create({
+      component: PopoverComponentComponent,
+      event: ev,
+      componentProps:{
+        idea:idea.uid
+      },
+      animated: true,
+      showBackdrop: true
+    });
+    popover.present();
+    
+  }
+    
 
   loadSuggestions(type){
       this.startSuggestions = [];
@@ -59,6 +81,7 @@ export class IdeasPage implements OnInit {
     this.ideas = [];
     const query = firebase.firestore().collection('ideas')
       .where('team', '==', "E4ZWxJbFoDE29ywISRQY")
+      .where('reported', '==', false)
       // .where("type", "==", type)
       query.onSnapshot((snapshot) => {
       console.log("ideas...")

@@ -143,6 +143,8 @@ categoryselected(type){
 
 
 createIdea() {
+  
+  console.log("Creater idea...")
   // create the comment
   this.surveyService.createIdea("E4ZWxJbFoDE29ywISRQY", this.message,this.type,this.type);
   // reset the message

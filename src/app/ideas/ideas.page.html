@@ -23,10 +23,21 @@
                           </ion-badge>
                       </ion-col>
                   </ion-row>
-                  <div class="comment-text">{{idea.text}}</div>
+                  <ion-row>
+                    <div class="comment-text">{{idea.text}}</div>
+
+                  </ion-row>
+    
               </div>
           </ion-col>
           <ion-col size="auto">
+                    <ion-row>
+                            <ion-button fill="clear" (click)="setPopover($event,idea)">
+                                    <ion-icon slot="icon-only" name="more" mode="ios"></ion-icon>
+                            </ion-button>
+                      </ion-row>
+            <ion-row>
+                <ion-col>
               <ion-button fill="clear" (click)="increaseScore(idea)">
                   <ion-icon slot="icon-only" name="arrow-up" mode="ios"></ion-icon>
               </ion-button>
@@ -34,6 +45,8 @@
               <ion-button fill="clear" [disabled]="0 == idea.score" (click)="decreaseScore(idea)">
                   <ion-icon slot="icon-only" name="arrow-down" mode="ios"></ion-icon>
               </ion-button>
+            </ion-col>
+            </ion-row>
           </ion-col>
       </ion-row>
   </ion-card>
