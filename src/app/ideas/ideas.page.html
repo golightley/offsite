@@ -12,30 +12,42 @@
               <div class="action-mark" [ngStyle]="{'background-color': getCardActionColor(idea.type)}"></div>
           </ion-col>
           <ion-col>
-              <div class="comment-content">
-                  <ion-row align-items-center>
-                      <ion-col size="auto">
-                          <div class="comment-name">Anonymous</div>
-                      </ion-col>
-                      <ion-col >
-                          <ion-badge  class="comment-action" [ngStyle]="{'background-color': getCardActionColor(idea.type)}">
-                              {{idea.type}}
-                          </ion-badge>
-                      </ion-col>
-                  </ion-row>
-                  <ion-row>
-                    <div class="comment-text">{{idea.text}}</div>
+              <ion-row>
+                  <ion-col>
+                        <div class="comment-content">
+                                <ion-row align-items-center>
+                                    <ion-col size="auto">
+                                        <div class="comment-name">Anonymous</div>
+                                    </ion-col>
+                                    <ion-col >
+                                        <ion-badge  class="comment-action" [ngStyle]="{'background-color': getCardActionColor(idea.type)}">
+                                            {{idea.type}}
+                                        </ion-badge>
+                                    </ion-col>
+                                </ion-row>
+                                <ion-row>
+                                  <div class="comment-text">{{idea.text}}</div>
+                                </ion-row>
+                            </div>
+                  </ion-col>
+              </ion-row>
+              <ion-row>
+                  <ion-col>
+                      <ion-row>
+                            <ion-button fill="clear" (click)="setPopover($event,idea)">
+                                    <ion-icon color="medium" slot="icon-only" name="flag"></ion-icon>
+                               </ion-button>   
+                      </ion-row>
+                  </ion-col>
+              </ion-row>
 
-                  </ion-row>
-    
-              </div>
           </ion-col>
           <ion-col size="auto">
-                    <ion-row>
+                    <!-- <ion-row>
                             <ion-button fill="clear" (click)="setPopover($event,idea)">
                                     <ion-icon slot="icon-only" name="more" mode="ios"></ion-icon>
                             </ion-button>
-                      </ion-row>
+                      </ion-row> -->
             <ion-row>
                 <ion-col>
               <ion-button fill="clear" (click)="increaseScore(idea)">
@@ -49,6 +61,7 @@
             </ion-row>
           </ion-col>
       </ion-row>
+
   </ion-card>
 </ion-content>
 

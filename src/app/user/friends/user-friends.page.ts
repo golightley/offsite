@@ -1,4 +1,4 @@
-import {Component, HostBinding} from '@angular/core';
+import {Component, HostBinding, OnInit} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {SurveyServiceService} from '../../services/survey-service.service';
 import {CommentActionType, CommentModel, UserFriendsModel} from './user-friends.model';
@@ -16,7 +16,7 @@ import { ModalPage } from '../../modal/modal.page';
     './styles/user-friends.md.scss'
   ]
 })
-export class UserFriendsPage {
+export class UserFriendsPage implements OnInit {
   data: UserFriendsModel;
 
   comments: CommentModel[] = [];
@@ -24,8 +24,8 @@ export class UserFriendsPage {
   message = '';
   messageType = 'keep';
 
-  public doughnutChartLabels:string[] = ["Me","Myself","Irene"];
-  public doughnutChartData:number[]    = [1200,1500,2000];
+  public doughnutChartLabels:string[] = ["Stronly Disagree","Disagree","Agree","Strongly Agree"];
+  public doughnutChartData:number[]    = [1,1,1,1];
   public doughnutChartType:string     = "doughnut"
 
   public lineChartLabels:string[] = ['January', 'February', 'Mars', 'April'];
@@ -56,6 +56,14 @@ export class UserFriendsPage {
     this.updateComment();
   }
 
+  ngOnInit(): void {
+    this.doughnutChartData = [1,1,1,1] 
+    this.surveyService.getQuestionData(this.surveyService.myParam.id).then(data => {
+      this.doughnutChartData = data.piechart;
+    })
+
+    // this.getData(this.doughnutChartData)
+  }
   async inputFocus(){
     console.log("Ion focus...")
     const modal = await this.modalController.create({
@@ -69,7 +77,36 @@ export class UserFriendsPage {
     await modal.present();
   } 
 
+  getData(doughnutChartData){
+    // get pie chart data from survey service
+    // this.surveyService.getQuestionData(this.surveyService.myParam.id);
+    // save array data 
+
+      const questions = [];
   
+      var docRef = firebase.firestore().collection("questions").doc(this.surveyService.myParam.id);
+
+      docRef.get().then(function(doc) {
+        if (doc.exists) {
+            console.log("Document data:", doc.data());
+            console.log(doc.data().piechart)
+            setTimeout(() => {
+                  // this.chart.chart.config.data.datasets = this.datasets_lines;
+                  // this.chart.chart.update();
+                  doughnutChartData = doc.data().piechart;
+                  // doughnutChartData.chart.update();
+              
+          });
+        } else {
+            // doc.data() will be undefined in this case
+            console.log("No such document!");
+        }
+      }).catch(function(error) {
+          console.log("Error getting document:", error);
+      });
+
+    
+  }
 
   updateComment() {
 

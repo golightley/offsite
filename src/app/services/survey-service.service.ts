@@ -101,6 +101,23 @@ export class SurveyServiceService {
     return aryMembers;
   }
 
+    // pull questions
+    getQuestionData(surveyId: string) {
+      const doughnutChartData:number[] = [];
+      const questions = [];
+  
+      return new Promise<any>((resolve, reject) => {
+        var docRef = firebase.firestore().collection("questions").doc(surveyId);
+        docRef.get().then(function(doc) {
+        resolve(doc.data());
+      }).catch(function(error) {
+          console.log("Error getting document:", error);
+          reject(error);
+      });
+    });
+
+  }
+
   // pull questions
   getQuestions(surveyId: string) {
     const questions = [];

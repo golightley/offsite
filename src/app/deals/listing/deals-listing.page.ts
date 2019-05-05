@@ -125,22 +125,11 @@ export class DealsListingPage implements OnInit {
   getMarkColorStyle(question: QuestionModel) {
 
     let score = question.avgScore;
-    if(score >= 4.5){
+    if(score >= 4){
       return '#20dc6a';
-    }else if(score >= 4 && score <4.5){
-      return '#41e07f';
-
-    }else if(score >= 3.5 && score <4.0){
-      return '#b9e07f';
     }
-    else if(score >= 3.0 && score <3.5){
-      return '#dce07f';
-    }
-    else if(score >= 2.5 && score <3.0){
+    else if(score >= 2.5 && score <4.0){
       return '#e0a27f';
-    }
-    else if(score >= 2.0 && score <2.5){
-      return '#e0927f';
     }
     else {
       return '#ff1a72';
