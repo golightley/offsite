@@ -125,11 +125,14 @@ export class DealsListingPage implements OnInit {
   getMarkColorStyle(question: QuestionModel) {
 
     let score = question.avgScore;
-    if(score >= 4){
+    if(score >= 3.5){
       return '#20dc6a';
     }
-    else if(score >= 2.5 && score <4.0){
-      return '#e0a27f';
+    else if(score >= 3.0 && score <3.5){
+      return '#7de8a7';
+    }
+    else if(score >=2 && score <3.0){
+      return '#ff84b3';
     }
     else {
       return '#ff1a72';
@@ -180,7 +183,8 @@ export class DealsListingPage implements OnInit {
 
     }
 
-    this.router.navigateByUrl('/app/categories/friends');
+    // this.router.navigateByUrl('/app/categories/friends');
+    this.router.navigate(['/app/categories/friends', { question: result.question }]);
   }
   // like(result) {
   //   console.log('Like function fired...');

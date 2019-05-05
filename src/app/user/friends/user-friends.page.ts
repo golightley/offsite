@@ -23,19 +23,25 @@ export class UserFriendsPage implements OnInit {
   showBottom:boolean = true;
   message = '';
   messageType = 'keep';
+  question = '';
 
   public doughnutChartLabels:string[] = ["Stronly Disagree","Disagree","Agree","Strongly Agree"];
   public doughnutChartData:number[]    = [1,1,1,1];
   public doughnutChartType:string     = "doughnut"
+  public lineChartLabels:string[] = [];
 
-  public lineChartLabels:string[] = ['January', 'February', 'Mars', 'April'];
+  // public lineChartLabels:string[] = ['January', 'February', 'Mars', 'April'];
 
   public lineChartType:string     = "line"
-  
+  public doughnutColors:any[] = [
+    { backgroundColor: ["#ff1a72","#ff84b3", "#7de8a7","#20dc6a"] },
+    { borderColor: ["#AEEBF2", "#FEFFC9"]     }
+    ];
+    
   public lineChartData   = [
     // { data: [330, 600, 260, 700], label: 'Account A' },
     // { data: [120, 455, 100, 340], label: 'Account B' },
-    { data: [4.5, 4.4, 4.0, 3.8], label: 'Macys team' }
+    { data: [4.5, 4.4, 4.0, 3.8], label: 'Your team' }
   ];
 
   @HostBinding('class.is-shell') get isShell() {
@@ -60,7 +66,9 @@ export class UserFriendsPage implements OnInit {
     this.doughnutChartData = [1,1,1,1] 
     this.surveyService.getQuestionData(this.surveyService.myParam.id).then(data => {
       this.doughnutChartData = data.piechart;
+      this.lineChartData[0].data = data.linechart;
     })
+    this.question = this.route.snapshot.paramMap.get('question');
 
     // this.getData(this.doughnutChartData)
   }
@@ -94,6 +102,7 @@ export class UserFriendsPage implements OnInit {
                   // this.chart.chart.config.data.datasets = this.datasets_lines;
                   // this.chart.chart.update();
                   doughnutChartData = doc.data().piechart;
+                  
                   // doughnutChartData.chart.update();
               
           });

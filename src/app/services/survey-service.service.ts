@@ -520,6 +520,25 @@ export class SurveyServiceService {
             let newTotal  = parseInt(response[1], 10) + oldTotal;
             let newNumRes = doc.data().numresponses +1;
             let newAvg    = newTotal / newNumRes;
+            let newResp   = parseInt(response[1], 10);
+            let pieChart  = doc.data().piechart;
+            let lineChart = doc.data().linechart;
+
+            // if the pie chart isn't set
+            if(pieChart == undefined){
+              pieChart = [0,0,0,0]
+            }
+            // update the pie chart 
+            if (newResp ==1){pieChart[0] = pieChart[0]+1}
+            else if(newResp ==2){pieChart[1] = pieChart[1]+1}
+            else if(newResp ==3){ pieChart[2] = pieChart[2]+1}
+            else{ pieChart[3] = pieChart[3]+1}
+
+            // if the line chart isn't set
+            if(lineChart == undefined){
+              lineChart = []
+            }
+            lineChart.push(newAvg);
 
             // if Nan then first time 
             if(isNaN(newAvg))   { newAvg       = parseInt(response[1], 10);}
@@ -536,6 +555,8 @@ export class SurveyServiceService {
                 lastresponse: response[1],
                 averagescore:  newAvg,
                 numresponses:newNumRes,
+                piechart:pieChart,
+                linechart:lineChart,
                 lastUpdate: firebase.firestore.FieldValue.serverTimestamp()
 
               })
