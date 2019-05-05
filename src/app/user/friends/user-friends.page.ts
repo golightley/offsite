@@ -28,9 +28,9 @@ export class UserFriendsPage implements OnInit {
   public doughnutChartLabels:string[] = ["Stronly Disagree","Disagree","Agree","Strongly Agree"];
   public doughnutChartData:number[]    = [1,1,1,1];
   public doughnutChartType:string     = "doughnut"
-  public lineChartLabels:string[] = [];
+  // public lineChartLabels:string[] = [];
 
-  // public lineChartLabels:string[] = ['January', 'February', 'Mars', 'April'];
+  public lineChartLabels:string[] = ['', '', '', '',''];
 
   public lineChartType:string     = "line"
   public doughnutColors:any[] = [
@@ -42,8 +42,7 @@ export class UserFriendsPage implements OnInit {
     // { data: [330, 600, 260, 700], label: 'Account A' },
     // { data: [120, 455, 100, 340], label: 'Account B' },
     { data: [4.5, 4.4, 4.0, 3.8], label: 'Your team' }
-  ];
-
+  ]
   @HostBinding('class.is-shell') get isShell() {
     return this.data && this.data.isShell;
   }
@@ -66,7 +65,26 @@ export class UserFriendsPage implements OnInit {
     this.doughnutChartData = [1,1,1,1] 
     this.surveyService.getQuestionData(this.surveyService.myParam.id).then(data => {
       this.doughnutChartData = data.piechart;
-      this.lineChartData[0].data = data.linechart;
+      // build line chart 
+      // first point
+      var dataLine = [];
+      const len = data.linechart.length;
+      console.log("len"+len);
+      const hop = len / 5;
+      console.log("hop"+hop);
+      dataLine[0] =  Math.round(data.linechart[0] * 100) /100
+      var x =1; 
+      for (var i=0; i<len; i+= hop) {
+        console.log("i"+Math.ceil(i)+"x"+x)
+        // console.log(dataLine)
+        dataLine[x] =  Math.round(data.linechart[Math.ceil(i)] * 100) /100
+        console.log(dataLine)
+        x++;
+      }
+    
+      this.lineChartData[0].data = dataLine;
+      // this.lineChartData[0].data =[1,2,3,4]
+
     })
     this.question = this.route.snapshot.paramMap.get('question');
 
