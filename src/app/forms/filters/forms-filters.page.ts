@@ -50,10 +50,12 @@ export class FormsFiltersPage implements OnInit {
   }
   submitSurvey() {
     // iterate through each survey response=
-    this.surveyService.responses = this.responses;
+    this.surveyService.responses = this.responses;  
     this.surveyService.submitSurvey(this.responses);
     // this.presentAlert();
+    this.surveyService.markSurveyComplete(this.surveyService.myParam.id);
     this.navCtrl.navigateBack('app/categories');
+
   }
 
   vibrate(){

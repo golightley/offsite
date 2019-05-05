@@ -82,6 +82,7 @@ export class IdeasPage implements OnInit {
     const query = firebase.firestore().collection('ideas')
       .where('team', '==', "E4ZWxJbFoDE29ywISRQY")
       .where('reported', '==', false)
+      .orderBy('score', 'desc')
       // .where("type", "==", type)
       query.onSnapshot((snapshot) => {
       console.log("ideas...")

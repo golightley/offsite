@@ -139,9 +139,8 @@ export class SurveyServiceService {
     const questions = [];
     // pull each question from firebase
     return new Promise<any>((resolve, reject) => {
-      firebase.firestore().collection('questions').where("goal", "==",goal).orderBy('lastUpdate', 'desc').get()
-
-      // firebase.firestore().collection('questions').where('users', 'array-contains', userID).orderBy('lastUpdate', 'desc').get()
+      // firebase.firestore().collection('questions').where("goal", "==",goal).orderBy('lastUpdate', 'desc').get()
+      firebase.firestore().collection('questions').where('users', 'array-contains', userID).orderBy('lastUpdate', 'desc').get()
         .then((questionData) => {
           questionData.forEach((doc) => {
             questions.push(doc);
@@ -633,6 +632,24 @@ export class SurveyServiceService {
       });
     }   
 
+
+
+    markSurveyComplete(id: string){
+      var ref = firebase.firestore().collection("surveynotifications").doc(id);
+      console.log("surveynotification"+id);
+      
+      // Set the "capital" field of the city 'DC'
+      return ref.update({
+        active: false
+      })
+      .then(function() {
+          console.log("Document successfully updated!");
+      })
+      .catch(function(error) {
+          // The document probably doesn't exist.
+          console.error("Error updating document: ", error);
+      });
+    }
     reportIdea(id: string) {
 
       var ref = firebase.firestore().collection("ideas").doc(id);

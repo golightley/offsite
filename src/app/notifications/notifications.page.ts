@@ -17,6 +17,7 @@ export class NotificationsPage implements OnInit {
 
   notifications: any = [];
   unsubscribe:any;
+  empty = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -87,6 +88,7 @@ export class NotificationsPage implements OnInit {
         }
       });
 
+      if(this.notifications.length == 0){this.empty=true;}else{this.empty = false}
       // this.notifications = notifications;
 
     });

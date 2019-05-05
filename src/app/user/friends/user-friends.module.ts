@@ -9,7 +9,7 @@ import { UserFriendsPage } from './user-friends.page';
 import { UserService } from '../user.service';
 import { UserFriendsResolver } from './user-friends.resolver';
 import { ComponentsModule } from '../../components/components.module';
-import { ModalPage } from '../../modal/modal.page';
+// import { ModalPage } from '../../modal/modal.page';
 
 const routes: Routes = [
   {
@@ -30,8 +30,8 @@ const routes: Routes = [
     ChartsModule,
     RouterModule.forChild(routes),
   ],
-  declarations: [UserFriendsPage,ModalPage],
-  entryComponents:[ModalPage],
+  declarations: [UserFriendsPage,],
+  entryComponents:[],
   providers: [
     UserFriendsResolver,
     UserService
