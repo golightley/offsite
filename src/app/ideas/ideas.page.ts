@@ -78,33 +78,55 @@ export class IdeasPage implements OnInit {
   }
 
   loadIdeas(type){
-    this.ideas = [];
-    const query = firebase.firestore().collection('ideas')
-      .where('team', '==', "E4ZWxJbFoDE29ywISRQY")
-      .where('reported', '==', false)
-      .orderBy('score', 'desc')
-      // .where("type", "==", type)
-      query.onSnapshot((snapshot) => {
-      console.log("ideas...")
-      console.log(snapshot);
-      // retrieve anything that has changed
-      const changedDocs = snapshot.docChanges();
-      changedDocs.forEach((change) => {
-        if (change.type === 'added') {
-          this.ideas.push(new IdeaModel(change.doc.id, change.doc.data()));
-          console.log(this.ideas)
-        } else if (change.type === 'modified') {
-          let index = 0;
-          for (let i = 0; i < this.ideas.length; i++) {
-            if (this.ideas[i].uid === change.doc.id) {
-              index = i;
-              break;
-            }
-          }
-          this.ideas[index] = new IdeaModel(change.doc.id, change.doc.data());
+    var team = "";
+    var that = this;
+    var docRef = firebase.firestore().collection("users").doc(firebase.auth().currentUser.uid);
+    docRef.get().then(function(doc) {
+        if (doc.exists) {
+            
+            // first fetch the team ID
+            console.log("Team data:", doc.data().team);
+            console.log("Team data:", doc.data());
+
+            team = doc.data().team;
+
+            // now get the ideas based on that team
+            const query = firebase.firestore().collection('ideas')
+            // .where('team', '==', "E4ZWxJbFoDE29ywISRQY")
+            .where('team', '==', team)
+            .where('reported', '==', false)
+            .orderBy('score', 'desc')
+            query.onSnapshot((snapshot) => {
+            console.log("ideas...")
+            console.log(snapshot);
+            // retrieve anything that has changed
+            const changedDocs = snapshot.docChanges();
+            that.ideas = [];
+            changedDocs.forEach((change) => {
+              if (change.type === 'added') {
+                that.ideas.push(new IdeaModel(change.doc.id, change.doc.data()));
+                console.log(that.ideas)
+              } else if (change.type === 'modified') {
+                let index = 0;
+                for (let i = 0; i < that.ideas.length; i++) {
+                  if (that.ideas[i].uid === change.doc.id) {
+                    index = i;
+                    break;
+                  }
+                }
+                that.ideas[index] = new IdeaModel(change.doc.id, change.doc.data());
+              }
+            });
+          });
+        } else {
+            // doc.data() will be undefined in this case
+            console.log("No such document!");
         }
-      });
+    }).catch(function(error) {
+        console.log("Error getting document:", error);
     });
+
+
 }
 
 

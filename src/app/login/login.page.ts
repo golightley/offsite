@@ -83,6 +83,7 @@ export class LoginPage implements OnInit {
       name: user.displayName,
       email: user.email,
       phoneNumber: user.phoneNumber,
+      team:"E4ZWxJbFoDE29ywISRQY",
       loggedAt: Date.now()
     };
     return firebase.firestore().collection('users').doc(user.uid).set(params);

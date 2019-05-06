@@ -95,7 +95,20 @@ export class NotificationsPage implements OnInit {
   }
 
   teamSurvey(notification) {
-    this.surveyService.myParam = notification;
-    this.router.navigateByUrl('/forms-filters');
+
+    if(notification.data().type=="instructional"){
+      this.router.navigateByUrl(notification.data().link);
+    }else if(notification.data().type=="feedback-ask"){
+      this.router.navigateByUrl(notification.data().link);
+    }
+    else{
+      this.surveyService.myParam = notification;
+      this.router.navigateByUrl('/forms-filters');
+
+    }
+
   }
+
+
+
 }

@@ -31,15 +31,48 @@
             <!-- <p class="details-description">{{ notification.data().owner_name }}</p> -->
           </ion-col>
         </ion-row>
-        <ion-col  *ngIf="notification.data().type == 'feedback'" class="radio-tags">
+        <ion-row  *ngIf="notification.data().type == 'instructional'" class="notification-item-wrapper">
+          <ion-col size="2">
+              <ion-icon name="bulb" class = "custom-icon"></ion-icon>
+          </ion-col>
+          <ion-col class="details-wrapper">
+              <h2 class="details-name"><b>{{ notification.data().message }}</b></h2>
+            <!-- <p class="details-description">{{ notification.data().owner_name }}</p> -->
+          </ion-col>
+        </ion-row>
+        <ion-row  *ngIf="notification.data().type == 'feedback-ask'" class="notification-item-wrapper">
+            <ion-col size="2">
+                <ion-icon name="leaf" class = "custom-icon"></ion-icon>
+            </ion-col>
+            <ion-col class="details-wrapper">
+                <h2 class="details-name"><b>{{ notification.data().message }}</b></h2>
+              <!-- <p class="details-description">{{ notification.data().owner_name }}</p> -->
+            </ion-col>
+          </ion-row>
+      
+        <ion-col  *ngIf="notification.data().type == 'feedback' || notification.data().type == 'feedback-ask' " class="radio-tags">
           <ion-item class="radio-tag" lines="none">
             <ion-label class="tag-label">
               <span> Feedback</span>
             </ion-label>
           </ion-item>
         </ion-col>
+        <ion-col  *ngIf="notification.data().type == 'instructional'" class="radio-tags">
+          <ion-item class="radio-tag" lines="none">
+            <ion-label class="tag-label">
+              <span> Suggestion</span>
+            </ion-label>
+          </ion-item>
+        </ion-col>
 
         <ion-col  *ngIf="notification.data().type == 'pulse'" class="radio-tags">
+          <ion-item class="radio-tag" lines="none">
+            <ion-label class="tag-label">
+              <span> Pulse check</span>
+            </ion-label>
+          </ion-item>
+        </ion-col>
+                <ion-col  *ngIf="notification.data().type == 'pulse'" class="radio-tags">
           <ion-item class="radio-tag" lines="none">
             <ion-label class="tag-label">
               <span> Pulse check</span>

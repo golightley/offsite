@@ -621,6 +621,7 @@ export class SurveyServiceService {
         text: comment,
         name: 'Anonymous',
         type: type,
+        score:0,
         action: type,
         reported:false,
         user: firebase.auth().currentUser.uid,

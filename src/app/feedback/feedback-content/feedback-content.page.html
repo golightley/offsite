@@ -7,14 +7,14 @@
     </ion-toolbar>
 </ion-header>
 <ion-content>
-    <ion-segment mode="md" color="success" [(ngModel)]="page">
+    <!-- <ion-segment mode="md" color="success" [(ngModel)]="page">
         <ion-segment-button value="what" mode="md">
             <ion-label>About What</ion-label>
         </ion-segment-button>
         <ion-segment-button value="who" mode="md">
             <ion-label>To who</ion-label>
         </ion-segment-button>
-    </ion-segment>
+    </ion-segment> -->
 
     <div [ngSwitch]="page">
         <ion-card *ngSwitchCase="'what'" padding>
