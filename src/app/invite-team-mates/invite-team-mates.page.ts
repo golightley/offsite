@@ -16,6 +16,10 @@ export class InviteTeamMatesPage {
   isAnonymously = false;
   teamName: string;
   teamData: any;
+  stage:string = "team";
+  createTeam:string = "";
+  teamId:string;
+  teamCode:string;
 
 
   constructor(
@@ -36,24 +40,60 @@ export class InviteTeamMatesPage {
     this.aryMembers.splice(index, 1);
   }
 
+  joinTeam(){
+    console.log("Join team clicked")
+    this.stage = "join";
+  }
+
   onClickBtnInvite() {
     // get the team we are inviting them to
-    this.surveyService.getTeamByUserId(firebase.auth().currentUser.uid).then(teamData => {
-      console.log("Team data has been loaded...");
-      console.log(teamData)
-      this.teamData = teamData;
-      this.teamName = teamData.data().teamName;
+    if(this.teamId == ''){
+      this.surveyService.getTeamByUserId(firebase.auth().currentUser.uid).then(teamData => {
+        console.log("Team data has been loaded...");
+        console.log(teamData)
+        this.teamData = teamData;
+        this.teamName = teamData.data().teamName;
+  
+       // for each invite save a team invite object 
+      this.aryMembers.forEach(member =>{
+        this.surveyService.createEmailInvite("Liam",member.email,this.teamName,this.teamName,this.teamData.id)
+      })
+  
+      })
+    }else{
+        // for each invite save a team invite object 
+       this.aryMembers.forEach(member =>{
+         this.surveyService.createEmailInvite("Liam",member.email,this.createTeam,this.createTeam,this.teamId);
+      })
 
-          // for each invite save a team invite object 
-    this.aryMembers.forEach(member =>{
-      this.surveyService.createEmailInvite("Liam",member.email,this.teamName,this.teamName,this.teamData.id)
-    })
+    }
 
-
-    })
 
     this.router.navigateByUrl('app/categories');
   }
+
+  onClickCreateTeam() {
+    // get the team we are inviting them to
+    this.surveyService.createTeamByUserId(firebase.auth().currentUser.uid,this.createTeam).then(teamData => {
+      console.log("Team created...");
+      console.log(teamData)
+      this.teamId = teamData;
+      this.stage  = 'invite';
+    })
+  }
+
+  joinTeamWithCode() {
+    // get the team we are inviting them to
+    this.surveyService.joinTeamWithCode(firebase.auth().currentUser.uid,this.teamCode).then(teamData => {
+      console.log("Team created...");
+      console.log(teamData)
+      this.teamId = teamData;
+      this.stage  = 'invite';
+    })
+  }
+
+
+  
   
 
 }

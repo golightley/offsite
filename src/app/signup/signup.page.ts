@@ -22,7 +22,7 @@ export class SignupPage implements OnInit {
   matching_passwords_group: FormGroup;
 
   //vars
-  name:string = "Liam";
+  name:string = "";
   email:string = "";
   password:string = "";
 
@@ -96,9 +96,9 @@ export class SignupPage implements OnInit {
       const newUser = data.user;
 
       newUser.updateProfile({
-        displayName: this.name
+        // displayName: this.name,
       }).then(() => {
-        newUser.displayName = this.name;
+        // newUser.displayName = this.name;
         this.updateUsers(newUser)
           .then(() => {
             this.router.navigate(['/invite-team-mates']);

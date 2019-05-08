@@ -100,7 +100,10 @@ export class DealsListingPage implements OnInit {
   attachResultListener(goal){
 
     const questions = [];
-    this.unsubscribe = firebase.firestore().collection('questions').where("goal", "==",goal).orderBy('lastUpdate', 'desc')
+    this.unsubscribe = firebase.firestore()
+    .collection('questions')
+    .where("goal", "==",goal)
+    .orderBy('lastUpdate', 'desc')
     .onSnapshot((snapshot) => {
       const changedDocs = snapshot.docChanges();
       changedDocs.forEach((change) => {

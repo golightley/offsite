@@ -35,30 +35,6 @@ export class SurveyServiceService {
     });
   }
 
-    //get notifcations for tab 1 of interface
-    // getNotificationsListener(userID){
-    //     let notifications = [];
-    //     firebase.firestore().collection("surveynotifications").where("user", "==",userID).where("active", "==", true)
-    //     .onSnapshot((snapshot) => {
-    //       console.log("Listener attached");
-    //       console.log(snapshot);
-    //       // retrieve anything that has changed
-    //       const changedDocs = snapshot.docChanges();
-    //       changedDocs.forEach((change) => {
-    //         if (change.type === 'added') {
-    //           console.log("Added in listener")
-    //           this.notifications.updateListener(change.doc)
-    //         } else if (change.type === 'modified') {
-    //           console.log("Modified")
-    //           console.log(change)            
-    //         }
-    //       });
-    
-    //       // this.notifications = notifications;
-    
-    //     });
-      
-    // }
 
   // get notifications for tab 1 of interface
   getFeedbackCategories() {
@@ -213,6 +189,56 @@ export class SurveyServiceService {
 });
 
 }
+
+createTeamByUserId(userId,teamName) {
+  
+return new Promise<any>((resolve, reject) => {
+  firebase.firestore().collection('teams').add({
+    active:true,
+    memembersids: [userId],
+    members:{
+      uid:userId
+    },
+    teamName:teamName,
+    createdBy:userId,
+    teamCreated: firebase.firestore.FieldValue.serverTimestamp()
+  }).then(function(docRef) {
+    console.log(' Team created with ID: ', docRef.id);
+    resolve(docRef.id);
+  }).catch(function(error) {
+    console.error('Error creating sruvey document: ', error);
+    reject(error)
+  });
+});
+}
+
+joinTeamWithCode(myUserId,teamId) {
+  
+  return new Promise<any>((resolve, reject) => {
+    var ref = firebase.firestore().collection("teams").doc(teamId);
+
+    // Set the "capital" field of the city 'DC'
+    return ref.update({
+      memembersids: firebase.firestore.FieldValue.arrayUnion(myUserId),
+      members: firebase.firestore.FieldValue.arrayUnion({myUserId}),
+    })
+    .then(function(docRef) {
+        console.log("Team Document successfully updated!");
+        resolve(docRef);
+
+    })
+    .catch(function(error) {
+        // The document probably doesn't exist.
+        console.error("Error updating document: ", error);
+        reject(error)
+
+    });
+
+  });
+  
+  
+  }
+
 
     updateComments(questionID){
 

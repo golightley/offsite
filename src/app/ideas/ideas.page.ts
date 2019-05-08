@@ -35,7 +35,7 @@ export class IdeasPage implements OnInit {
     ) {this.loadSuggestions("start"), this.loadIdeas("start") }
 
   ngOnInit() {
-    // this.loadIdeas("start");
+    this.loadIdeas("start");
   }
 
   async setPopover(ev:Event, idea){
@@ -80,10 +80,10 @@ export class IdeasPage implements OnInit {
   loadIdeas(type){
     var team = "";
     var that = this;
+    that.ideas = [];
     var docRef = firebase.firestore().collection("users").doc(firebase.auth().currentUser.uid);
     docRef.get().then(function(doc) {
         if (doc.exists) {
-            
             // first fetch the team ID
             console.log("Team data:", doc.data().team);
             console.log("Team data:", doc.data());
@@ -101,7 +101,6 @@ export class IdeasPage implements OnInit {
             console.log(snapshot);
             // retrieve anything that has changed
             const changedDocs = snapshot.docChanges();
-            that.ideas = [];
             changedDocs.forEach((change) => {
               if (change.type === 'added') {
                 that.ideas.push(new IdeaModel(change.doc.id, change.doc.data()));
