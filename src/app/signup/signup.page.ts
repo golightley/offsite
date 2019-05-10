@@ -90,21 +90,43 @@ export class SignupPage implements OnInit {
 
   doSignup() {
     console.log('do sign up');
+    var hasBeenInvited = false;
     this.surveyService.email = this.email;
 
-    firebase.auth().createUserWithEmailAndPassword(this.email, this.password).then(data => {
-      const newUser = data.user;
+    // first make sure email isn't in invite list...
+    this.surveyService.checkIfInvitedtoAteamWithEmail(this.email).then(teamData => {
+      console.log("Team created...");
+      console.log(teamData)
+      hasBeenInvited = true;
+      
+    // if the email is not in the invite list...
+      firebase.auth().createUserWithEmailAndPassword(this.email, this.password).then(data => {
+        const newUser = data.user;
+  
+        newUser.updateProfile({
+          // displayName: this.name,
+        }).then(() => {
+          // newUser.displayName = this.name;
+          this.updateUsers(newUser)
+            .then(() => {
+              if(teamData != "null"){
+                this.router.navigate(['/invite-team-mates', { 
+                  teamName: teamData.data().team,
+                  teamId:teamData.data().teamId
+                 }]);
+              }else{
+                this.router.navigate(['/invite-team-mates']);        
+              }
 
-      newUser.updateProfile({
-        // displayName: this.name,
-      }).then(() => {
-        // newUser.displayName = this.name;
-        this.updateUsers(newUser)
-          .then(() => {
-            this.router.navigate(['/invite-team-mates']);
-          }, err => console.error(err));
+              // this.router.navigate(['/invite-team-mates'],);
+            }, err => console.error(err));
+        }, err => console.log(err));
       }, err => console.log(err));
-    }, err => console.log(err));
+  }, function(error) {
+    // The Promise was rejected.
+    
+    console.error(error);
+  });
   }
 
   private updateUsers(user: firebase.User) {
@@ -117,18 +139,18 @@ export class SignupPage implements OnInit {
     return firebase.firestore().collection('users').doc(user.uid).set(params);
   }
 
-  doFacebookSignup(): void {
-    console.log('facebook signup');
-    this.router.navigate(['app/categories']);
-  }
+  // doFacebookSignup(): void {
+  //   console.log('facebook signup');
+  //   this.router.navigate(['app/categories']);
+  // }
 
-  doGoogleSignup(): void {
-    console.log('google signup');
-    this.router.navigate(['app/categories']);
-  }
+  // doGoogleSignup(): void {
+  //   console.log('google signup');
+  //   this.router.navigate(['app/categories']);
+  // }
 
-  doTwitterSignup(): void {
-    console.log('twitter signup');
-    this.router.navigate(['app/categories']);
-  }
+  // doTwitterSignup(): void {
+  //   console.log('twitter signup');
+  //   this.router.navigate(['app/categories']);
+  // }
 }

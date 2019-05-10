@@ -39,6 +39,9 @@
         </ion-button>
       </div>
     </ion-card>
+    <ion-card *ngIf="stage=='alreadyInvited'" padding>
+      <div class="title">You have been invited to join {{invitedToTeamName}}</div>
+    </ion-card>
   <ion-card *ngIf="stage=='invite'" padding>
       <div class="title">Which team members do you want to invite?</div>
       <ion-list class="list-members" lines="none" inset>
@@ -70,14 +73,13 @@
   <ion-button  *ngIf="stage=='team'" class="button-invite" expand="block" (click)="onClickCreateTeam()">
       Create team
   </ion-button>
+  <ion-button  *ngIf="stage=='alreadyInvited'" class="button-invite" expand="block" (click)="alreadyJoinedATeam()">
+    Next
+</ion-button>
     <ion-button  *ngIf="stage=='join'" class="button-invite" expand="block" (click)="joinTeamWithCode()">
         Join team
       </ion-button>
   <ion-button  *ngIf="stage=='invite'" class="button-invite" expand="block" (click)="onClickBtnInvite()">
     Send invites
   </ion-button>
-
-  <ion-button  *ngIf="stage=='invite'" class="button-skip" expand="block" fill="clear" (click)="onClickBtnInvite()">
-      Skip
-    </ion-button>
 </ion-content>

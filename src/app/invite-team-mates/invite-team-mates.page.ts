@@ -3,6 +3,7 @@ import {InviteTeamMatesModel} from './invite-team-mates.model';
 import {Router} from '@angular/router';
 import {SurveyServiceService} from '../services/survey-service.service';
 import * as firebase from 'firebase/app';
+import {ActivatedRoute} from '@angular/router';
 
 require('firebase/auth');
 @Component({
@@ -20,16 +21,29 @@ export class InviteTeamMatesPage {
   createTeam:string = "";
   teamId:string;
   teamCode:string;
+  invitedToTeamName:string;
+  invitedToTeamId:string;
+  hasBeenAlreadyInvitedToATeam:boolean = false;
+
 
 
   constructor(
     private router: Router,
     public surveyService: SurveyServiceService,
+    private route: ActivatedRoute,
 
   ) {
     this.aryMembers = [
       new InviteTeamMatesModel()
     ];
+
+    // get data if team was invited
+    this.invitedToTeamName = this.route.snapshot.paramMap.get('teamName');
+    this.invitedToTeamId = this.route.snapshot.paramMap.get('teamId');
+    if(this.invitedToTeamName != null && this.invitedToTeamId !=null ){
+      this.stage = 'alreadyInvited';
+    }
+
   }
 
   onClickBtnAddMember() {
@@ -45,7 +59,19 @@ export class InviteTeamMatesPage {
     this.stage = "join";
   }
 
+  alreadyJoinedATeam(){
+    this.joinTeamWithCode(this.invitedToTeamId);
+    this.stage  = 'invite';
+
+  }
+
+
   onClickBtnInvite() {
+    
+    console.log("Team id-->"+this.teamId )
+
+
+
     // get the team we are inviting them to
     if(this.teamId == ''){
       this.surveyService.getTeamByUserId(firebase.auth().currentUser.uid).then(teamData => {
@@ -63,7 +89,14 @@ export class InviteTeamMatesPage {
     }else{
         // for each invite save a team invite object 
        this.aryMembers.forEach(member =>{
-         this.surveyService.createEmailInvite("Liam",member.email,this.createTeam,this.createTeam,this.teamId);
+             // make sure they haven't already been invited
+        this.surveyService.checkIfInvitedtoAteamWithEmail(member.email).then(teamData => {
+          console.log("invite is already outstanding...")
+        }, function(error) {
+        // The Promise was rejected.
+        console.error(error);
+        this.surveyService.createEmailInvite("Liam",member.email,this.createTeam,this.createTeam,this.teamId);
+        });
       })
 
     }
@@ -82,13 +115,23 @@ export class InviteTeamMatesPage {
     })
   }
 
-  joinTeamWithCode() {
+  joinTeamWithCode(teamId) {
+    var myTeamId = ""
+    if(teamId==null){
+      myTeamId = this.teamCode;
+    }else{
+      myTeamId = teamId
+    }
     // get the team we are inviting them to
-    this.surveyService.joinTeamWithCode(firebase.auth().currentUser.uid,this.teamCode).then(teamData => {
-      console.log("Team created...");
-      console.log(teamData)
-      this.teamId = teamData;
-      this.stage  = 'invite';
+    this.surveyService.joinTeamWithCode(firebase.auth().currentUser.uid,myTeamId).then(joinedTeamData => {
+      this.surveyService.getTeamByUserId(firebase.auth().currentUser.uid).then(joinedTeamData => {
+        this.teamId     = joinedTeamData.id;
+        this.teamName   = this.invitedToTeamName
+        this.createTeam = joinedTeamData.data().teamName;
+        this.stage      = 'invite';
+        myTeamId        = myTeamId;
+
+      })
     })
   }
 

@@ -146,6 +146,30 @@ export class SurveyServiceService {
         }, err => reject(err));
       });
     }
+
+        // pull questions for results tab
+    checkIfInvitedtoAteamWithEmail(email) {
+          console.log("checking email function");
+          console.log(email);
+          // pull each question from firebase                                                                                                       
+          return new Promise<any>((resolve, reject) => {
+            firebase.firestore().collection('emailInvites')
+            .where("email", "==", email)
+            .where("active", "==", true)
+            .get()
+            .then((teams) => {
+              
+              console.log("returned checkIfInvitedToTeamsFunction" + teams);                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
+              if(teams==null){
+                resolve(teams);
+              }
+
+              teams.forEach((doc) => {
+                  resolve(doc);
+              });
+            }, err => reject(err));
+          });
+        }
         // pull questions for results tab
     getTeamById(teamId) {
       return new Promise<any>((resolve, reject) => {
@@ -219,12 +243,13 @@ joinTeamWithCode(myUserId,teamId) {
 
     // Set the "capital" field of the city 'DC'
     return ref.update({
-      memembersids: firebase.firestore.FieldValue.arrayUnion(myUserId),
+      membersids: firebase.firestore.FieldValue.arrayUnion(myUserId),
       members: firebase.firestore.FieldValue.arrayUnion({myUserId}),
     })
     .then(function(docRef) {
         console.log("Team Document successfully updated!");
-        resolve(docRef);
+        console.log(ref);
+        resolve(ref);
 
     })
     .catch(function(error) {
@@ -707,6 +732,7 @@ joinTeamWithCode(myUserId,teamId) {
         email: email,
         team: team,
         teamId:teamId,
+        active:true,
         teamName: teamName,
         user: firebase.auth().currentUser.uid,
         timestamp: firebase.firestore.FieldValue.serverTimestamp()
