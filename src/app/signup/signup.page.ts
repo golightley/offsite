@@ -109,7 +109,7 @@ export class SignupPage implements OnInit {
           // newUser.displayName = this.name;
           this.updateUsers(newUser)
             .then(() => {
-              if(teamData != "null"){
+              if(teamData!= null){
                 this.router.navigate(['/invite-team-mates', { 
                   teamName: teamData.data().team,
                   teamId:teamData.data().teamId

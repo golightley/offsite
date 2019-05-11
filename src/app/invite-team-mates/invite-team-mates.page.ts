@@ -91,11 +91,19 @@ export class InviteTeamMatesPage {
        this.aryMembers.forEach(member =>{
              // make sure they haven't already been invited
         this.surveyService.checkIfInvitedtoAteamWithEmail(member.email).then(teamData => {
-          console.log("invite is already outstanding...")
+          console.log("Team data...")
+          console.log(teamData)
+          if(teamData != null){
+
+          }else{
+            console.log("no invite...")
+            this.surveyService.createEmailInvite("Liam",member.email,this.createTeam,this.createTeam,this.teamId);
+
+          }
+
         }, function(error) {
         // The Promise was rejected.
         console.error(error);
-        this.surveyService.createEmailInvite("Liam",member.email,this.createTeam,this.createTeam,this.teamId);
         });
       })
 
