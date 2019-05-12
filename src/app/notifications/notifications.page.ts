@@ -57,7 +57,7 @@ export class NotificationsPage implements OnInit {
   }
 
   ionViewWillLeave(){
-    this.unsubscribe();
+    // this.unsubscribe();
     console.log("Detach listner")
   }
 

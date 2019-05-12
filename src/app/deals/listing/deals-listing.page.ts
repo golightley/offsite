@@ -46,6 +46,7 @@ export class DealsListingPage implements OnInit {
       // Get results to show for each card
       // this.getResults();
       this.attachResultListener("pulse");
+      
       if (promiseObservable) {
         promiseObservable.subscribe(promiseValue => {
           const dataObservable = promiseValue['data'];
@@ -89,7 +90,7 @@ export class DealsListingPage implements OnInit {
 
   updateListner(goal){
     
-    this.unsubscribe();
+    // this.unsubscribe();
     this.results = [];
     this.attachResultListener(goal);
     this.createChart("1")
@@ -99,30 +100,54 @@ export class DealsListingPage implements OnInit {
 
   attachResultListener(goal){
 
-    const questions = [];
-    this.unsubscribe = firebase.firestore()
-    .collection('questions')
-    .where("goal", "==",goal)
-    .orderBy('lastUpdate', 'desc')
-    .onSnapshot((snapshot) => {
-      const changedDocs = snapshot.docChanges();
-      changedDocs.forEach((change) => {
-        if (change.type === 'added') {
-          console.log("Added in listener")
-          this.results.push(new QuestionModel(change.doc.id, change.doc.data()));
-        } else if (change.type === 'modified') {
-          console.log("Modified")
-          console.log(change)
-          let index = change.oldIndex;
-          this.results[change.oldIndex] = new QuestionModel(change.doc.id, change.doc.data());
-          // this.results.push(new QuestionModel(change.doc.id, change.doc));
+    // entering attach listner
+    console.log("Entering attached listner")
 
-        }
+    // get the team ID of the signed in user
+    var teamId; 
+    var userId = firebase.auth().currentUser.uid
+    console.log("User id"+ userId);
+    console.log("Goal"+goal);
+
+
+    if(goal=='pulse') {
+      // get team id
+      this.surveyService.getTeamId(userId).then((teamId) => {
+        this.getQuestions(goal,teamId.data().team)
       });
+    }else{
+      // get user id
+      this.getQuestions(goal,userId)
+    }
 
-      // this.notifications = notifications;
+  }
 
-    });
+  getQuestions(goal,teamId){
+        // pull the questions associated with that team
+        const questions = [];
+        this.unsubscribe = firebase.firestore()
+        .collection('questions')
+        .where("goal", "==",goal)
+        .where("team", "==",teamId)
+        .orderBy('lastUpdate', 'desc')
+        .onSnapshot((snapshot) => {
+          const changedDocs = snapshot.docChanges();
+          changedDocs.forEach((change) => {
+            if (change.type === 'added') {
+              console.log("Added in listener")
+              this.results.push(new QuestionModel(change.doc.id, change.doc.data()));
+            } else if (change.type === 'modified') {
+              console.log("Modified")
+              console.log(change)
+              let index = change.oldIndex;
+              this.results[change.oldIndex] = new QuestionModel(change.doc.id, change.doc.data());
+              // this.results.push(new QuestionModel(change.doc.id, change.doc));
+    
+            }
+          });
+          // this.notifications = notifications;
+        });
+
   }
 
   getMarkColorStyle(question: QuestionModel) {
@@ -146,6 +171,11 @@ export class DealsListingPage implements OnInit {
   ionViewDidLoad(){
     //download the data here
     // this.createChart("1")
+    // this.updateListner("pulse");
+    this.attachResultListener("pulse");
+
+
+
   }
   createChart(dataa){
 

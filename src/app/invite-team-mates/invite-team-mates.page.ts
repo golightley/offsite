@@ -24,7 +24,7 @@ export class InviteTeamMatesPage {
   invitedToTeamName:string;
   invitedToTeamId:string;
   hasBeenAlreadyInvitedToATeam:boolean = false;
-
+  fromLoginScreen:string = 'false';
 
 
   constructor(
@@ -40,8 +40,15 @@ export class InviteTeamMatesPage {
     // get data if team was invited
     this.invitedToTeamName = this.route.snapshot.paramMap.get('teamName');
     this.invitedToTeamId = this.route.snapshot.paramMap.get('teamId');
+    this.fromLoginScreen = this.route.snapshot.paramMap.get('fromLoginScreen');
+    console.log("invite-team-mates.teamname"+this.invitedToTeamName+this.invitedToTeamId+this.fromLoginScreen)
+
     if(this.invitedToTeamName != null && this.invitedToTeamId !=null ){
       this.stage = 'alreadyInvited';
+    }else if(this.fromLoginScreen=='true'){
+      this.stage = 'invite';
+    }else{
+
     }
 
   }
@@ -110,7 +117,11 @@ export class InviteTeamMatesPage {
     }
 
 
-    this.router.navigateByUrl('app/categories');
+    this.router.navigateByUrl('app/notifications');
+  }
+
+  skipInvites(){
+    this.router.navigateByUrl('app/notifications');
   }
 
   onClickCreateTeam() {

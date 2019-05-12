@@ -129,6 +129,22 @@ export class SurveyServiceService {
   }
 
     // pull questions for results tab
+    getTeamId(userID) {
+
+      console.log("ServeyService.GetTeamId.UserID="+userID)
+      // pull each question from firebase
+      return new Promise<any>((resolve, reject) => {
+        firebase.firestore()
+        .collection('users')
+        .doc(userID)
+        .get()
+          .then((questionData) => {
+          resolve(questionData);
+        }, err => reject(err));
+      });
+    }
+
+    // pull questions for results tab
     checkIfInvitedtoAteam() {
 
       console.log("checking email function");
