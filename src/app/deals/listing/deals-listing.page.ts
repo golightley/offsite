@@ -7,6 +7,7 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { attachEmbeddedView } from '@angular/core/src/view';
 import { Chart } from 'chart.js';
+import { __core_private_testing_placeholder__ } from '@angular/core/testing';
 require('firebase/auth');
 
 @Component({
@@ -113,7 +114,7 @@ export class DealsListingPage implements OnInit {
     if(goal=='pulse') {
       // get team id
       this.surveyService.getTeamId(userId).then((teamId) => {
-        this.getQuestions(goal,teamId.data().team)
+        this.getQuestions(goal,teamId.data().teamId)
       });
     }else{
       // get user id
@@ -123,12 +124,14 @@ export class DealsListingPage implements OnInit {
   }
 
   getQuestions(goal,teamId){
+        // teamID
+        console.log("Goal"+goal+"teamId: "+teamId)
         // pull the questions associated with that team
         const questions = [];
         this.unsubscribe = firebase.firestore()
         .collection('questions')
         .where("goal", "==",goal)
-        .where("team", "==",teamId)
+        .where("teamId", "==",teamId)
         .orderBy('lastUpdate', 'desc')
         .onSnapshot((snapshot) => {
           const changedDocs = snapshot.docChanges();

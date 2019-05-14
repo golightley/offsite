@@ -3,6 +3,7 @@ import * as firebase from 'firebase/app';
 import {TeamMemberRole} from '../invite-team-mates/invite-team-mates.model';
 import {TeammatesModel} from '../feedback/feedback-content/feedback-content.model';
 // import {NotificationsPage} from '../notifications/notifications.page';
+import { HttpClientModule, HttpClient } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
@@ -19,7 +20,7 @@ export class SurveyServiceService {
   public team:any;
 
 
-  constructor() { }
+  constructor(private http:HttpClient) { }
 
   //get notifcations for tab 1 of interface
   getNotifications(userID){
@@ -231,8 +232,11 @@ export class SurveyServiceService {
 }
 
 createTeamByUserId(userId,teamName) {
+
   
 return new Promise<any>((resolve, reject) => {
+  var that = this;
+  // firebase.firestore().collection('teams').add({
   firebase.firestore().collection('teams').add({
     active:true,
     memembersids: [userId],
@@ -244,12 +248,52 @@ return new Promise<any>((resolve, reject) => {
     teamCreated: firebase.firestore.FieldValue.serverTimestamp()
   }).then(function(docRef) {
     console.log(' Team created with ID: ', docRef.id);
+    // create survey questions for the team utilizing cloud functions
+    that.callCreateSurveyCloudFunction(docRef.id);
+    that.updateUserWithTeamId(userId,docRef.id);
+
     resolve(docRef.id);
   }).catch(function(error) {
     console.error('Error creating sruvey document: ', error);
     reject(error)
   });
 });
+}
+
+updateUserWithTeamId(userId,teamId){
+
+  var userRef = firebase.firestore().collection('users').doc(userId);
+
+  // Set the "capital" field of the city 'DC'
+  userRef.update({
+      teamId: teamId
+  })
+  .then(function() {
+      console.log("Document successfully updated!");
+  })
+  .catch(function(error) {
+      // The document probably doesn't exist.
+      console.error("Error updating document: ", error);
+  });
+}
+
+callCreateSurveyCloudFunction(teamId){
+
+  let body = {
+    teamId:teamId,
+    userId:firebase.auth().currentUser.uid
+  }
+
+  this.http.post("//us-central1-offsite-9f67c.cloudfunctions.net/createPulseChecks",JSON.stringify(body),{
+    responseType:"text"
+  }).subscribe((data)=>{
+    console.log(data)
+  },(error)=> {
+    console.log(error)
+  })
+
+
+
 }
 
 joinTeamWithCode(myUserId,teamId) {

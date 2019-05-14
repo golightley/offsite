@@ -58,14 +58,14 @@ export class LoginPage implements OnInit {
     firebase.auth().signInWithEmailAndPassword(this.email, this.password)
     .then(user => {
       console.log(user);
-      this.updateUsers(firebase.auth().currentUser)
-        .then(() => {
+      // this.updateUsers(firebase.auth().currentUser)
+        // .then(() => {
           // this.router.navigate(['app/notifications']);
           this.router.navigate(['/invite-team-mates', { 
             fromLoginScreen:'true',
            }]);
-          // this.router.navigate(['/invite-team-mates']);
-        }, err => console.error(err));
+        //   // this.router.navigate(['/invite-team-mates']);
+        // }, err => console.error(err));
     }, err => console.log(err));
   }
 
