@@ -92,6 +92,8 @@ export class SignupPage implements OnInit {
     console.log('do sign up');
     var hasBeenInvited = false;
     this.surveyService.email = this.email;
+    console.log("Name"+this.name)
+    console.log("Email"+this.email)
 
     // first make sure email isn't in invite list...
     this.surveyService.checkIfInvitedtoAteamWithEmail(this.email).then(teamData => {
@@ -99,16 +101,15 @@ export class SignupPage implements OnInit {
       console.log(teamData)
       hasBeenInvited = true;
       
-    // if the email is not in the invite list...
+    // create a new user in fireabase 
       firebase.auth().createUserWithEmailAndPassword(this.email, this.password).then(data => {
         const newUser = data.user;
-  
-        newUser.updateProfile({
-          // displayName: this.name,
-        }).then(() => {
-          // newUser.displayName = this.name;
-          this.updateUsers(newUser)
+
+    // create the first field in user table 
+          this.updateUsers(newUser,this.name)
             .then(() => {
+
+    // if they were invited to a team, then pass in the team data 
               if(teamData!= null){
                 this.router.navigate(['/invite-team-mates', { 
                   teamName: teamData.data().team,
@@ -117,10 +118,7 @@ export class SignupPage implements OnInit {
               }else{
                 this.router.navigate(['/invite-team-mates']);        
               }
-
-              // this.router.navigate(['/invite-team-mates'],);
             }, err => console.error(err));
-        }, err => console.log(err));
       }, err => console.log(err));
   }, function(error) {
     // The Promise was rejected.
@@ -129,28 +127,12 @@ export class SignupPage implements OnInit {
   });
   }
 
-  private updateUsers(user: firebase.User) {
+  private updateUsers(user: firebase.User,name) {
     const params = {
-      name: user.displayName,
+      name: name,
       email: user.email,
-      phoneNumber: user.phoneNumber,
       loggedAt: Date.now()
     };
     return firebase.firestore().collection('users').doc(user.uid).set(params);
   }
-
-  // doFacebookSignup(): void {
-  //   console.log('facebook signup');
-  //   this.router.navigate(['app/categories']);
-  // }
-
-  // doGoogleSignup(): void {
-  //   console.log('google signup');
-  //   this.router.navigate(['app/categories']);
-  // }
-
-  // doTwitterSignup(): void {
-  //   console.log('twitter signup');
-  //   this.router.navigate(['app/categories']);
-  // }
 }

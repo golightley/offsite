@@ -279,6 +279,8 @@ updateUserWithTeamId(userId,teamId){
 
 callCreateSurveyCloudFunction(teamId){
 
+  console.log("Calling cloud function... ")
+
   let body = {
     teamId:teamId,
     userId:firebase.auth().currentUser.uid

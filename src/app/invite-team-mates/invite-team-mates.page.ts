@@ -37,12 +37,13 @@ export class InviteTeamMatesPage {
       new InviteTeamMatesModel()
     ];
 
-    // get data if team was invited
+    // get data if team was invited and passed from the sign up page
     this.invitedToTeamName = this.route.snapshot.paramMap.get('teamName');
     this.invitedToTeamId = this.route.snapshot.paramMap.get('teamId');
     this.fromLoginScreen = this.route.snapshot.paramMap.get('fromLoginScreen');
     console.log("invite-team-mates.teamname"+this.invitedToTeamName+this.invitedToTeamId+this.fromLoginScreen)
 
+    // stage determins to show a create a new team or already invited to a team 
     if(this.invitedToTeamName != null && this.invitedToTeamId !=null ){
       this.stage = 'alreadyInvited';
     }else if(this.fromLoginScreen=='true'){
@@ -76,10 +77,7 @@ export class InviteTeamMatesPage {
   onClickBtnInvite() {
     
     console.log("Team id-->"+this.teamId )
-
-
-
-    // get the team we are inviting them to
+    // get the team we are inviting them to if we haven't already set it
     if(this.teamId == ''){
       this.surveyService.getTeamByUserId(firebase.auth().currentUser.uid).then(teamData => {
         console.log("Team data has been loaded...");

@@ -14,7 +14,7 @@ import { timer } from 'rxjs/observable/timer';
 export class ModalPage implements OnInit {
   private mutationObserver: MutationObserver;
 
-  val;
+  team;
   suggestions= [];
   startSuggestions = [];
   stopSuggestions  = [];
@@ -39,7 +39,7 @@ export class ModalPage implements OnInit {
     public surveyService: SurveyServiceService,
     private keyboard: Keyboard
     ) { 
-    this.val = navParams.get('prop1');
+    this.team = navParams.get('team');
     this.loadSuggestions("start");
     this.loadSuggestions("stop");
 
@@ -146,7 +146,7 @@ createIdea() {
   
   console.log("Creater idea...")
   // create the comment
-  this.surveyService.createIdea("E4ZWxJbFoDE29ywISRQY", this.message,this.type,this.type);
+  this.surveyService.createIdea(this.team, this.message,this.type,this.type);
   // reset the message
   this.message = '';
   this.dismiss();

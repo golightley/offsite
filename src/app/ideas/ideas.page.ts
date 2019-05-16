@@ -24,6 +24,7 @@ export class IdeasPage implements OnInit {
   color = "green";
   ideas: IdeaModel[] = [];
   type = ""
+  teamId='';
 
 
   constructor(
@@ -88,8 +89,8 @@ export class IdeasPage implements OnInit {
             console.log("Team data:", doc.data().team);
             console.log("Team data:", doc.data());
 
-            team = doc.data().team;
-
+            team = doc.data().teamId;
+            that.teamId = team;
             // now get the ideas based on that team
             const query = firebase.firestore().collection('ideas')
             // .where('team', '==', "E4ZWxJbFoDE29ywISRQY")
@@ -164,12 +165,12 @@ export class IdeasPage implements OnInit {
 
   }
 
-  createIdea() {
-    // create the comment
-    this.surveyService.createIdea("E4ZWxJbFoDE29ywISRQY", this.message, this.type, this.type);
-    // reset the message
-    this.message = '';
-  }
+  // createIdea() {
+  //   // create the comment
+  //   this.surveyService.createIdea(this.teamId, this.message, this.type, this.type);
+  //   // reset the message
+  //   this.message = '';
+  // }
 
 
     // this should be moved to the service
@@ -212,7 +213,7 @@ export class IdeasPage implements OnInit {
     const modal = await this.modalController.create({
       component: ModalPage,
       componentProps: {
-        'prop1': "test",
+        'team': this.teamId,
         'prop2': "test2"
       }
     });

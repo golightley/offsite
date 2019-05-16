@@ -58,14 +58,11 @@ export class LoginPage implements OnInit {
     firebase.auth().signInWithEmailAndPassword(this.email, this.password)
     .then(user => {
       console.log(user);
-      // this.updateUsers(firebase.auth().currentUser)
-        // .then(() => {
+      this.updateUsers(firebase.auth().currentUser);
           // this.router.navigate(['app/notifications']);
           this.router.navigate(['/invite-team-mates', { 
             fromLoginScreen:'true',
            }]);
-        //   // this.router.navigate(['/invite-team-mates']);
-        // }, err => console.error(err));
     }, err => console.log(err));
   }
 
@@ -82,14 +79,14 @@ export class LoginPage implements OnInit {
       console.log(error)
     })
     
-    const params = {
-      name: user.displayName,
-      email: user.email,
-      phoneNumber: user.phoneNumber,
-      team:"E4ZWxJbFoDE29ywISRQY",
-      loggedAt: Date.now()
-    };
-    return firebase.firestore().collection('users').doc(user.uid).set(params);
+    // const params = {
+    //   name: user.displayName,
+    //   email: user.email,
+    //   phoneNumber: user.phoneNumber,
+    //   team:"E4ZWxJbFoDE29ywISRQY",
+    //   loggedAt: Date.now()
+    // };
+    // return firebase.firestore().collection('users').doc(user.uid).set(params);
   }
 
 
