@@ -62,6 +62,7 @@ export class SignupPage implements OnInit {
     });
 
     this.signupForm = new FormGroup({
+      'name' : new FormControl(''),
       'email': new FormControl('test@test.com', Validators.compose([
         Validators.required,
         Validators.pattern('^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+$')
