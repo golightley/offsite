@@ -4,6 +4,7 @@ import {SurveyServiceService} from '../../services/survey-service.service';
 import {AlertController, NavController} from '@ionic/angular';
 import {QuestionModel, QuestionType} from '../../deals/listing/deals-listing.model';
 import { Vibration } from '@ionic-native/vibration/ngx';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'forms-filters-page',
@@ -21,7 +22,8 @@ export class FormsFiltersPage implements OnInit {
     public surveyService: SurveyServiceService,
     private navCtrl: NavController,
     public alertController: AlertController,
-    private vibration: Vibration
+    private vibration: Vibration,
+    private route: ActivatedRoute
     ) {
     this.radioTagsForm = new FormGroup({
       selected_option: new FormControl('any')
@@ -33,7 +35,8 @@ export class FormsFiltersPage implements OnInit {
   }
   getQuestions() {
     const surveyId = this.surveyService.myParam.data().survey;
-
+    
+    console.log('form-filters.qetQuestions.Fetching questions with ID:'+surveyId)
     this.surveyService.getQuestions(surveyId).then(questionData => {
       questionData.forEach(data => {
         const question = new QuestionModel(data.id, data.data());
