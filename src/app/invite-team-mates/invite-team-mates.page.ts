@@ -1,9 +1,9 @@
-import {Component} from '@angular/core';
-import {InviteTeamMatesModel} from './invite-team-mates.model';
-import {Router} from '@angular/router';
-import {SurveyServiceService} from '../services/survey-service.service';
+import { Component } from '@angular/core';
+import { InviteTeamMatesModel } from './invite-team-mates.model';
+import { Router } from '@angular/router';
+import { SurveyServiceService } from '../services/survey-service.service';
 import * as firebase from 'firebase/app';
-import {ActivatedRoute} from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 
 require('firebase/auth');
 @Component({
@@ -17,14 +17,14 @@ export class InviteTeamMatesPage {
   isAnonymously = false;
   teamName: string;
   teamData: any;
-  stage:string = "team";
-  createTeam:string = "";
-  teamId:string;
-  teamCode:string;
-  invitedToTeamName:string;
-  invitedToTeamId:string;
-  hasBeenAlreadyInvitedToATeam:boolean = false;
-  fromLoginScreen:string = 'false';
+  stage: string = 'team';
+  createTeam: string = '';
+  teamId: string;
+  teamCode: string;
+  invitedToTeamName: string;
+  invitedToTeamId: string;
+  hasBeenAlreadyInvitedToATeam: boolean = false;
+  fromLoginScreen: string = 'false';
 
 
   constructor(
@@ -36,21 +36,31 @@ export class InviteTeamMatesPage {
     this.aryMembers = [
       new InviteTeamMatesModel()
     ];
+  }
 
-    // get data if team was invited and passed from the sign up page
-    this.invitedToTeamName = this.route.snapshot.paramMap.get('teamName');
-    this.invitedToTeamId = this.route.snapshot.paramMap.get('teamId');
-    this.fromLoginScreen = this.route.snapshot.paramMap.get('fromLoginScreen');
-    console.log("invite-team-mates.teamname"+this.invitedToTeamName+this.invitedToTeamId+this.fromLoginScreen)
+  async ionViewWillEnter() {
 
-    // stage determins to show a create a new team or already invited to a team 
-    if(this.invitedToTeamName != null && this.invitedToTeamId !=null ){
-      this.stage = 'alreadyInvited';
-    }else if(this.fromLoginScreen=='true'){
-      this.stage = 'invite';
-    }else{
+    await this.route.queryParams.subscribe(params => {
+      if (params) {
+        // get data if team was invited and passed from the sign up page
+        this.invitedToTeamName = params.teamName;
+        this.invitedToTeamId = params.teamId;
+        this.fromLoginScreen = params.fromLoginScreen;
+        console.log('invite-team-mates.teamname:' + this.invitedToTeamName + ',' + this.invitedToTeamId + ',' + this.fromLoginScreen);
 
-    }
+        // stage determins to show a create a new team or already invited to a team
+        if (this.invitedToTeamName !== null
+          && this.invitedToTeamName !== undefined
+          && this.invitedToTeamId != null
+          && this.invitedToTeamId !== undefined) {
+          this.stage = 'alreadyInvited';
+        } else if (this.fromLoginScreen === 'true') {
+          this.stage = 'invite';
+        } else {
+
+        }
+      }
+    });
 
   }
 
@@ -62,53 +72,52 @@ export class InviteTeamMatesPage {
     this.aryMembers.splice(index, 1);
   }
 
-  joinTeam(){
-    console.log("Join team clicked")
-    this.stage = "join";
+  joinTeam() {
+    console.log('Join team clicked');
+    this.stage = 'join';
   }
 
-  alreadyJoinedATeam(){
+  alreadyJoinedATeam() {
     this.joinTeamWithCode(this.invitedToTeamId);
-    this.stage  = 'invite';
+    this.stage = 'invite';
 
   }
 
 
   onClickBtnInvite() {
-    
-    console.log("Team id-->"+this.teamId )
+    console.log('Team id-->' + this.teamId);
     // get the team we are inviting them to if we haven't already set it
-    if(this.teamId == ''){
+    if (this.teamId === '') {
       this.surveyService.getTeamByUserId(firebase.auth().currentUser.uid).then(teamData => {
-        console.log("Team data has been loaded...");
+        console.log('Team data has been loaded...');
         console.log(teamData)
         this.teamData = teamData;
         this.teamName = teamData.data().teamName;
-  
-       // for each invite save a team invite object 
-      this.aryMembers.forEach(member =>{
-        this.surveyService.createEmailInvite("Liam",member.email,this.teamName,this.teamName,this.teamData.id)
-      })
-  
-      })
-    }else{
-        // for each invite save a team invite object 
-       this.aryMembers.forEach(member =>{
-             // make sure they haven't already been invited
-        this.surveyService.checkIfInvitedtoAteamWithEmail(member.email).then(teamData => {
-          console.log("Team data...")
-          console.log(teamData)
-          if(teamData != null){
 
-          }else{
-            console.log("no invite...")
-            this.surveyService.createEmailInvite("Liam",member.email,this.createTeam,this.createTeam,this.teamId);
+        // for each invite save a team invite object 
+        this.aryMembers.forEach(member => {
+          this.surveyService.createEmailInvite('Liam', member.email, this.teamName, this.teamName, this.teamData.id)
+        });
+
+      })
+    } else {
+      // for each invite save a team invite object 
+      this.aryMembers.forEach(member => {
+        // make sure they haven't already been invited
+        this.surveyService.checkIfInvitedtoAteamWithEmail(member.email).then(teamData => {
+          console.log('Team data...')
+          console.log(teamData)
+          if (teamData != null) {
+
+          } else {
+            console.log('no invite...')
+            this.surveyService.createEmailInvite('Liam', member.email, this.createTeam, this.createTeam, this.teamId);
 
           }
 
-        }, function(error) {
-        // The Promise was rejected.
-        console.error(error);
+        }, function (error) {
+          // The Promise was rejected.
+          console.error(error);
         });
       })
 
@@ -118,42 +127,38 @@ export class InviteTeamMatesPage {
     this.router.navigateByUrl('app/notifications');
   }
 
-  skipInvites(){
+  skipInvites() {
     this.router.navigateByUrl('app/notifications');
   }
 
   onClickCreateTeam() {
     // get the team we are inviting them to
-    this.surveyService.createTeamByUserId(firebase.auth().currentUser.uid,this.createTeam).then(teamData => {
-      console.log("Team created...");
-      console.log(teamData)
+    this.surveyService.createTeamByUserId(firebase.auth().currentUser.uid, this.createTeam).then(teamData => {
+      console.log('Team created...');
+      console.log(teamData);
       this.teamId = teamData;
-      this.stage  = 'invite';
+      this.stage = 'invite';
     })
   }
 
   joinTeamWithCode(teamId) {
-    var myTeamId = ""
-    if(teamId==null){
+    let myTeamId = '';
+    if (teamId == null) {
       myTeamId = this.teamCode;
-    }else{
-      myTeamId = teamId
+    } else {
+      myTeamId = teamId;
     }
     // get the team we are inviting them to
-    this.surveyService.joinTeamWithCode(firebase.auth().currentUser.uid,myTeamId).then(joinedTeamData => {
+    this.surveyService.joinTeamWithCode(firebase.auth().currentUser.uid, myTeamId).then(joinedTeamData => {
       this.surveyService.getTeamByUserId(firebase.auth().currentUser.uid).then(joinedTeamData => {
-        this.teamId     = joinedTeamData.id;
-        this.teamName   = this.invitedToTeamName
+        this.teamId = joinedTeamData.id;
+        this.teamName = this.invitedToTeamName;
         this.createTeam = joinedTeamData.data().teamName;
-        this.stage      = 'invite';
-        myTeamId        = myTeamId;
+        this.stage = 'invite';
+        myTeamId = myTeamId;
 
-      })
-    })
+      });
+    });
   }
-
-
-  
-  
-
 }
+

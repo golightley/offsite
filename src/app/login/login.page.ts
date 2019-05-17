@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
-import {Router} from '@angular/router';
+import {Router, NavigationExtras} from '@angular/router';
 import {MenuController} from '@ionic/angular';
 import {Firebase} from '@ionic-native/firebase/ngx';
 
@@ -60,9 +60,14 @@ export class LoginPage implements OnInit {
       console.log(user);
       this.updateUsers(firebase.auth().currentUser);
           // this.router.navigate(['app/notifications']);
-          this.router.navigate(['/invite-team-mates', { 
-            fromLoginScreen:'true',
-           }]);
+           const navigationExtras: NavigationExtras = {
+            replaceUrl: true,
+            queryParams: {
+              fromLoginScreen: 'true'
+            }
+          };
+          this.router.navigate(['/invite-team-mates'], navigationExtras);
+
     }, err => console.log(err));
   }
 
