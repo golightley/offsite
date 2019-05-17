@@ -9,6 +9,7 @@ import { ModalController } from '@ionic/angular';
 import { PopoverController } from '@ionic/angular';
 import { PopoverReportComponent } from '../components/popover-report/popover-report.component';
 
+import { LoadingController } from '@ionic/angular';
 
 @Component({
   selector: 'app-ideas',
@@ -25,19 +26,34 @@ export class IdeasPage implements OnInit {
   ideas: IdeaModel[] = [];
   type = '';
   teamId = '';
-
+  ldc: LoadingController;
+  loading: any;
 
   constructor(
     public surveyService: SurveyServiceService,
     private http: HttpClient,
     public modalController: ModalController,
     public popoverController: PopoverController,
+    loadingController: LoadingController
 
-  ) { /*this.loadSuggestions('start');*/  this.loadIdeas(); }
+  ) {
+    this.ldc = loadingController;
+    this.loadIdeas();
+  }
 
   ngOnInit() { }
 
   ionViewWillEnter() { }
+
+  protected async presentLoading() {
+    this.loading = await this.ldc.create({
+      message: 'Please wait...',
+      mode: 'ios',
+      // spinner: 'dots',
+      // cssClass: 'loading'
+    });
+    return await this.loading.present();
+  }
 
   async setPopover(ev: Event, idea) {
     this.currentIdea = idea;
@@ -59,6 +75,7 @@ export class IdeasPage implements OnInit {
 
   loadIdeas() {
     console.log('== load Ideas ==');
+    
     let team = '';
     const that = this;
     that.ideas = [];
@@ -152,6 +169,7 @@ export class IdeasPage implements OnInit {
   // this should be moved to the service
   increaseScore(idea: IdeaModel) {
     console.log('Update score function fired...');
+    this.presentLoading();
     const body = {
       team: idea.uid,
       userId: firebase.auth().currentUser.uid,
@@ -161,14 +179,17 @@ export class IdeasPage implements OnInit {
       responseType: 'text'
     }).subscribe((data) => {
       console.log(data);
+      this.loading.dismiss();
     }, (error) => {
       console.log(error);
+      this.loading.dismiss();
     });
   }
 
   // this should be moved to the service
   decreaseScore(idea: IdeaModel) {
     console.log('Update score function fired...');
+    this.presentLoading();
     const body = {
       team: idea.uid,
       userId: firebase.auth().currentUser.uid,
@@ -178,8 +199,10 @@ export class IdeasPage implements OnInit {
       responseType: 'text'
     }).subscribe((data) => {
       console.log(data);
+      this.loading.dismiss();
     }, (error) => {
       console.log(error);
+      this.loading.dismiss();
     });
   }
 
