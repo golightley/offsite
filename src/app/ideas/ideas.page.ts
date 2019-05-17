@@ -5,8 +5,9 @@ import { SurveyServiceService } from '../services/survey-service.service';
 import { HttpClient } from '@angular/common/http';
 import { ModalPage } from '../modal/modal.page';
 import { ModalController } from '@ionic/angular';
-import { PopoverComponentComponent } from '../popover-component/popover-component.component';
+
 import { PopoverController } from '@ionic/angular';
+import { PopoverReportComponent } from '../components/popover-report/popover-report.component';
 
 
 @Component({
@@ -42,11 +43,11 @@ export class IdeasPage implements OnInit {
 
   async setPopover(ev: Event, idea) {
     this.currentIdea = idea;
-    console.log('Idea...');
+    console.log('show Report Idea Popover');
     console.log(idea);
 
     const popover = await this.popoverController.create({
-      component: PopoverComponentComponent,
+      component: PopoverReportComponent,
       event: ev,
       componentProps: {
         idea: idea.uid
@@ -79,7 +80,7 @@ export class IdeasPage implements OnInit {
    }*/
 
   loadIdeas() {
-    console.log('load ideas');
+    console.log('== load Ideas ==');
     let team = '';
     const that = this;
     that.ideas = [];
@@ -89,7 +90,7 @@ export class IdeasPage implements OnInit {
         if (doc.exists) {
           // first fetch the team ID
           console.log('Team data:', doc.data().team);
-          console.log('Team data:', doc.data());
+          console.log('User data:', doc.data());
 
           team = doc.data().teamId;
           that.teamId = team;
@@ -100,12 +101,11 @@ export class IdeasPage implements OnInit {
             .where('reported', '==', false)
             .orderBy('score', 'desc');
           query.onSnapshot((snapshot) => {
-            console.log('ideas...');
             // console.log(snapshot);
             // retrieve anything that has changed
             const changedDocs = snapshot.docChanges();
             changedDocs.forEach((change) => {
-              console.log('--load ideas--' + change.type);
+              console.log('-- Ideas onSnapshot -- ' + change.type);
               if (change.type === 'added') { // Occurs when get Ideas list.
                 that.ideas.push(new IdeaModel(change.doc.id, change.doc.data()));
               } else if (change.type === 'modified') {  // Occurs when increasing/decreasing of score.
@@ -158,8 +158,8 @@ export class IdeasPage implements OnInit {
   }
 
   makeSuggestion(suggestion) {
-    console.log('Make suggestion')
-    console.log(suggestion)
+    console.log('Make suggestion');
+    console.log(suggestion);
     this.message = suggestion.text;
 
   }
@@ -208,7 +208,7 @@ export class IdeasPage implements OnInit {
 
 
   async inputFocus() {
-    console.log('Ion focus...')
+    console.log('Ion focus...');
     const modal = await this.modalController.create({
       component: ModalPage,
       componentProps: {
