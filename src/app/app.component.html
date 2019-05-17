@@ -51,10 +51,12 @@
             </ion-item>
           </ion-menu-toggle>
         </ion-list> -->
+
+
         <ion-list>
           <ion-list-header>Account</ion-list-header>
           <ion-menu-toggle auto-hide="false" *ngFor="let p of accountPages; let i = index">
-            <ion-item [routerLink]="p.url">
+            <ion-item [routerLink]="p.url" [queryParams]="{ fromLoginScreen: 'true'}">
               <ion-icon slot="start" [src]="p.icon"></ion-icon>
               <ion-label>
                 {{p.title}}

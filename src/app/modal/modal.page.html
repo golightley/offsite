@@ -105,7 +105,7 @@
           </ion-row>
         </ion-grid>
 
-        <ion-row *ngIf= "step >= '6'">
+        <ion-row *ngIf= "step >= '6' && type =='start'">
           <ion-col>
               <ion-list>
                   <ion-list-header>
@@ -115,6 +115,26 @@
                       <ion-col>
                           <div scrollX="true" id="myFixZone">
                               <ion-button  class ="suggest-button-start" [ngStyle]="{'color': getCommentActionColor()}" *ngFor="let suggestion of startSuggestions" class ="suggest-button-start" (click)="makeSuggestion(suggestion)">
+                                  {{suggestion.text}}
+                              </ion-button>
+                          </div>
+                      </ion-col>
+                    </ion-row> 
+              </ion-list>
+          </ion-col>
+
+        </ion-row>
+
+        <ion-row *ngIf= "step >= '6' && type=='stop'">
+          <ion-col>
+              <ion-list>
+                  <ion-list-header>
+                    <ion-label>Popular Suggestions</ion-label>
+                  </ion-list-header>
+                    <ion-row>
+                      <ion-col>
+                          <div scrollX="true" id="myFixZone">
+                              <ion-button  class ="suggest-button-stop" [ngStyle]="{'color': getCommentActionColor()}" *ngFor="let suggestion of stopSuggestions" (click)="makeSuggestion(suggestion)">
                                   {{suggestion.text}}
                               </ion-button>
                           </div>

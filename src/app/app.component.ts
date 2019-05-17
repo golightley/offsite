@@ -70,6 +70,10 @@ export class AppComponent {
     this.initializeApp();
   }
 
+  setInvitePage(){
+    
+  }
+
   initializeApp() {
     this.platform.ready().then(() => {
       this.statusBar.styleDefault();

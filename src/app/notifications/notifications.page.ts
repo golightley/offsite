@@ -96,6 +96,8 @@ export class NotificationsPage implements OnInit {
 
   teamSurvey(notification) {
 
+    console.log('Sending to survey page with survey id: '+notification)
+
     if(notification.data().type=="instructional"){
       this.router.navigateByUrl(notification.data().link);
     }else if(notification.data().type=="feedback-ask"){
@@ -104,6 +106,7 @@ export class NotificationsPage implements OnInit {
     else{
       this.surveyService.myParam = notification;
       this.router.navigateByUrl('/forms-filters');
+      // this.router.navigate(['/forms-filters', { surveyId: notification.data().survey }]);
 
     }
 
