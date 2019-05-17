@@ -33,18 +33,16 @@ export class IdeasPage implements OnInit {
     public modalController: ModalController,
     public popoverController: PopoverController,
 
-  ) { /*this.loadSuggestions('start');*/ }
+  ) { /*this.loadSuggestions('start');*/  this.loadIdeas(); }
 
   ngOnInit() { }
 
-  ionViewWillEnter() {
-    this.loadIdeas();
-  }
+  ionViewWillEnter() { }
 
   async setPopover(ev: Event, idea) {
     this.currentIdea = idea;
     console.log('show Report Idea Popover');
-    console.log(idea);
+    // console.log(idea);
 
     const popover = await this.popoverController.create({
       component: PopoverReportComponent,
@@ -58,26 +56,6 @@ export class IdeasPage implements OnInit {
     popover.present();
 
   }
-
-  /*
-   loadSuggestions(type) {
-     this.startSuggestions = [];
-     const query = firebase.firestore().collection('suggestionBank')
-       .where('type', '==', type);
-     // .where('type', '==', 'comment');
-     query.onSnapshot((snapshot) => {
-       console.log('loaded suggestion bank')
-       console.log(snapshot);
-       // retrieve anything that has changed
-       const changedDocs = snapshot.docChanges();
-       changedDocs.forEach((change) => {
-         if (change.type === 'added') {
-           this.startSuggestions.push(change.doc.data());
-         } else if (change.type === 'modified') {
-         }
-       });
-     });
-   }*/
 
   loadIdeas() {
     console.log('== load Ideas ==');
@@ -94,24 +72,31 @@ export class IdeasPage implements OnInit {
 
           team = doc.data().teamId;
           that.teamId = team;
+          if (that.teamId === undefined) {
+            console.log('No selected team! returned');
+            return;
+          }
           // now get the ideas based on that team
           const query = firebase.firestore().collection('ideas')
             // .where('team', '==', 'E4ZWxJbFoDE29ywISRQY')
             .where('team', '==', team)
             .where('reported', '==', false)
-            .orderBy('score', 'desc');
+            .orderBy('score', 'desc')
+            .orderBy('timestamp', 'asc');
           query.onSnapshot((snapshot) => {
             // console.log(snapshot);
             // retrieve anything that has changed
+            console.log('-- Ideas count: ' + that.ideas.length);
             const changedDocs = snapshot.docChanges();
             changedDocs.forEach((change) => {
-              console.log('-- Ideas onSnapshot -- ' + change.type);
-              if (change.type === 'added') { // Occurs when get Ideas list.
-                that.ideas.push(new IdeaModel(change.doc.id, change.doc.data()));
-              } else if (change.type === 'modified') {  // Occurs when increasing/decreasing of score.
-                const changed_idea_index = that.ideas.findIndex(idea => idea.uid === change.doc.id);
-                that.ideas[changed_idea_index] = new IdeaModel(change.doc.id, change.doc.data());
+              // console.log('-- Ideas onSnapshot -- ' + change.type);
+              if (change.oldIndex !== -1) {
+                that.ideas.splice(change.oldIndex, 1);
               }
+              if (change.newIndex !== -1) {
+                that.ideas.splice(change.newIndex, 0, new IdeaModel(change.doc.id, change.doc.data()));
+              }
+
             });
           });
         } else {
@@ -163,14 +148,6 @@ export class IdeasPage implements OnInit {
     this.message = suggestion.text;
 
   }
-
-  // createIdea() {
-  //   // create the comment
-  //   this.surveyService.createIdea(this.teamId, this.message, this.type, this.type);
-  //   // reset the message
-  //   this.message = '';
-  // }
-
 
   // this should be moved to the service
   increaseScore(idea: IdeaModel) {
