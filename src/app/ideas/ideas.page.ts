@@ -9,7 +9,7 @@ import { ModalController } from '@ionic/angular';
 import { PopoverController } from '@ionic/angular';
 import { PopoverReportComponent } from '../components/popover-report/popover-report.component';
 
-import { LoadingController } from '@ionic/angular';
+import { LoadingService } from '../utils/loading-service';
 
 @Component({
   selector: 'app-ideas',
@@ -26,34 +26,21 @@ export class IdeasPage implements OnInit {
   ideas: IdeaModel[] = [];
   type = '';
   teamId = '';
-  ldc: LoadingController;
-  loading: any;
 
   constructor(
     public surveyService: SurveyServiceService,
     private http: HttpClient,
     public modalController: ModalController,
     public popoverController: PopoverController,
-    loadingController: LoadingController
+    public loadingService: LoadingService
 
   ) {
-    this.ldc = loadingController;
     this.loadIdeas();
   }
 
   ngOnInit() { }
 
   ionViewWillEnter() { }
-
-  protected async presentLoading() {
-    this.loading = await this.ldc.create({
-      message: 'Please wait...',
-      mode: 'ios',
-      // spinner: 'dots',
-      // cssClass: 'loading'
-    });
-    return await this.loading.present();
-  }
 
   async setPopover(ev: Event, idea) {
     this.currentIdea = idea;
@@ -73,57 +60,58 @@ export class IdeasPage implements OnInit {
 
   }
 
-  loadIdeas() {
+  async loadIdeas() {
     console.log('== load Ideas ==');
-    
-    let team = '';
-    const that = this;
-    that.ideas = [];
-    if (typeof firebase.auth === 'function') {
-      const docRef = firebase.firestore().collection('users').doc(firebase.auth().currentUser.uid);
-      docRef.get().then(function (doc) {
-        if (doc.exists) {
-          // first fetch the team ID
-          console.log('Team data:', doc.data().team);
-          console.log('User data:', doc.data());
+    await this.loadingService.doFirebase(async () => {
+      let team = '';
+      const that = this;
+      that.ideas = [];
+      if (typeof firebase.auth === 'function') {
+        const docRef = firebase.firestore().collection('users').doc(firebase.auth().currentUser.uid);
+        docRef.get().then(function (doc) {
+          if (doc.exists) {
+            // first fetch the team ID
+            console.log('Team data:', doc.data().team);
+            console.log('User data:', doc.data());
 
-          team = doc.data().teamId;
-          that.teamId = team;
-          if (that.teamId === undefined) {
-            console.log('No selected team! returned');
-            return;
-          }
-          // now get the ideas based on that team
-          const query = firebase.firestore().collection('ideas')
-            // .where('team', '==', 'E4ZWxJbFoDE29ywISRQY')
-            .where('team', '==', team)
-            .where('reported', '==', false)
-            .orderBy('score', 'desc')
-            .orderBy('timestamp', 'asc');
-          query.onSnapshot((snapshot) => {
-            // console.log(snapshot);
-            // retrieve anything that has changed
-            console.log('-- Ideas count: ' + that.ideas.length);
-            const changedDocs = snapshot.docChanges();
-            changedDocs.forEach((change) => {
-              // console.log('-- Ideas onSnapshot -- ' + change.type);
-              if (change.oldIndex !== -1) {
-                that.ideas.splice(change.oldIndex, 1);
-              }
-              if (change.newIndex !== -1) {
-                that.ideas.splice(change.newIndex, 0, new IdeaModel(change.doc.id, change.doc.data()));
-              }
+            team = doc.data().teamId;
+            that.teamId = team;
+            if (that.teamId === undefined) {
+              console.log('No selected team! returned');
+              return;
+            }
+            // now get the ideas based on that team
+            const query = firebase.firestore().collection('ideas')
+              // .where('team', '==', 'E4ZWxJbFoDE29ywISRQY')
+              .where('team', '==', team)
+              .where('reported', '==', false)
+              .orderBy('score', 'desc')
+              .orderBy('timestamp', 'asc');
+            query.onSnapshot((snapshot) => {
+              // console.log(snapshot);
+              // retrieve anything that has changed
+              console.log('-- Ideas count: ' + that.ideas.length);
+              const changedDocs = snapshot.docChanges();
+              changedDocs.forEach((change) => {
+                // console.log('-- Ideas onSnapshot -- ' + change.type);
+                if (change.oldIndex !== -1) {
+                  that.ideas.splice(change.oldIndex, 1);
+                }
+                if (change.newIndex !== -1) {
+                  that.ideas.splice(change.newIndex, 0, new IdeaModel(change.doc.id, change.doc.data()));
+                }
 
+              });
             });
-          });
-        } else {
-          // doc.data() will be undefined in this case
-          console.log('No such document!');
-        }
-      }).catch(function (error) {
-        console.log('Error getting document:', error);
-      });
-    }
+          } else {
+            // doc.data() will be undefined in this case
+            console.log('No such document!');
+          }
+        }).catch(function (error) {
+          console.log('Error getting document:', error);
+        });
+      }
+    });
   }
 
   /*improvementTypeChipSelected(type) {
@@ -167,42 +155,34 @@ export class IdeasPage implements OnInit {
   }
 
   // this should be moved to the service
-  increaseScore(idea: IdeaModel) {
+  async increaseScore(idea: IdeaModel) {
     console.log('Update score function fired...');
-    this.presentLoading();
+    
     const body = {
       team: idea.uid,
       userId: firebase.auth().currentUser.uid,
       action: 'upvote'
     };
-    this.http.post('https://us-central1-offsite-9f67c.cloudfunctions.net/updateIdeaScore', JSON.stringify(body), {
-      responseType: 'text'
-    }).subscribe((data) => {
-      console.log(data);
-      this.loading.dismiss();
-    }, (error) => {
-      console.log(error);
-      this.loading.dismiss();
+    await this.loadingService.doFirebase(async () => {
+      await this.http.post('https://us-central1-offsite-9f67c.cloudfunctions.net/updateIdeaScore', JSON.stringify(body), {
+        responseType: 'text'
+      }).toPromise();
     });
   }
 
   // this should be moved to the service
-  decreaseScore(idea: IdeaModel) {
+  async decreaseScore(idea: IdeaModel) {
     console.log('Update score function fired...');
-    this.presentLoading();
+    
     const body = {
       team: idea.uid,
       userId: firebase.auth().currentUser.uid,
       action: 'downvote'
     };
-    this.http.post('https://us-central1-offsite-9f67c.cloudfunctions.net/updateIdeaScore', JSON.stringify(body), {
-      responseType: 'text'
-    }).subscribe((data) => {
-      console.log(data);
-      this.loading.dismiss();
-    }, (error) => {
-      console.log(error);
-      this.loading.dismiss();
+    await this.loadingService.doFirebase(async () => {
+      await this.http.post('https://us-central1-offsite-9f67c.cloudfunctions.net/updateIdeaScore', JSON.stringify(body), {
+        responseType: 'text'
+      }).toPromise();
     });
   }
 
