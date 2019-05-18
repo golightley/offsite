@@ -99,7 +99,7 @@ export class SignupPage implements OnInit {
     const result = await this.loadingService.doFirebase(async () => {
       // first make sure email isn't in invite list...
       const teamData = await this.surveyService.checkIfInvitedtoAteamWithEmail(this.email);
-      console.log('Team created...');
+      console.log('get Team data...');
       console.log(teamData);
       hasBeenInvited = true;
       // create a new user in fireabase
@@ -122,6 +122,7 @@ export class SignupPage implements OnInit {
         };
         this.router.navigate(['/invite-team-mates'], navigationExtras);
       } else {
+        console.log('empty team');
         this.router.navigate(['/invite-team-mates']);
       }
       return 'registered';
