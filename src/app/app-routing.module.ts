@@ -8,6 +8,7 @@ const routes: Routes = [
   { path: 'auth/login', loadChildren: './login/login.module#LoginPageModule' },
   { path: 'auth/signup', loadChildren: './signup/signup.module#SignupPageModule' },
   { path: 'auth/forgot-password', loadChildren: './forgot-password/forgot-password.module#ForgotPasswordPageModule' },
+  { path: 'auth/forgot-email-confirm', loadChildren: './forgot-password/forgot-email-confirm/forgot-email-confirm.module#ForgotEmailConfirmPageModule' },
   { path: 'app', loadChildren: './tabs/tabs.module#TabsPageModule' },
   // { path: 'contact-card', loadChildren: './contact-card/contact-card.module#ContactCardPageModule' },
   { path: 'forms-and-validations', loadChildren: './forms/validations/forms-validations.module#FormsValidationsPageModule' },
@@ -20,6 +21,8 @@ const routes: Routes = [
   { path: 'test', loadChildren: './pages/test/test.module#TestPageModule' },
   { path: 'invite-signup/:id', loadChildren: './invite-signup/invite-signup.module#InviteSignupPageModule' },
   { path: 'manage-team', loadChildren: './manage-team/manage-team.module#ManageTeamPageModule' },
+  
+
   // { path: 'ideas', loadChildren: './ideas/ideas.module#IdeasPageModule' },
   // { path: 'modal-page', loadChildren: './modal-page/modal-page.module#ModalPagePageModule' },
   // { path: 'modal', loadChildren: './modal/modal.module#ModalPageModule' }
