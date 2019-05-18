@@ -163,11 +163,17 @@ export class IdeasPage implements OnInit {
       userId: firebase.auth().currentUser.uid,
       action: 'upvote'
     };
-    await this.loadingService.doFirebase(async () => {
-      await this.http.post('https://us-central1-offsite-9f67c.cloudfunctions.net/updateIdeaScore', JSON.stringify(body), {
+    const result =  await this.loadingService.doFirebase(async () => {
+      const resp = await this.http.post('https://us-central1-offsite-9f67c.cloudfunctions.net/updateIdeaScore', JSON.stringify(body), {
         responseType: 'text'
       }).toPromise();
-    });
+      return resp;
+    }); 
+    if ( result && result.status) {
+
+    } else {
+      console.log(result.error);
+    }
   }
 
   // this should be moved to the service
