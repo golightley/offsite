@@ -74,7 +74,7 @@ export class LoginPage implements OnInit {
       this.router.navigate(['/invite-team-mates'], navigationExtras);
     } else {
       console.log(result.error);
-      if ( result.error.message ){
+      if ( result.error.message ) {
         this.respondErrorMsg = result.error.message;
       }
     }
