@@ -44,6 +44,20 @@ export class LoadingService {
   }
 
   private handleError(error) {
-    console.log(error);
+    // console.log(error);
+    let errorMessage = '';
+    if (error.error instanceof ErrorEvent) {
+      errorMessage = `Error: ${error.error.message}`;
+    } else {
+      if (error && error.message) {
+        if (error.message !== undefined && error.message !== null) {
+          errorMessage =  `Error: ${error.message}`;
+        }
+      }
+    }
+    return {
+      error: error,
+      errorMessage: errorMessage
+    };
   }
 }
