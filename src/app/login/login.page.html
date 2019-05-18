@@ -14,7 +14,7 @@
   <form [formGroup]="loginForm" (ngSubmit)="doLogin()">
     <ion-list class="inputs-list" lines="full">
       <ion-item class="input-item">
-        <ion-input [(ngModel)]= "email" type="email" placeholder="Email" formControlName="email" clearInput autocapitalize="off" inputmode="email"></ion-input>
+        <ion-input [(ngModel)]= "email" type="email" placeholder="Email" formControlName="email" (ionFocus)="onEmailFocus()" clearInput autocapitalize="off" inputmode="email"></ion-input>
       </ion-item>
       <div class="error-container">
         <ng-container *ngFor="let validation of validation_messages.email">
@@ -27,7 +27,7 @@
 
       <ion-item class="input-item">
         <app-show-hide-password>
-          <ion-input [(ngModel)]= "password" type="password" placeholder="Password" formControlName="password"></ion-input>
+          <ion-input [(ngModel)]= "password" type="password" placeholder="Password" (ionFocus)="onPasswordFocus()" formControlName="password"></ion-input>
         </app-show-hide-password>
       </ion-item>
       <div class="error-container">
@@ -37,6 +37,12 @@
             <span>{{ validation.message }}</span>
           </div>
         </ng-container>
+      </div>
+      <div class="error-container">
+          <div class="error-message" *ngIf="respondErrorMsg">
+            <ion-icon name="information-circle-outline"></ion-icon>
+            <span>{{ respondErrorMsg }}</span>
+          </div>
       </div>
     </ion-list>
 

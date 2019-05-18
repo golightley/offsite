@@ -1,10 +1,11 @@
 import {Component, OnInit} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {Router, NavigationExtras} from '@angular/router';
-import {MenuController, LoadingController} from '@ionic/angular';
+import {MenuController} from '@ionic/angular';
 import {Firebase} from '@ionic-native/firebase/ngx';
 
 import * as firebase from 'firebase/app';
+import { LoadingService } from '../utils/loading-service';
 
 require('firebase/auth')
 
@@ -20,9 +21,7 @@ export class LoginPage implements OnInit {
 
   email = '';
   password = '';
-
-  loading: any;
-  ldc: LoadingController;
+  respondErrorMsg = '';
 
   validation_messages = {
     'email': [
@@ -31,18 +30,17 @@ export class LoginPage implements OnInit {
     ],
     'password': [
       { type: 'required', message: 'Password is required.' },
-      { type: 'minlength', message: 'Password must be at least 5 characters long.' }
+      { type: 'minlength', message: 'Password must be at least 6 characters long.' }
     ]
   };
 
   constructor(
     public router: Router,
     public menu: MenuController,
-    private firebaseCordova:Firebase,
-    loadingController: LoadingController
+    private firebaseCordova: Firebase,
+    public loadingService: LoadingService
   ) {
-    
-    this.ldc = loadingController;
+
     this.loginForm = new FormGroup({
       'email': new FormControl('test@test.com', Validators.compose([
         Validators.required,
@@ -60,43 +58,33 @@ export class LoginPage implements OnInit {
   }
 
   async doLogin() {
-    console.log('do Log In');
-    await this.doFirebase(async () => {
-      firebase.auth().signInWithEmailAndPassword(this.email, this.password)
-      .then(user => {
-        console.log(user);
-        this.updateUsers(firebase.auth().currentUser);
-        // this.router.navigate(['app/notifications']);
-          const navigationExtras: NavigationExtras = {
-          replaceUrl: true,
-          queryParams: {
-            fromLoginScreen: 'true'
-          }
-        };
-        this.router.navigate(['/invite-team-mates'], navigationExtras);
-      }, err => console.log(err));
+    const result = await this.loadingService.doFirebase(async () => {
+      const resp = await firebase.auth().signInWithEmailAndPassword(this.email, this.password);
+      return resp;
     });
-  }
-
-  protected async presentLoading() {
-    this.loading = await this.ldc.create({
-      message: 'Please wait...',
-      mode: 'ios',
-      // spinner: 'dots',
-      // cssClass: 'loading'
-    });
-    return await this.loading.present();
-  }
-
-  protected async doFirebase(fn) {
-    await this.presentLoading();
-    try {
-      return await fn();
-    } catch (error) {
-      console.log(error);
-    } finally {
-      await this.loading.dismiss();
+    if ( result && result.user) {
+      // console.log(result.user);
+      this.updateUsers(firebase.auth().currentUser);
+      const navigationExtras: NavigationExtras = {
+        replaceUrl: true,
+        queryParams: {
+          fromLoginScreen: 'true'
+        }
+      };
+      this.router.navigate(['/invite-team-mates'], navigationExtras);
+    } else {
+      console.log(result.error);
+      if ( result.error.message ){
+        this.respondErrorMsg = result.error.message;
+      }
     }
+  }
+
+  onEmailFocus() {
+    this.respondErrorMsg = '';
+  }
+  onPasswordFocus() {
+    this.respondErrorMsg = '';
   }
 
   private updateUsers(user: firebase.User) {
@@ -111,7 +99,7 @@ export class LoginPage implements OnInit {
       console.log('Error fired');
       console.log(error);
     });
-    
+
     // const params = {
     //   name: user.displayName,
     //   email: user.email,
@@ -142,7 +130,7 @@ export class LoginPage implements OnInit {
     this.router.navigate(['app/categories']);
   }
 
-  updateToken(token:string, uid:string):void {
+  updateToken(token: string, uid: string): void {
 
     firebase.firestore().collection('users').doc(uid).update({
       'token': token,
