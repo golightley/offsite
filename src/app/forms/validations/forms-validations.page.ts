@@ -26,7 +26,7 @@ export class FormsValidationsPage implements OnInit {
   validations = {
     'username': [
       { type: 'required', message: 'Username is required.' },
-      { type: 'minlength', message: 'Username must be at least 5 characters long.' },
+      { type: 'minlength', message: 'Username must be at least 6 characters long.' },
       { type: 'maxlength', message: 'Username cannot be more than 25 characters long.' },
       { type: 'pattern', message: 'Your username must contain only numbers and letters.' },
       { type: 'usernameNotAvailable', message: 'Your username is already taken.' }
@@ -47,7 +47,7 @@ export class FormsValidationsPage implements OnInit {
     ],
     'password': [
       { type: 'required', message: 'Password is required.' },
-      { type: 'minlength', message: 'Password must be at least 5 characters long.' },
+      { type: 'minlength', message: 'Password must be at least 6 characters long.' },
       { type: 'pattern', message: 'Your password must contain at least one uppercase, one lowercase and one number.' }
     ],
     'confirm_password': [
