@@ -10,6 +10,7 @@ import { PopoverController } from '@ionic/angular';
 import { PopoverReportComponent } from '../components/popover-report/popover-report.component';
 
 import { LoadingService } from '../utils/loading-service';
+import { async } from '@angular/core/testing';
 
 @Component({
   selector: 'app-ideas',
@@ -67,8 +68,8 @@ export class IdeasPage implements OnInit {
       const that = this;
       that.ideas = [];
       if (typeof firebase.auth === 'function') {
-        const docRef = firebase.firestore().collection('users').doc(firebase.auth().currentUser.uid);
-        docRef.get().then(function (doc) {
+        const docRef = await firebase.firestore().collection('users').doc(firebase.auth().currentUser.uid);
+        await docRef.get().then(async(doc) => {
           if (doc.exists) {
             // first fetch the team ID
             console.log('Team data:', doc.data().team);
@@ -81,7 +82,7 @@ export class IdeasPage implements OnInit {
               return;
             }
             // now get the ideas based on that team
-            const query = firebase.firestore().collection('ideas')
+            const query = await firebase.firestore().collection('ideas')
               // .where('team', '==', 'E4ZWxJbFoDE29ywISRQY')
               .where('team', '==', team)
               .where('reported', '==', false)
@@ -90,7 +91,7 @@ export class IdeasPage implements OnInit {
             query.onSnapshot((snapshot) => {
               // console.log(snapshot);
               // retrieve anything that has changed
-              console.log('-- Ideas count: ' + that.ideas.length);
+              console.log('-- Changed ideas count: ' + that.ideas.length);
               const changedDocs = snapshot.docChanges();
               changedDocs.forEach((change) => {
                 // console.log('-- Ideas onSnapshot -- ' + change.type);
@@ -100,7 +101,6 @@ export class IdeasPage implements OnInit {
                 if (change.newIndex !== -1) {
                   that.ideas.splice(change.newIndex, 0, new IdeaModel(change.doc.id, change.doc.data()));
                 }
-
               });
             });
           } else {
@@ -112,6 +112,7 @@ export class IdeasPage implements OnInit {
         });
       }
     });
+
   }
 
   /*improvementTypeChipSelected(type) {
@@ -157,7 +158,6 @@ export class IdeasPage implements OnInit {
   // this should be moved to the service
   async increaseScore(idea: IdeaModel) {
     console.log('Update score function fired...');
-    
     const body = {
       team: idea.uid,
       userId: firebase.auth().currentUser.uid,
@@ -168,28 +168,35 @@ export class IdeasPage implements OnInit {
         responseType: 'text'
       }).toPromise();
       return resp;
-    }); 
-    if ( result && result.status) {
-
-    } else {
+    });
+    if (!result || !result.status) {
       console.log(result.error);
+      if (result.errorMessage) {
+        console.log(result.errorMessage);
+      }
     }
   }
 
   // this should be moved to the service
   async decreaseScore(idea: IdeaModel) {
     console.log('Update score function fired...');
-    
     const body = {
       team: idea.uid,
       userId: firebase.auth().currentUser.uid,
       action: 'downvote'
     };
-    await this.loadingService.doFirebase(async () => {
-      await this.http.post('https://us-central1-offsite-9f67c.cloudfunctions.net/updateIdeaScore', JSON.stringify(body), {
+    const result = await this.loadingService.doFirebase(async () => {
+      const resp = await this.http.post('https://us-central1-offsite-9f67c.cloudfunctions.net/updateIdeaScore', JSON.stringify(body), {
         responseType: 'text'
       }).toPromise();
+      return resp;
     });
+    if (!result || !result.status) {
+      console.log(result.error);
+      if (result.errorMessage) {
+        console.log(result.errorMessage);
+      }
+    }
   }
 
 
