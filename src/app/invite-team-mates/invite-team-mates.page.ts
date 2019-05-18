@@ -57,7 +57,7 @@ export class InviteTeamMatesPage {
         } else if (this.fromLoginScreen === 'true') {
           this.stage = 'invite';
         } else {
-
+          this.stage = 'team';
         }
       }
     });
