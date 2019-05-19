@@ -232,11 +232,8 @@ export class SurveyServiceService {
   }
 
   createTeamByUserId(userId, teamName) {
-
-
     return new Promise<any>((resolve, reject) => {
-      var that = this;
-      // firebase.firestore().collection('teams').add({
+      const that = this;
       firebase.firestore().collection('teams').add({
         active: true,
         memembersids: [userId],
@@ -246,56 +243,48 @@ export class SurveyServiceService {
         teamName: teamName,
         createdBy: userId,
         teamCreated: firebase.firestore.FieldValue.serverTimestamp()
-      }).then(function (docRef) {
+      }).then(async(docRef) => {
         console.log(' Team created with ID: ', docRef.id);
         // create survey questions for the team utilizing cloud functions
-        that.callCreateSurveyCloudFunction(docRef.id);
-        that.updateUserWithTeamId(userId, docRef.id);
-
+        await that.callCreateSurveyCloudFunction(docRef.id);
+        await that.updateUserWithTeamId(userId, docRef.id);
         resolve(docRef.id);
       }).catch(function (error) {
         console.error('Error creating sruvey document: ', error);
-        reject(error)
+        reject(error);
       });
     });
   }
 
-  updateUserWithTeamId(userId, teamId) {
-
-    var userRef = firebase.firestore().collection('users').doc(userId);
-
-    // Set the 'capital' field of the city 'DC'
-    userRef.update({
-      teamId: teamId
-    })
-      .then(function () {
-        console.log('Document successfully updated!');
-      })
-      .catch(function (error) {
-        // The document probably doesn't exist.
-        console.error('Error updating document: ', error);
-      });
-  }
-
-  callCreateSurveyCloudFunction(teamId) {
-
-    console.log('Calling cloud function... ')
-
-    let body = {
+  async callCreateSurveyCloudFunction(teamId) {
+    console.log('Calling cloud function... ');
+    const body = {
       teamId: teamId,
       userId: firebase.auth().currentUser.uid
+    };
+    try {
+      const resp = await this.http.post('//us-central1-offsite-9f67c.cloudfunctions.net/createPulseChecks', JSON.stringify(body), {
+        responseType: 'text'
+      }).toPromise();
+      console.log(resp);
+      return resp;
+    } catch (error) {
+      console.log(error);
     }
 
-    this.http.post('//us-central1-offsite-9f67c.cloudfunctions.net/createPulseChecks', JSON.stringify(body), {
-      responseType: 'text'
-    }).subscribe((data) => {
-      console.log(data)
-    }, (error) => {
-      console.log(error)
-    })
+  }
 
+  async updateUserWithTeamId(userId, teamId) {
 
-
+    try {
+      await firebase.firestore().collection('users').doc(userId).update({
+        teamId: teamId
+      });
+      console.log('User\'s teamID successfully updated!');
+    } catch (error) {
+      // The document probably doesn't exist.
+      console.error('Error updating user: ', error);
+    }
   }
 
   joinTeamWithCode(myUserId, teamId) {

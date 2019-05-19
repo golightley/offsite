@@ -1,13 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { Validators, FormGroup, FormControl } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, NavigationExtras } from '@angular/router';
 import { ModalController, MenuController } from '@ionic/angular';
-import {SurveyServiceService} from '../services/survey-service.service';
+import { SurveyServiceService } from '../services/survey-service.service';
 import { TermsOfServicePage } from '../terms-of-service/terms-of-service.page';
 import { PrivacyPolicyPage } from '../privacy-policy/privacy-policy.page';
 import { PasswordValidator } from '../validators/password.validator';
 import * as firebase from 'firebase/app';
-require('firebase/auth')
+import { LoadingService } from '../utils/loading-service';
+require('firebase/auth');
 
 
 @Component({
@@ -21,11 +22,10 @@ export class SignupPage implements OnInit {
   signupForm: FormGroup;
   matching_passwords_group: FormGroup;
 
-  //vars
-  name:string = "";
-  email:string = "";
-  password:string = "";
-
+  name = '';
+  email = '';
+  password = '';
+  respondErrorMsg = '';
 
   validation_messages = {
     'email': [
@@ -34,7 +34,7 @@ export class SignupPage implements OnInit {
     ],
     'password': [
       { type: 'required', message: 'Password is required.' },
-      { type: 'minlength', message: 'Password must be at least 5 characters long.' }
+      { type: 'minlength', message: 'Password must be at least 6 characters long.' }
     ],
     'confirm_password': [
       { type: 'required', message: 'Confirm password is required' }
@@ -48,12 +48,13 @@ export class SignupPage implements OnInit {
     public router: Router,
     public modalController: ModalController,
     public menu: MenuController,
-    public surveyService: SurveyServiceService
+    public surveyService: SurveyServiceService,
+    public loadingService: LoadingService
 
   ) {
     this.matching_passwords_group = new FormGroup({
       'password': new FormControl('', Validators.compose([
-        Validators.minLength(5),
+        Validators.minLength(6),
         Validators.required
       ])),
       'confirm_password': new FormControl('', Validators.required)
@@ -62,7 +63,7 @@ export class SignupPage implements OnInit {
     });
 
     this.signupForm = new FormGroup({
-      'name' : new FormControl(''),
+      'name': new FormControl(''),
       'email': new FormControl('test@test.com', Validators.compose([
         Validators.required,
         Validators.pattern('^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+$')
@@ -89,51 +90,53 @@ export class SignupPage implements OnInit {
     return await modal.present();
   }
 
-  doSignup() {
-    console.log('do sign up');
-    var hasBeenInvited = false;
+  async doSignup() {
+    let hasBeenInvited = false;
     this.surveyService.email = this.email;
-    console.log("Name"+this.name)
-    console.log("Email"+this.email)
+    console.log('Name: ' + this.name);
+    console.log('Email: ' + this.email);
 
-    // first make sure email isn't in invite list...
-    this.surveyService.checkIfInvitedtoAteamWithEmail(this.email).then(teamData => {
-      console.log("Team created...");
-      console.log(teamData)
+    const result = await this.loadingService.doFirebase(async () => {
+      // first make sure email isn't in invite list...
+      const teamData = await this.surveyService.checkIfInvitedtoAteamWithEmail(this.email);
+      console.log('get Team data...');
+      console.log(teamData);
       hasBeenInvited = true;
-      
-    // create a new user in fireabase 
-      firebase.auth().createUserWithEmailAndPassword(this.email, this.password).then(data => {
-        const newUser = data.user;
+      // create a new user in fireabase
+      const userData = await firebase.auth().createUserWithEmailAndPassword(this.email, this.password);
+      // create the first field in user table
+      const params = {
+        name: this.name,
+        email: userData.user.email,
+        loggedAt: Date.now()
+      };
+      await firebase.firestore().collection('users').doc(userData.user.uid).set(params);
+      // if they were invited to a team, then pass in the team data
+      if (teamData !== null) {
+        const navigationExtras: NavigationExtras = {
+          replaceUrl: true,
+          queryParams: {
+            teamName: teamData.data().team,
+            teamId: teamData.data().teamId
+          }
+        };
+        this.router.navigate(['/invite-team-mates'], navigationExtras);
+      } else {
+        console.log('empty team');
+        this.router.navigate(['/invite-team-mates']);
+      }
+      return 'registered';
+    });
 
-    // create the first field in user table 
-          this.updateUsers(newUser,this.name)
-            .then(() => {
-
-    // if they were invited to a team, then pass in the team data 
-              if(teamData!= null){
-                this.router.navigate(['/invite-team-mates', { 
-                  teamName: teamData.data().team,
-                  teamId:teamData.data().teamId
-                 }]);
-              }else{
-                this.router.navigate(['/invite-team-mates']);        
-              }
-            }, err => console.error(err));
-      }, err => console.log(err));
-  }, function(error) {
-    // The Promise was rejected.
-    
-    console.error(error);
-  });
+    if (result !== 'registered') {
+      console.log(result.error);
+      if ( result.error.message ) {
+        this.respondErrorMsg = result.error.message;
+      }
+    }
   }
 
-  private updateUsers(user: firebase.User,name) {
-    const params = {
-      name: name,
-      email: user.email,
-      loggedAt: Date.now()
-    };
-    return firebase.firestore().collection('users').doc(user.uid).set(params);
+  onEmailFocus() {
+    this.respondErrorMsg = '';
   }
 }

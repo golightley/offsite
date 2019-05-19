@@ -1,0 +1,33 @@
+// Custom variables
+// Note:  These ones were added by us and have nothing to do with Ionic CSS Custom Properties
+:host {
+    --page-margin: var(--app-broad-margin);
+    --page-background: var(--app-background-shade);
+  }
+  
+  // Note:  All the CSS variables defined below are overrides of Ionic elements CSS Custom Properties
+  .forgot-email-confirm {
+    --background: var(--page-background);
+    --padding-start: var(--page-margin);
+    --padding-end: var(--page-margin);
+    --padding-top: var(--page-margin);
+    --padding-bottom: var(--page-margin);
+  
+    .auth-title {
+      color: var(--ion-color-primary);
+      font-weight: bold;
+      margin-top: calc(var(--page-margin) / 2);
+      margin-bottom: calc(var(--page-margin) * (3/2));
+      letter-spacing: 0.6px;
+    }
+  
+    .recover-message {
+      color: var(--ion-color-medium);
+      margin: calc(var(--page-margin) / 2) 0px;
+    }
+    .done-btn {
+        margin-top: 30px !important;
+      margin: calc(var(--page-margin) / 2) 0px;
+    }
+  }
+  

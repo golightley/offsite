@@ -4,6 +4,8 @@ import { Router } from '@angular/router';
 import { SurveyServiceService } from '../services/survey-service.service';
 import * as firebase from 'firebase/app';
 import { ActivatedRoute } from '@angular/router';
+import { ToastController } from '@ionic/angular';
+import { LoadingService } from '../utils/loading-service';
 
 require('firebase/auth');
 @Component({
@@ -31,6 +33,8 @@ export class InviteTeamMatesPage {
     private router: Router,
     public surveyService: SurveyServiceService,
     private route: ActivatedRoute,
+    private toastController: ToastController,
+    private loadingService: LoadingService
 
   ) {
     this.aryMembers = [
@@ -57,7 +61,7 @@ export class InviteTeamMatesPage {
         } else if (this.fromLoginScreen === 'true') {
           this.stage = 'invite';
         } else {
-
+          this.stage = 'team';
         }
       }
     });
@@ -119,7 +123,7 @@ export class InviteTeamMatesPage {
           // The Promise was rejected.
           console.error(error);
         });
-      })
+      });
 
     }
 
@@ -131,14 +135,29 @@ export class InviteTeamMatesPage {
     this.router.navigateByUrl('app/notifications');
   }
 
-  onClickCreateTeam() {
-    // get the team we are inviting them to
-    this.surveyService.createTeamByUserId(firebase.auth().currentUser.uid, this.createTeam).then(teamData => {
-      console.log('Team created...');
-      console.log(teamData);
-      this.teamId = teamData;
-      this.stage = 'invite';
-    })
+  async onClickCreateTeam() {
+    if ( this.createTeam === '') {
+      const toast = await this.toastController.create({
+        message: 'Please input your team name.',
+        closeButtonText: 'close',
+        showCloseButton: true,
+        duration: 2000
+      });
+      toast.present();
+      return;
+    }
+    const result = await this.loadingService.doFirebase(async() => {
+      // get the team we are inviting them to
+      const teamData = await this.surveyService.createTeamByUserId(firebase.auth().currentUser.uid, this.createTeam);
+      return teamData;
+    });
+    if ( result && result.error === undefined) {
+        console.log('Team created...');
+        this.teamId = result;
+        this.stage = 'invite';
+    } else {
+      console.log(result.error);
+    }
   }
 
   joinTeamWithCode(teamId) {
