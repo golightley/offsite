@@ -4,7 +4,8 @@ import { TeamMemberRole } from '../invite-team-mates/invite-team-mates.model';
 import { TeammatesModel } from '../feedback/feedback-content/feedback-content.model';
 // import {NotificationsPage} from '../notifications/notifications.page';
 import { HttpClientModule, HttpClient } from '@angular/common/http';
-
+import { LoadingService } from './loading-service';
+import { async } from '@angular/core/testing';
 @Injectable({
   providedIn: 'root'
 })
@@ -20,7 +21,13 @@ export class SurveyServiceService {
   public team: any;
 
 
-  constructor(private http: HttpClient) { }
+  constructor(
+    private http: HttpClient,
+    public loadingService: LoadingService
+  )
+  {
+
+  }
 
   //get notifcations for tab 1 of interface
   getNotifications(userID) {
@@ -95,22 +102,23 @@ export class SurveyServiceService {
 
   }
 
-  // pull questions
-  getQuestions(surveyId: string) {
+  async getQuestions(surveyId: string) {
     const questions = [];
-
-    // pull each question from firebase
-    return new Promise<any>((resolve, reject) => {
-      firebase.firestore().collection('questions').where('surveys', 'array-contains', surveyId).get()
-        .then(questionData => {
-          questionData.forEach(doc => {
-            questions.push(doc);
-          });
-          resolve(questions);
-        }, err => reject(err));
-    });
-  }
-
+    const result = await this.loadingService.doFirebase(async() => {
+      const docs = await firebase.firestore().collection('questions').where('surveys', 'array-contains', surveyId);
+      await docs.get().then(async(questionData) => {
+        questionData.forEach(doc => {
+          questions.push(doc);
+        });
+      })
+      .catch(error => {
+        return 'error';
+      })
+    return questions;
+  })
+  return result;
+}
+ 
   // pull questions for results tab
   getResults(userID, goal) {
     const questions = [];
@@ -231,29 +239,33 @@ export class SurveyServiceService {
 
   }
 
-  createTeamByUserId(userId, teamName) {
-    return new Promise<any>((resolve, reject) => {
-      const that = this;
-      firebase.firestore().collection('teams').add({
-        active: true,
-        memembersids: [userId],
-        members: {
-          uid: userId
-        },
-        teamName: teamName,
-        createdBy: userId,
-        teamCreated: firebase.firestore.FieldValue.serverTimestamp()
-      }).then(async(docRef) => {
-        console.log(' Team created with ID: ', docRef.id);
-        // create survey questions for the team utilizing cloud functions
-        await that.callCreateSurveyCloudFunction(docRef.id);
-        await that.updateUserWithTeamId(userId, docRef.id);
-        resolve(docRef.id);
-      }).catch(function (error) {
-        console.error('Error creating sruvey document: ', error);
-        reject(error);
+  async createTeamByUserId(userId, teamName) {
+    const result = await this.loadingService.doFirebase(async() => {
+      return new Promise<any>((resolve, reject) => {
+        const that = this;
+        firebase.firestore().collection('teams').add({
+          active: true,
+          memembersids: [userId],
+          members: {
+            uid: userId
+          },
+          teamName: teamName,
+          createdBy: userId,
+          teamCreated: firebase.firestore.FieldValue.serverTimestamp()
+        }).then(async(docRef) => {
+          console.log(' Team created with ID: ', docRef.id);
+          console.log(docRef);
+          // create survey questions for the team utilizing cloud functions
+          await that.callCreateSurveyCloudFunction(docRef.id);
+          await that.updateUserWithTeamId(userId, docRef.id);
+          resolve(docRef.id);
+        }).catch(function (error) {
+          console.error('Error creating sruvey document: ', error);
+          reject(error);
+        });
       });
     });
+    return result;
   }
 
   async callCreateSurveyCloudFunction(teamId) {
@@ -360,22 +372,25 @@ export class SurveyServiceService {
     });
   }
 
-  // submit survey response
-  submitSurvey(surveyResponses) {
+  async submitSurvey(surveyResponses) {
     console.log(Object.entries(surveyResponses));
     this.responses = Object.entries(surveyResponses);
-    this.responses.forEach((response) => {
-      this.updateDocument(response);
-      this.createResponse(response);
-      if (typeof response[1] === 'string') {
-        console.log(response[1]);
-        // if does not contain a number then save as a comment
-        if (!((response[1].includes('1') || response[1].includes('2') || response[1].includes('3') || response[1].includes('4')))) {
-          this.createComment(response[0], response[1], 'feedback', '');
+    const result = await this.loadingService.doFirebase(async() => {
+      this.responses.forEach((response) => {
+        this.updateDocument(response);
+        this.createResponse(response);
+        if (typeof response[1] === 'string') {
+          console.log(response[1]);
+          // if does not contain a number then save as a comment
+          if (!((response[1].includes('1') || response[1].includes('2') || response[1].includes('3') || response[1].includes('4')))) {
+            this.createComment(response[0], response[1], 'feedback', '');
+          }
         }
-      }
+      });
     });
+    return result;
   }
+
 
 
 

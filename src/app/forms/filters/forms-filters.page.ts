@@ -5,7 +5,7 @@ import {AlertController, NavController} from '@ionic/angular';
 import {QuestionModel, QuestionType} from '../../deals/listing/deals-listing.model';
 import { Vibration } from '@ionic-native/vibration/ngx';
 import { ActivatedRoute } from '@angular/router';
-
+import { LoadingService } from '../../services/loading-service';
 @Component({
   selector: 'forms-filters-page',
   templateUrl: './forms-filters.page.html',
@@ -23,6 +23,7 @@ export class FormsFiltersPage implements OnInit {
     private navCtrl: NavController,
     public alertController: AlertController,
     private vibration: Vibration,
+    public loadingService: LoadingService,
     private route: ActivatedRoute
     ) {
     this.radioTagsForm = new FormGroup({
@@ -33,11 +34,12 @@ export class FormsFiltersPage implements OnInit {
     // get questions based on survey passed in notifications
     this.getQuestions();
   }
-  getQuestions() {
+  async getQuestions() {
     const surveyId = this.surveyService.myParam.data().survey;
     
     console.log('form-filters.qetQuestions.Fetching questions with ID:'+surveyId)
-    this.surveyService.getQuestions(surveyId).then(questionData => {
+    const questionData = await this.surveyService.getQuestions(surveyId);
+    if (questionData != 'error') {
       questionData.forEach(data => {
         const question = new QuestionModel(data.id, data.data());
         this.questions.push(question);
@@ -47,14 +49,17 @@ export class FormsFiltersPage implements OnInit {
           this.responses[question.id] = '1';
         }
       });
-      console.log(this.questions);
-      console.log('Responses', this.responses);
-    });
+    } else {
+      
+    }
+    console.log(this.questions);
+    console.log('Responses', this.responses);
   }
-  submitSurvey() {
+
+  async submitSurvey() {
     // iterate through each survey response=
     this.surveyService.responses = this.responses;  
-    this.surveyService.submitSurvey(this.responses);
+    await this.surveyService.submitSurvey(this.responses);
     // this.presentAlert();
     this.surveyService.markSurveyComplete(this.surveyService.myParam.id);
     this.navCtrl.navigateBack('app/categories');

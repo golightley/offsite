@@ -5,7 +5,7 @@ import { SurveyServiceService } from '../services/survey-service.service';
 import * as firebase from 'firebase/app';
 import { ActivatedRoute } from '@angular/router';
 import { ToastController } from '@ionic/angular';
-import { LoadingService } from '../utils/loading-service';
+import { LoadingService } from '../services/loading-service';
 
 require('firebase/auth');
 @Component({
