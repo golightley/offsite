@@ -7,7 +7,7 @@ import { TermsOfServicePage } from '../terms-of-service/terms-of-service.page';
 import { PrivacyPolicyPage } from '../privacy-policy/privacy-policy.page';
 import { PasswordValidator } from '../validators/password.validator';
 import * as firebase from 'firebase/app';
-import { LoadingService } from '../utils/loading-service';
+import { LoadingService } from '../services/loading-service';
 require('firebase/auth');
 
 
@@ -91,7 +91,6 @@ export class SignupPage implements OnInit {
   }
 
   async doSignup() {
-    let hasBeenInvited = false;
     this.surveyService.email = this.email;
     console.log('Name: ' + this.name);
     console.log('Email: ' + this.email);
@@ -101,7 +100,6 @@ export class SignupPage implements OnInit {
       const teamData = await this.surveyService.checkIfInvitedtoAteamWithEmail(this.email);
       console.log('get Team data...');
       console.log(teamData);
-      hasBeenInvited = true;
       // create a new user in fireabase
       const userData = await firebase.auth().createUserWithEmailAndPassword(this.email, this.password);
       // create the first field in user table

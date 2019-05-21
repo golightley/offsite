@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Validators, FormGroup, FormControl } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MenuController } from '@ionic/angular';
-import { LoadingService } from '../utils/loading-service';
+import { LoadingService } from '../services/loading-service';
 import * as firebase from 'firebase/app';
 
 require('firebase/auth');

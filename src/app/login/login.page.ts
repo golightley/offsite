@@ -5,7 +5,7 @@ import {MenuController} from '@ionic/angular';
 import {Firebase} from '@ionic-native/firebase/ngx';
 
 import * as firebase from 'firebase/app';
-import { LoadingService } from '../utils/loading-service';
+import { LoadingService } from '../services/loading-service';
 
 require('firebase/auth')
 
@@ -68,7 +68,7 @@ export class LoginPage implements OnInit {
       const navigationExtras: NavigationExtras = {
         replaceUrl: true,
         queryParams: {
-          fromLoginScreen: 'true'
+          fromLoginScreen: 'false'
         }
       };
       this.router.navigate(['/invite-team-mates'], navigationExtras);

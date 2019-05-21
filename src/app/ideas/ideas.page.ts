@@ -9,8 +9,7 @@ import { ModalController } from '@ionic/angular';
 import { PopoverController } from '@ionic/angular';
 import { PopoverReportComponent } from '../components/popover-report/popover-report.component';
 
-import { LoadingService } from '../utils/loading-service';
-import { async } from '@angular/core/testing';
+import { LoadingService } from '../services/loading-service';
 
 @Component({
   selector: 'app-ideas',
