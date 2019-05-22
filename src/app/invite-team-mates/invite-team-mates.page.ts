@@ -5,8 +5,6 @@ import { SurveyServiceService } from '../services/survey-service.service';
 import * as firebase from 'firebase/app';
 import { ActivatedRoute } from '@angular/router';
 import { ToastController } from '@ionic/angular';
-import { LoadingService } from '../services/loading-service';
-
 require('firebase/auth');
 @Component({
   selector: 'app-invite-team-mates',
@@ -33,9 +31,7 @@ export class InviteTeamMatesPage {
     private router: Router,
     public surveyService: SurveyServiceService,
     private route: ActivatedRoute,
-    private toastController: ToastController,
-    private loadingService: LoadingService
-
+    private toastController: ToastController
   ) {
     this.aryMembers = [
       new InviteTeamMatesModel()
@@ -88,46 +84,10 @@ export class InviteTeamMatesPage {
   }
 
 
-  onClickBtnInvite() {
+  async onClickBtnInvite() {
     console.log('Team id-->' + this.teamId);
-    // get the team we are inviting them to if we haven't already set it
-    if (this.teamId === '') {
-      this.surveyService.getTeamByUserId(firebase.auth().currentUser.uid).then(teamData => {
-        console.log('Team data has been loaded...');
-        console.log(teamData)
-        this.teamData = teamData;
-        this.teamName = teamData.data().teamName;
-
-        // for each invite save a team invite object 
-        this.aryMembers.forEach(member => {
-          this.surveyService.createEmailInvite('Liam', member.email, this.teamName, this.teamName, this.teamData.id)
-        });
-
-      })
-    } else {
-      // for each invite save a team invite object 
-      this.aryMembers.forEach(member => {
-        // make sure they haven't already been invited
-        this.surveyService.checkIfInvitedtoAteamWithEmail(member.email).then(teamData => {
-          console.log('Team data...')
-          console.log(teamData)
-          if (teamData != null) {
-
-          } else {
-            console.log('no invite...')
-            this.surveyService.createEmailInvite('Liam', member.email, this.createTeam, this.createTeam, this.teamId);
-
-          }
-
-        }, function (error) {
-          // The Promise was rejected.
-          console.error(error);
-        });
-      });
-
-    }
-
-
+    await this.surveyService.inviteTeamMembers(this.aryMembers, this.teamId, this.createTeam);
+    console.log(' **** Sent all invite email **** ');
     this.router.navigateByUrl('app/notifications');
   }
 
@@ -146,17 +106,14 @@ export class InviteTeamMatesPage {
       toast.present();
       return;
     }
-    const result = await this.loadingService.doFirebase(async() => {
-      // get the team we are inviting them to
-      const teamData = await this.surveyService.createTeamByUserId(firebase.auth().currentUser.uid, this.createTeam);
-      return teamData;
-    });
-    if ( result && result.error === undefined) {
+    // get the team we are inviting them to
+    const data = await this.surveyService.createTeamByUserId(firebase.auth().currentUser.uid, this.createTeam);
+    if ( data && data.error === undefined) {
         console.log('Team created...');
-        this.teamId = result;
+        this.teamId = data;
         this.stage = 'invite';
     } else {
-      console.log(result.error);
+      console.log(data.error);
     }
   }
 
