@@ -9,9 +9,9 @@ import { ModalController } from '@ionic/angular';
 import { PopoverController } from '@ionic/angular';
 import { PopoverReportComponent } from '../components/popover-report/popover-report.component';
 
-import { LoadingService } from '../utils/loading-service';
+import { LoadingService } from '../services/loading-service';
 import { async } from '@angular/core/testing';
-
+require('firebase/auth');
 @Component({
   selector: 'app-ideas',
   templateUrl: './ideas.page.html',
@@ -36,7 +36,11 @@ export class IdeasPage implements OnInit {
     public loadingService: LoadingService
 
   ) {
-    this.loadIdeas();
+    firebase.auth().onAuthStateChanged(user => {
+      if (user) {
+        this.loadIdeas();
+      }
+    });
   }
 
   ngOnInit() { }
@@ -58,16 +62,21 @@ export class IdeasPage implements OnInit {
       showBackdrop: true
     });
     popover.present();
-
   }
 
   async loadIdeas() {
+    
     console.log('== load Ideas ==');
     await this.loadingService.doFirebase(async () => {
       let team = '';
       const that = this;
       that.ideas = [];
       if (typeof firebase.auth === 'function') {
+        firebase.auth().onAuthStateChanged(user => {
+          if (user) {
+            
+          }
+        });
         const docRef = await firebase.firestore().collection('users').doc(firebase.auth().currentUser.uid);
         await docRef.get().then(async(doc) => {
           if (doc.exists) {
@@ -209,10 +218,8 @@ export class IdeasPage implements OnInit {
         'prop2': 'test2'
       }
     });
-
     await modal.present();
   }
-
 }
 
 

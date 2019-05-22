@@ -5,7 +5,7 @@ import {MenuController} from '@ionic/angular';
 import {Firebase} from '@ionic-native/firebase/ngx';
 
 import * as firebase from 'firebase/app';
-import { LoadingService } from '../utils/loading-service';
+import { LoadingService } from '../services/loading-service';
 
 require('firebase/auth')
 

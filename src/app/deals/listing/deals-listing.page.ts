@@ -84,43 +84,42 @@ export class DealsListingPage implements OnInit {
       });
       console.log(this.results);
     });
-  
-  
-  
   }
 
   updateListner(goal){
-    
     // this.unsubscribe();
     this.results = [];
     this.attachResultListener(goal);
     this.createChart("1")
-
-
   }
 
   attachResultListener(goal){
-
     // entering attach listner
     console.log("Entering attached listner")
 
     // get the team ID of the signed in user
     var teamId; 
-    var userId = firebase.auth().currentUser.uid
-    console.log("User id"+ userId);
-    console.log("Goal"+goal);
-
-
-    if(goal=='pulse') {
-      // get team id
-      this.surveyService.getTeamId(userId).then((teamId) => {
-        this.getQuestions(goal,teamId.data().teamId)
-      });
-    }else{
-      // get user id
-      this.getQuestions(goal,userId)
-    }
-
+    const DealsListingPage = this;
+    firebase.auth().onAuthStateChanged(user => {
+      if (user) {
+        var userId = user.uid;
+        // User is signed in.
+        console.log("User id"+ userId);
+        console.log("Goal"+goal);
+    
+        if(goal=='pulse') {
+          // get team id
+          DealsListingPage.surveyService.getTeamId(userId).then((teamId) => {
+            this.getQuestions(goal,teamId.data().teamId)
+          });
+        }else{
+          // get user id
+          this.getQuestions(goal,userId)
+        }
+      } else {
+        // No user is signed in.
+      }
+    });
   }
 
   getQuestions(goal,teamId){
@@ -150,7 +149,6 @@ export class DealsListingPage implements OnInit {
           });
           // this.notifications = notifications;
         });
-
   }
 
   getMarkColorStyle(question: QuestionModel) {
