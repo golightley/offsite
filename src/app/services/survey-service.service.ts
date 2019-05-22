@@ -201,7 +201,7 @@ export class SurveyServiceService {
     return new Promise<any>((resolve, reject) => {
       console.log('Pulling team with this ID');
       console.log(teamId);
-      var docRef = firebase.firestore().collection('teams').doc(teamId);
+      const docRef = firebase.firestore().collection('teams').doc(teamId);
       docRef.get().then(function (doc) {
         if (doc.exists) {
           console.log('Document data:', doc.data());
@@ -240,25 +240,23 @@ export class SurveyServiceService {
 
   }
 
-  async createTeamByUserId(userId, teamName) {
+  async createTeamByUserId(uid, teamName) {
     const result = await this.loadingService.doFirebase(async() => {
       return new Promise<any>((resolve, reject) => {
         const that = this;
         firebase.firestore().collection('teams').add({
           active: true,
-          memembersids: [userId],
-          members: {
-            uid: userId
-          },
+          memembersids: [uid],
+          members: firebase.firestore.FieldValue.arrayUnion({ uid }),
           teamName: teamName,
-          createdBy: userId,
+          createdBy: uid,
           teamCreated: firebase.firestore.FieldValue.serverTimestamp()
         }).then(async(docRef) => {
           console.log(' Team created with ID: ', docRef.id);
           console.log(docRef);
           // create survey questions for the team utilizing cloud functions
           await to(that.callCreateSurveyCloudFunction(docRef.id));
-          await to(that.updateUserWithTeamId(userId, docRef.id));
+          await to(that.updateUserWithTeamId(uid, docRef.id));
           resolve(docRef.id);
         }).catch(function (error) {
           console.error('Error creating sruvey document: ', error);
@@ -300,26 +298,26 @@ export class SurveyServiceService {
     }
   }
 
-  joinTeamWithCode(myUserId, teamId) {
+  joinTeamWithCode(uid, teamId) {
 
     return new Promise<any>((resolve, reject) => {
-      var ref = firebase.firestore().collection('teams').doc(teamId);
+      const ref = firebase.firestore().collection('teams').doc(teamId);
 
       // Set the 'capital' field of the city 'DC'
       return ref.update({
-        membersids: firebase.firestore.FieldValue.arrayUnion(myUserId),
-        members: firebase.firestore.FieldValue.arrayUnion({ myUserId }),
+        memembersids: firebase.firestore.FieldValue.arrayUnion(uid),
+        members: firebase.firestore.FieldValue.arrayUnion({ uid }),
       })
         .then(function (docRef) {
           console.log('Team Document successfully updated!');
-          console.log(ref);
-          resolve(ref);
+          console.log(docRef);
+          resolve(docRef);
 
         })
         .catch(function (error) {
           // The document probably doesn't exist.
           console.error('Error updating document: ', error);
-          reject(error)
+          reject(error);
 
         });
 
@@ -848,7 +846,7 @@ export class SurveyServiceService {
   }
 
 
-  createTeam(team: any, teamName: string) {
+  /*createTeam(team: any, teamName: string) {
 
     return new Promise<any>((resolve, reject) => {
       // Add a new document with a generated id.
@@ -870,7 +868,7 @@ export class SurveyServiceService {
         reject(error)
       });
     });
-  }
+  }*/
 
   createFeedbackNotifications(teamMates, surveyId, category, toggle) {
     console.log('in create feedback notificatino')
