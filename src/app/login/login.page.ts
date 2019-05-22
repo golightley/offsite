@@ -68,7 +68,7 @@ export class LoginPage implements OnInit {
       const navigationExtras: NavigationExtras = {
         replaceUrl: true,
         queryParams: {
-          fromLoginScreen: 'false'
+          fromLoginScreen: 'true'
         }
       };
       this.router.navigate(['/invite-team-mates'], navigationExtras);
