@@ -18,11 +18,10 @@ export class ChatServiceService {
   sendMessage(message: ChatModel) {
     // Add a new document with a generated id.
     firebase.firestore().collection('messages').add({
-      from: message.from,
+      userId: message.userId,
       text: message.text,
-      isEdited:true,
-      ideaId:message.ideaId,
-      teamId:message.teamId,
+      ideaId: message.ideaId,
+      teamId: message.teamId,
       createdAt: message.createdAt
     }).then(function (docRef) {
       console.log('Document written with ID: ', docRef.id);
