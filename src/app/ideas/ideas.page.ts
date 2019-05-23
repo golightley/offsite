@@ -8,7 +8,7 @@ import { ModalController } from '@ionic/angular';
 
 import { PopoverController } from '@ionic/angular';
 import { PopoverReportComponent } from '../components/popover-report/popover-report.component';
-
+import { Router, NavigationExtras } from '@angular/router';
 import { LoadingService } from '../services/loading-service';
 require('firebase/auth');
 @Component({
@@ -32,6 +32,7 @@ export class IdeasPage implements OnInit {
     private http: HttpClient,
     public modalController: ModalController,
     public popoverController: PopoverController,
+    private router: Router,
     public loadingService: LoadingService
 
   ) {
@@ -61,6 +62,26 @@ export class IdeasPage implements OnInit {
       showBackdrop: true
     });
     popover.present();
+  }
+
+  enterChatRoom(idea) {
+    console.log('enter chat_room');
+    //const ideaId = idea.uid;
+
+    const navigationExtras: NavigationExtras = {
+      replaceUrl: true,
+      queryParams: {
+        ideaId: idea.uid,
+        ideaText: idea.text,
+        teamId: this.teamId
+      }
+    };
+
+    this.router.navigate(['/chat'], navigationExtras);
+  }
+
+  navigateTo(url: string) {
+    this.router.navigateByUrl(url);
   }
 
   async loadIdeas() {

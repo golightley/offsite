@@ -21,6 +21,7 @@ const routes: Routes = [
   { path: 'test', loadChildren: './pages/test/test.module#TestPageModule' },
   { path: 'invite-signup/:id', loadChildren: './invite-signup/invite-signup.module#InviteSignupPageModule' },
   { path: 'manage-team', loadChildren: './manage-team/manage-team.module#ManageTeamPageModule' },
+  { path: 'chat', loadChildren: './chat/chat.module#ChatPageModule' },
   
 
   // { path: 'ideas', loadChildren: './ideas/ideas.module#IdeasPageModule' },
