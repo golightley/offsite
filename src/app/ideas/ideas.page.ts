@@ -26,6 +26,7 @@ export class IdeasPage implements OnInit {
   ideas: IdeaModel[] = [];
   type = '';
   teamId = '';
+  messageCount = '';
 
   constructor(
     public surveyService: SurveyServiceService,
@@ -39,6 +40,7 @@ export class IdeasPage implements OnInit {
     firebase.auth().onAuthStateChanged(user => {
       if (user) {
         this.loadIdeas();
+        
       }
     });
   }
@@ -84,6 +86,27 @@ export class IdeasPage implements OnInit {
     this.router.navigateByUrl(url);
   }
 
+  async getMessageCount(ideaId) {
+    const that = this;
+    //this.loadingService.doFirebase(async () => {
+      console.log('initMessages!!!');
+      console.log('teamId' + that.teamId);
+
+      //that.ideas.forEach((idea) => {
+        const query = firebase.firestore().collection('chats')
+        .where('ideaId', '==', ideaId)
+        query.onSnapshot((snapshot) => {
+          console.log('Listener attached');
+          console.log('onSnapshot changed count = ' + ' ' + snapshot.size);
+          const ideaMessageCount = snapshot.size.toString();
+
+          const idea_index = that.ideas.findIndex(idea => idea.uid === ideaId);
+          that.ideas[idea_index].messageCount = ideaMessageCount;
+
+        });
+    //});
+  }
+
   async loadIdeas() {
 
     console.log('== load Ideas ==');
@@ -119,7 +142,10 @@ export class IdeasPage implements OnInit {
                   that.ideas.splice(change.oldIndex, 1);
                 }
                 if (change.newIndex !== -1) {
-                  that.ideas.splice(change.newIndex, 0, new IdeaModel(change.doc.id, change.doc.data()));
+                  
+                  const newIdea = new IdeaModel(change.doc.id, change.doc.data());
+                  that.ideas.splice(change.newIndex, 0, newIdea);
+                  that.getMessageCount(change.doc.id);
                 }
               });
             });
@@ -129,7 +155,6 @@ export class IdeasPage implements OnInit {
           }
       }
     });
-
   }
 
   /*improvementTypeChipSelected(type) {

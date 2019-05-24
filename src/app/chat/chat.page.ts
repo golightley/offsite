@@ -70,25 +70,26 @@ export class ChatPage implements OnInit {
     await this.loadingService.doFirebase(async () => {
       console.log('initMessages!!!');
       console.log('teamId' + this.teamId);
-      const query = await firebase.firestore().collection('messages')
+      const query = await firebase.firestore().collection('chats')
       .where('ideaId', '==', this.ideaId)
       .where('teamId', '==', this.teamId)
       .orderBy('createdAt', 'asc');
 
       query.onSnapshot((snapshot) => {
         console.log('Listener attached');
+        // console.log('onSnapshot changed count = ' + ' ' + snapshot.size);
         // console.log(snapshot);
         // retrieve anything that has changed
           const changedDocs = snapshot.docChanges();
           changedDocs.forEach((change) => {
-            console.log(change.doc.data());
+            // console.log(change.doc.data());
             const message = change.doc.data();
             const msgTime = message.createdAt;
-            if ( msgTime.seconds !== undefined ) {
+            if ( msgTime !== undefined && msgTime !== null) {
               const date = new Date(msgTime.seconds * 1000);
               message.createdDateTime = that.formatDate(date);
               // change.doc.data()['createdDateTime'] = that.formatDate(date);
-              console.log(message);
+              // console.log(message);
               if (change.oldIndex !== -1) {
                 that.messages.splice(change.oldIndex, 1);
               }

@@ -17,7 +17,7 @@ export class ChatServiceService {
 
   sendMessage(message: ChatModel) {
     // Add a new document with a generated id.
-    firebase.firestore().collection('messages').add({
+    firebase.firestore().collection('chats').add({
       userId: message.userId,
       text: message.text,
       ideaId: message.ideaId,

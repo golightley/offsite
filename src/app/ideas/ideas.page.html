@@ -39,8 +39,10 @@
                                 <ion-icon color="medium" slot="icon-only" name="flag"></ion-icon>
                             </ion-button>
                             <ion-button fill="chat" (click)="enterChatRoom(idea)">
-                                <ion-icon name="chatboxes"></ion-icon>
+                                <ion-icon color="medium" name="text"></ion-icon>
+                                <div class="messagecount-text">{{idea.messageCount}}</div>
                             </ion-button>
+                            
                         </ion-row>
                     </ion-col>
                 </ion-row>
