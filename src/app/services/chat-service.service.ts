@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import * as firebase from 'firebase/app';
-import { ChatModel } from '../chat/chat.model';
+import { ChatModel } from '../pages/ideas/chat/chat.model';
 @Injectable({
   providedIn: 'root'
 })

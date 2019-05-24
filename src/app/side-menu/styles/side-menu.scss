@@ -69,7 +69,7 @@
     ion-list-header {
       --color: rgba(var(--ion-color-light-shade-rgb), 0.6);
 
-      text-transform: uppercase;
+      text-transform: none;
       box-shadow: inset 0px -4px 8px -2px var(--page-headers-shadow-color);
       padding-inline-start: var(--page-margin);
     }

@@ -4,6 +4,9 @@ import { Events, MenuController, Platform } from '@ionic/angular';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 
+import { PopoverController } from '@ionic/angular';
+import { SelectTeamComponent } from './pages/team/select-team/select-team.component';
+
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
@@ -14,43 +17,37 @@ import { StatusBar } from '@ionic-native/status-bar/ngx';
   ]
 })
 export class AppComponent {
-  appPages = [
-    {
-      title: 'Categories',
-      url: '/app/categories',
-      icon: './assets/sample-icons/side-menu/categories.svg'
-    },
-    {
-      title: 'Profile',
-      url: '/app/user',
-      icon: './assets/sample-icons/side-menu/profile.svg'
-    },
-    {
-      title: 'Contact Card',
-      url: '/contact-card',
-      icon: './assets/sample-icons/side-menu/contact-card.svg'
-    },
-    {
-      title: 'Notifications',
-      url: '/app/notifications',
-      icon: './assets/sample-icons/side-menu/notifications.svg'
-    }
-  ];
   accountPages = [
+    
     {
-      title: 'Log In',
-      url: '/auth/login',
-      icon: './assets/sample-icons/side-menu/login.svg'
+      title: 'Create a new team',
+      url: '/create-team',
+      icon: './assets/sample-icons/side-menu/add-circle.svg'
+    },
+    {
+      title: 'Join to a team',
+      url: '/join-team',
+      icon: './assets/sample-icons/side-menu/aperture.svg'
+    },
+    {
+      title: 'Invited team list',
+      url: '/invited-team-list',
+      icon: './assets/sample-icons/side-menu/notifications-1.svg'
     },
     {
       title: 'Invite team members',
       url: '/invite-team-mates',
-      icon: './assets/sample-icons/side-menu/signup.svg'
+      icon: './assets/sample-icons/side-menu/megaphone.svg'
     },
     {
       title: 'Manage Team',
       url: '/manage-team',
-      icon: './assets/sample-icons/side-menu/signup.svg'
+      icon: './assets/sample-icons/side-menu/construct.svg'
+    },
+    {
+      title: 'Log out',
+      url: '/auth/login',
+      icon: './assets/sample-icons/side-menu/login.svg'
     },
     {
       title: 'Tutorial',
@@ -65,9 +62,22 @@ export class AppComponent {
     private platform: Platform,
     private splashScreen: SplashScreen,
     private statusBar: StatusBar,
-    private router: Router
+    private router: Router,
+    public popoverController: PopoverController
   ) {
     this.initializeApp();
+  }
+
+  async presentPopover(ev: any) {
+    const popover = await this.popoverController.create({
+      component: SelectTeamComponent,
+      event: ev,
+      // translucent: true,
+      animated: true,
+      showBackdrop: true,
+      cssClass: 'offsite-popover'
+    });
+    return await popover.present();
   }
 
   setInvitePage(){
