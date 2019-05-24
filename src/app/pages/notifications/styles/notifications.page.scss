@@ -1,0 +1,77 @@
+@import "../../../../theme/mixins/inputs/radio-tag";
+
+
+
+// Custom variables
+// Note:  These ones were added by us and have nothing to do with Ionic CSS Custom Properties
+// :host {
+//   --page-margin: var(--app-narrow-margin);
+// }
+.radio-tags {
+  padding: 2% calc(var(--page-margin) - var(--page-tags-gutter));
+  // justify-content: space-between;
+
+  @include radio-tag();
+
+  // Add a deeper selector to override default colors
+  .radio-tag {
+    --radio-tag-color: rgb(79, 219, 165);
+    --radio-tag-background: var(--ion-color-lightest);
+    --radio-tag-active-color: var(--ion-color-lightest);
+    --radio-tag-active-background: rgb(79, 219, 165);
+
+    padding: 0 var(--page-tags-gutter);
+    margin: var(--page-tags-gutter) 0;
+  }
+}
+
+.custom-icon {
+  font-size: 30px;
+  color :rgb(79, 219, 165);
+  margin-top: 40%;
+
+}
+
+// // Note:  All the CSS variables defined below are overrides of Ionic elements CSS Custom Properties
+.notifications-content {
+  // ion-item-divider {
+  //   --background:  rgb(152, 169, 188);
+  //   --padding-start: var(--page-margin);
+  // }
+
+
+
+
+  .notification-item {
+    --padding-start: 0px;
+    --inner-padding-end: 0px;
+
+    padding: var(--page-margin);
+    color: var(--ion-color-medium);
+    box-shadow: inset 0 8px 2px -9px var(--ion-color-darkest);
+
+    .notification-item-wrapper {
+      --ion-grid-column-padding: 0px;
+
+      width: 100%;
+    }
+
+    .details-wrapper {
+      margin-left: 3%;
+
+      .details-name {
+        color: rgb(152, 169, 188);
+        margin: 0 1%;
+        margin-top: 5%;
+        font-weight: 100;
+        font-size: 1.0rem;
+      }
+    }
+      .notification-date {
+        color: rgb(152, 169, 188);
+        margin: 0 5%;
+        // text-align: end;
+      }
+    
+  }
+}
