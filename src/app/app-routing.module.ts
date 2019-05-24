@@ -18,12 +18,12 @@ const routes: Routes = [
   { path: 'showcase', loadChildren: './pages/showcase/showcase.module#ShowcasePageModule' },
   // { path: '**', redirectTo: 'page-not-found' },
   { path: 'contact', loadChildren: './pages/contact/contact.module#ContactPageModule' },
-  { path: 'invite-team-mates', loadChildren: './pages/team/invite-team-mates/invite-team-mates.module#InviteTeamMatesPageModule' },
-  { path: 'manage-team', loadChildren: './pages/team/manage-team/manage-team.module#ManageTeamPageModule' },
-  { path: 'create-team', loadChildren: './pages/team/create-team/create-team.module#CreateTeamPageModule' },
-  { path: 'invited-team-list', loadChildren: './pages/team/invited-team-list/invited-team-list.module#InvitedTeamListPageModule' },
-  { path: 'join-team', loadChildren: './pages/team/join-team/join-team.module#JoinTeamPageModule' },
-  { path: 'chat', loadChildren: './pages/ideas/chat/chat.module#ChatPageModule' },
+  { path: 'team/invite-team-mates', loadChildren: './pages/team/invite-team-mates/invite-team-mates.module#InviteTeamMatesPageModule' },
+  { path: 'team/manage-team', loadChildren: './pages/team/manage-team/manage-team.module#ManageTeamPageModule' },
+  { path: 'team/create-team', loadChildren: './pages/team/create-team/create-team.module#CreateTeamPageModule' },
+  { path: 'team/invited-team-list', loadChildren: './pages/team/invited-team-list/invited-team-list.module#InvitedTeamListPageModule' },
+  { path: 'team/join-team', loadChildren: './pages/team/join-team/join-team.module#JoinTeamPageModule' },
+  { path: 'ideas/chat', loadChildren: './pages/ideas/chat/chat.module#ChatPageModule' },
 
 
   // { path: 'modal-page', loadChildren: './modal-page/modal-page.module#ModalPagePageModule' },

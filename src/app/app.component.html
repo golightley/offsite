@@ -13,45 +13,6 @@
             <!-- <h5 class="user-handle">@IonicThemes</h5> -->
           </ion-col>
         </ion-row>
-        <!-- <ion-row class="user-stats-wrapper user-details-wrapper">
-          <ion-col>
-            <span class="user-stat-value">1553</span>
-            <span class="user-stat-name">Following</span>
-          </ion-col>
-          <ion-col>
-            <span class="user-stat-value">537</span>
-            <span class="user-stat-name">Followers</span>
-          </ion-col>
-        </ion-row> -->
-        <!-- <ion-list>
-          <ion-list-header>Layouts</ion-list-header>
-          <ion-menu-toggle auto-hide="false" *ngFor="let p of appPages; let i = index">
-            <ion-item [routerLink]="p.url">
-              <ion-icon slot="start" [src]="p.icon"></ion-icon>
-              <ion-label>
-                {{p.title}}
-              </ion-label>
-            </ion-item>
-          </ion-menu-toggle>
-        </ion-list> -->
-        <!-- <ion-list>
-          <ion-list-header>Forms</ion-list-header>
-          <ion-menu-toggle auto-hide="false">
-            <ion-item [routerLink]="['/forms-and-validations']">
-              <ion-icon slot="start" src="./assets/sample-icons/side-menu/forms.svg"></ion-icon>
-              <ion-label>
-                Forms & Validations
-              </ion-label>
-            </ion-item>
-            <ion-item [routerLink]="['/forms-filters']">
-              <ion-icon slot="start" name="options"></ion-icon>
-              <ion-label>
-                Filters
-              </ion-label>
-            </ion-item>
-          </ion-menu-toggle>
-        </ion-list> -->
-
 
         <ion-list>
           <ion-list-header style="height: 55px;">
@@ -61,8 +22,6 @@
             </ion-item>
           </ion-list-header>
           
-            
-          
           <ion-menu-toggle auto-hide="false" *ngFor="let p of accountPages; let i = index">
             <ion-item [routerLink]="p.url" [queryParams]="{ fromLoginScreen: 'true'}">
               <ion-icon slot="start" [src]="p.icon"></ion-icon>
@@ -71,30 +30,15 @@
               </ion-label>
             </ion-item>
           </ion-menu-toggle>
-        </ion-list>
-        <!-- <ion-list>
-          <ion-list-header>Showcase</ion-list-header>
-          <ion-menu-toggle auto-hide="false">
-            <ion-item [routerLink]="['/showcase/app-shell']">
-              <ion-icon slot="start" name="egg"></ion-icon>
+          <ion-menu-toggle>
+            <ion-item (click)="logout()">
+              <ion-icon slot="start" src="./assets/sample-icons/side-menu/login.svg"></ion-icon>
               <ion-label>
-                App Shell
-              </ion-label>
-            </ion-item>
-            <ion-item [routerLink]="['/showcase/route-resolvers-ux']">
-              <ion-icon slot="start" name="cog"></ion-icon>
-              <ion-label>
-                Route Resolvers UX
-              </ion-label>
-            </ion-item>
-            <ion-item [routerLink]="['/showcase/custom-components']">
-              <ion-icon slot="start" name="color-wand"></ion-icon>
-              <ion-label>
-                Custom Components
+                Log out
               </ion-label>
             </ion-item>
           </ion-menu-toggle>
-        </ion-list> -->
+        </ion-list>
       </ion-content>
     </ion-menu>
     <!-- Main app content get's rendered in this router-outlet -->

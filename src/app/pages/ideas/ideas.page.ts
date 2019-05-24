@@ -79,7 +79,7 @@ export class IdeasPage implements OnInit {
       }
     };
 
-    this.router.navigate(['/chat'], navigationExtras);
+    this.router.navigate(['/ideas/chat'], navigationExtras);
   }
 
   navigateTo(url: string) {

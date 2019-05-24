@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { Events, MenuController, Platform } from '@ionic/angular';
+import { Events, MenuController, Platform, AlertController } from '@ionic/angular';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 
@@ -21,33 +21,28 @@ export class AppComponent {
     
     {
       title: 'Create a new team',
-      url: '/create-team',
+      url: '/team/create-team',
       icon: './assets/sample-icons/side-menu/add-circle.svg'
     },
     {
       title: 'Join to a team',
-      url: '/join-team',
+      url: '/team/join-team',
       icon: './assets/sample-icons/side-menu/aperture.svg'
     },
     {
       title: 'Invited team list',
-      url: '/invited-team-list',
+      url: '/team/invited-team-list',
       icon: './assets/sample-icons/side-menu/notifications-1.svg'
     },
     {
       title: 'Invite team members',
-      url: '/invite-team-mates',
+      url: '/team/invite-team-mates',
       icon: './assets/sample-icons/side-menu/megaphone.svg'
     },
     {
       title: 'Manage Team',
-      url: '/manage-team',
+      url: '/team/manage-team',
       icon: './assets/sample-icons/side-menu/construct.svg'
-    },
-    {
-      title: 'Log out',
-      url: '/auth/login',
-      icon: './assets/sample-icons/side-menu/login.svg'
     },
     {
       title: 'Tutorial',
@@ -57,13 +52,12 @@ export class AppComponent {
   ];
 
   constructor(
-    private events: Events,
     private menu: MenuController,
     private platform: Platform,
     private splashScreen: SplashScreen,
     private statusBar: StatusBar,
-    private router: Router,
-    public popoverController: PopoverController
+    public popoverController: PopoverController,
+    private alertController: AlertController
   ) {
     this.initializeApp();
   }
@@ -80,8 +74,7 @@ export class AppComponent {
     return await popover.present();
   }
 
-  setInvitePage(){
-    
+  setInvitePage() {
   }
 
   initializeApp() {
@@ -90,4 +83,26 @@ export class AppComponent {
       this.splashScreen.hide();
     });
   }
+
+  async logout() {
+    const alert = await this.alertController.create({
+      message: 'Are you sure you would like to log out?',
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          cssClass: 'secondary'
+        },
+        {
+          text: 'Log out',
+          handler: async () => {
+            window.location.href = 'auth/login';
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+
 }
