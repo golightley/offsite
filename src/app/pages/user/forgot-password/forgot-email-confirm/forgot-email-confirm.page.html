@@ -1,0 +1,16 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button mode="ios" icon="md-arrow-back" text=""></ion-back-button>
+    </ion-buttons>
+    <ion-title>Forgot Password?</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="forgot-email-confirm">
+  <h2 class="auth-title">Password Reset Email Sent</h2>
+  <p class="recover-message">
+    An email has been sent to your rescue email address, Follow the directions in the email to reset your password.
+  </p>
+  <ion-button class="done-btn" (click)="gotoLogin()" expand="block">Done</ion-button>
+</ion-content>

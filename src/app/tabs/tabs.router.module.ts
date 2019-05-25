@@ -14,15 +14,15 @@ const routes: Routes = [
         children: [
           {
             path: '',
-            loadChildren: '../deals/listing/deals-listing.module#DealsListingPageModule'
+            loadChildren: '../pages/deals/listing/deals-listing.module#DealsListingPageModule'
           },
           {
             path: 'friends',
-            loadChildren: '../user/friends/user-friends.module#UserFriendsPageModule'
+            loadChildren: '../pages/user/friends/user-friends.module#UserFriendsPageModule'
           },
           { 
-            path: 'modal', 
-            loadChildren: '../modal/modal.module#ModalPageModule' 
+            path: 'modal',
+            loadChildren: '../pages/modal/modal.module#ModalPageModule' 
           }
 
         ]
@@ -32,15 +32,15 @@ const routes: Routes = [
         children: [
           {
             path: '',
-            loadChildren: '../feedback/feedback-logo/feedback-logo.module#FeedbackLogoPageModule'
+            loadChildren: '../pages/feedback/feedback-logo/feedback-logo.module#FeedbackLogoPageModule'
           },
           {
             path: 'feedback-content',
-            loadChildren: '../feedback/feedback-content/feedback-content.module#FeedbackContentPageModule'
+            loadChildren: '../pages/feedback/feedback-content/feedback-content.module#FeedbackContentPageModule'
           },
           {
             path: 'feedback-request',
-            loadChildren: '../feedback/feedback-request/feedback-request.module#FeedbackRequestPageModule'
+            loadChildren: '../pages/feedback/feedback-request/feedback-request.module#FeedbackRequestPageModule'
           }
         ]
       },
@@ -49,7 +49,7 @@ const routes: Routes = [
         children: [
           {
             path: '',
-            loadChildren: '../notifications/notifications.module#NotificationsPageModule'
+            loadChildren: '../pages/notifications/notifications.module#NotificationsPageModule'
           }
         ]
       },
@@ -58,7 +58,7 @@ const routes: Routes = [
         children: [
           {
             path: '',
-            loadChildren: '../ideas/ideas.module#IdeasPageModule'
+            loadChildren: '../pages/ideas/ideas.module#IdeasPageModule'
           }
         ]
       },

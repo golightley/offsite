@@ -1,0 +1,49 @@
+ion-content {
+    .title {
+      font-weight: 500;
+      font-size: 1.2rem;
+    }
+  
+    .list-members {
+      margin: 5% 0;
+      padding: 0;
+  
+      .component-container {
+        width: 100%;
+        border: lightgray 1px solid;
+        border-radius: 2px;
+  
+        ion-input {
+          margin: 0 3%;
+        }
+      }
+    }
+  
+    .anonymous {
+      margin-top: 10%;
+      margin-bottom: 0;
+      width: 70%;
+      margin-left: 15%;
+  
+      ion-checkbox {
+        --size: 1rem;
+        --checkmark-color: white;
+      }
+      ion-label {
+        color: rgb(152, 169, 188);
+        font-size: 0.8rem;
+      }
+    }
+  
+    .button-invite {
+      width: 90%;
+      margin-left: 5%;
+      --background: rgb(79, 219, 165);
+    }
+    .button-skip {
+      width: 90%;
+      margin-left: 5%;
+  
+    }
+  }
+  

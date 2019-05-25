@@ -1,7 +1,7 @@
 import { Injectable, ErrorHandler } from '@angular/core';
 import * as firebase from 'firebase/app';
-import { TeamMemberRole } from '../invite-team-mates/invite-team-mates.model';
-import { TeammatesModel } from '../feedback/feedback-content/feedback-content.model';
+import { TeamMemberRole } from '../pages/team/invite-team-mates/invite-team-mates.model';
+import { TeammatesModel } from '../pages/feedback/feedback-content/feedback-content.model';
 // import {NotificationsPage} from '../notifications/notifications.page';
 import { HttpClientModule, HttpClient } from '@angular/common/http';
 import { LoadingService } from './loading-service';

@@ -2,7 +2,9 @@ ion-title {
   font-weight: 400;
   letter-spacing: 0.4px;
 }
-
+ion-toolbar ion-buttons {
+  padding-left: 8px;
+}
 .offsite-loading {
   .loading-wrapper {
     flex-flow: column nowrap;
@@ -14,6 +16,8 @@ ion-title {
     }
   }
 }
-.back-button{
-  margin-left: 10px;
+
+.offsite-popover {
+  --min-width:250px;
 }
+

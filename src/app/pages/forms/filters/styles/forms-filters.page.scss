@@ -1,0 +1,76 @@
+@import "../../../../../theme/mixins/inputs/checkbox-tag";
+@import "../../../../../theme/mixins/inputs/radio-tag";
+@import "../../../../../theme/mixins/inputs/color-radio";
+
+// Custom variables
+// Note:  These ones were added by us and have nothing to do with Ionic CSS Custom Properties
+:host {
+  --page-margin: var(--app-fair-margin);
+  --page-background: var(--app-background-shade);
+
+  --page-tags-gutter: 5px;
+
+  --page-color-radio-items-per-row: 5;
+  --page-color-radio-gutter: 2%;
+  --page-color-radio-width: calc((100% - (2 * var(--page-color-radio-gutter) * var(--page-color-radio-items-per-row))) / var(--page-color-radio-items-per-row));
+}
+
+// Note:  All the CSS variables defined below are overrides of Ionic elements CSS Custom Properties
+.filters-content {
+  --background: white;
+
+  .question-title {
+    margin: 7% 5% 2% 5%;
+    color: rgb(24, 51, 80);
+    font-weight: 500;
+    font-size: 1.1rem;
+  }
+
+  .question-description {
+    color: rgb(152, 169, 188);
+    font-size: 0.8rem;
+    margin: 0 5%;
+  }
+
+  .radio-tags {
+    padding: 1% calc(var(--page-margin) - var(--page-tags-gutter));
+    justify-content: space-between;
+
+    @include radio-tag();
+
+    // Add a deeper selector to override default colors
+    .radio-tag {
+      --radio-tag-color: rgb(79, 219, 165);
+      --radio-tag-background: var(--ion-color-lightest);
+      --radio-tag-active-color: var(--ion-color-lightest);
+      --radio-tag-active-background: rgb(79, 219, 165);
+
+      padding: 0 var(--page-tags-gutter);
+      margin: var(--page-tags-gutter) 0;
+    }
+  }
+
+  .question-divider {
+    height: 1px;
+    margin: 0 5% 5% 5%;
+    background-color: rgb(241, 243, 243);
+  }
+
+  .text-response {
+    margin: 2% 10% 0 5%;
+    padding-right: 8% !important;
+    font-size: 0.8rem;
+    font-weight: 400;
+    color: rgb(152, 169, 188);
+  }
+}
+
+ion-footer {
+  background-color: white;
+
+  .button-submit {
+    margin: 5%;
+    width: 90%;
+    --background: #4fdba5;
+  }
+}

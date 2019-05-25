@@ -1,0 +1,112 @@
+<ion-header>
+  <ion-toolbar color="primary">
+      <ion-buttons slot="start">
+        <ion-back-button  mode="ios" icon="md-arrow-back" text="" defaultHref="app/categories"></ion-back-button>
+      </ion-buttons>
+      <ion-title>Data</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="user-friends-content">
+    <ion-card>
+        <ion-card-header>
+            <!-- <ion-card-subtitle>My work life balance is sustainable</ion-card-subtitle> -->
+            <ion-card-title>{{question}}</ion-card-title>
+          </ion-card-header>
+    </ion-card>
+    <ion-card>
+        <ion-card-header>
+            <ion-card-subtitle>Team breakdown</ion-card-subtitle>
+            <!-- <ion-card-title># of people</ion-card-title> -->
+          </ion-card-header>
+        <div style="display: block">
+            <canvas baseChart
+                [data]="doughnutChartData"
+                [labels]="doughnutChartLabels"
+                [chartType]="doughnutChartType"
+                [colors]="doughnutColors"                >
+            </canvas>
+          </div>
+    </ion-card>
+
+    <ion-card>
+        <ion-card-header>
+            <ion-card-subtitle>Average score over time</ion-card-subtitle>
+            <!-- <ion-card-title># of people</ion-card-title> -->
+          </ion-card-header>
+          <div style="display: block;">
+              <canvas baseChart width="400" height="400"
+                          [datasets]="lineChartData"
+                          [labels]="lineChartLabels"
+                          [chartType]="lineChartType">
+                        </canvas>
+              </div>
+    </ion-card>
+
+  <!-- <ion-card *ngFor="let comment of comments"> -->
+      <!-- <ion-row>
+          <ion-col  *ngIf="comment.type != 'feedback'" size="auto">
+              <div class="action-mark" [ngStyle]="{'background-color': getCommentActionColor(comment.action)}"></div>
+          </ion-col>
+          <ion-col>
+              <div class="comment-content">
+                  <ion-row align-items-center>
+                      <ion-col *ngIf="comment.type != 'feedback'" size="auto">
+                          <div class="comment-name">{{comment.name}}</div>
+                      </ion-col>
+                      <ion-col >
+                          <ion-badge *ngIf="comment.type != 'feedback'" class="comment-action" [ngStyle]="{'background-color': getCommentActionColor(comment.action)}">
+                              {{comment.action}}
+                          </ion-badge>
+                      </ion-col>
+                  </ion-row>
+                  <div class="comment-text">{{comment.text}}</div>
+              </div>
+          </ion-col>
+          <ion-col *ngIf="comment.type != 'feedback'" size="auto">
+              <ion-button fill="clear" (click)="increaseScore(comment)">
+                  <ion-icon slot="icon-only" name="arrow-up" mode="ios"></ion-icon>
+              </ion-button>
+              <div text-center class="comment-score">{{comment.score}}</div>
+              <ion-button fill="clear" [disabled]="0 == comment.score" (click)="decreaseScore(comment)">
+                  <ion-icon slot="icon-only" name="arrow-down" mode="ios"></ion-icon>
+              </ion-button>
+          </ion-col>
+      </ion-row> -->
+</ion-content>
+
+
+      <!-- <ion-segment [(ngModel)]="messageType" (ionChange)="segmentChanged()">
+        <ion-segment-button value="keep">
+          <ion-label>Keep</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="stop">
+          <ion-label>Stop</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="start">
+          <ion-label>Start</ion-label>
+        </ion-segment-button>
+      </ion-segment> -->
+      <!-- <ion-row >
+          <div scrollX="true" id="myFixZone">
+                <ion-button class ="suggest-button-start" (click)="makeSuggestion()"></ion-button>
+                <ion-button class ="suggest-button-start" (click)="makeSuggestion()" >Listen to each other more</ion-button>
+                <ion-button class ="suggest-button-start" (click)="makeSuggestion()" >Post 7pm break</ion-button>
+                <ion-button class ="suggest-button-start" (click)="makeSuggestion()" >Post 7pm break</ion-button>
+                <ion-button class ="suggest-button-start" (click)="makeSuggestion()" >Post 7pm break</ion-button>
+          </div>
+      </ion-row> -->
+      <!-- <ion-footer *ngIf="showBottom">
+          <ion-toolbar class="message-form">
+      <ion-row>
+        <ion-col>
+          <ion-textarea  class="toolbar-content"  placeholder="Suggest an idea" [(ngModel)]="message" (keyup.enter)="createComment();"></ion-textarea>
+        </ion-col>
+        <ion-col size="auto">
+          <ion-button fill="clear" [disabled]="0 == message.length" class="bar-button" (click)="createComment()">
+            SEND
+          </ion-button>
+        </ion-col>
+      </ion-row>    
+    </ion-toolbar>
+  </ion-footer> -->

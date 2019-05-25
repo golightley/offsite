@@ -1,0 +1,69 @@
+<ion-header>
+    <ion-toolbar color="primary">
+        <ion-buttons slot="start">
+            <ion-back-button  mode="ios" icon="md-arrow-back" text="" defaultHref="app/feedback"></ion-back-button>
+        </ion-buttons>
+        <ion-title>Feedback</ion-title>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <!-- <ion-segment mode="md" color="success" [(ngModel)]="page">
+        <ion-segment-button value="what" mode="md">
+            <ion-label>About What</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="who" mode="md">
+            <ion-label>To who</ion-label>
+        </ion-segment-button>
+    </ion-segment> -->
+
+    <div [ngSwitch]="page">
+        <ion-card *ngSwitchCase="'what'" padding>
+            <div class="title">What would you like to ask feedback on?</div>
+            <!-- Default Segment -->
+            <ion-segment (ionChange)="segmentChanged($event)" color="success">
+                    <ion-segment-button value="category">
+                    <ion-label>A category</ion-label>
+                    </ion-segment-button>
+                    <ion-segment-button value="event">
+                    <ion-label>A specific event</ion-label>
+                    </ion-segment-button>
+            </ion-segment>
+            <!-- <div class="instruction">You may choose multiple options</div> -->
+            <ion-list *ngIf="toggle == 'category'" lines="none">
+                <ion-item *ngFor="let category of categories">
+                    <ion-checkbox mode="md" [(ngModel)]="category.checked" color="success"></ion-checkbox>
+                    <ion-label>{{category.name}}</ion-label>
+                </ion-item>
+
+            </ion-list>
+            <div  *ngIf="toggle == 'event'">
+                    <ion-item>
+                             <ion-textarea #inputToFocus autofocus="true" class = "textArea" placeholder="Type a specific event or topic" [(ngModel)]="message" (keyup.enter)="createIdea();"></ion-textarea>
+                    </ion-item>
+                    <ion-list-header>
+                            <ion-label></ion-label>
+                    </ion-list-header>
+                    <div scrollX="true" id="myFixZone">
+                            <ion-button  class ="suggest-button-start" *ngFor="let suggestion of startSuggestions" class ="suggest-button-start" (click)="makeSuggestion(suggestion)">
+                                {{suggestion.text}}
+                            </ion-button>
+                    </div>
+            </div>
+        </ion-card>
+        <ion-card *ngSwitchCase="'who'" padding>
+            <div class="title">Who would you like to ask for feedback from?</div>
+            <div class="instruction">You may choose multiple options</div>
+            <ion-list lines="none">
+                <ion-item *ngFor="let teammate of teammates">
+                    <ion-checkbox mode="md" [(ngModel)]="teammate.checked" color="success"></ion-checkbox>
+                    <ion-label>{{teammate.name}}</ion-label>
+                </ion-item>
+            </ion-list>
+            
+        </ion-card>
+    </div>
+</ion-content>
+<ion-footer>
+    <ion-button *ngIf="page == 'what'" class="button-submit" type="submit" expand="block" (click)="goToWho()">Next</ion-button>
+    <ion-button *ngIf="page == 'who'"  class="button-submit" type="submit" expand="block" [disabled]="checkSubmitStatus()" (click)="submitFeedback()">Submit</ion-button>
+</ion-footer>

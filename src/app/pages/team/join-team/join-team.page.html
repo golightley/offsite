@@ -1,0 +1,31 @@
+<ion-header>
+  <ion-toolbar color="primary">
+      <ion-buttons slot="start">
+          <ion-back-button mode="ios" icon="md-arrow-back" text=""></ion-back-button>
+        </ion-buttons>
+    <ion-title>Join Team</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>  
+  <ion-card padding>
+      <div class="title">Please enter the team below</div>
+      <ion-list class="list-members" lines="none" inset>
+        <ion-row align-items-center>
+          <ion-col size="12">
+            <div class="component-container">
+              <ion-input placeholder="IBM Strategy Team" [(ngModel)]="teamCode"></ion-input>
+            </div>
+          </ion-col>
+        </ion-row>
+      </ion-list>
+    </ion-card>
+    
+    <ion-button  class="button-invite" expand="block" (click)="joinTeamWithCode()">
+        Join team
+      </ion-button>
+  
+  <ion-button class="button-skip" expand="block" fill="clear" (click)="skipInvites()">
+    Cancel
+  </ion-button>
+</ion-content>
