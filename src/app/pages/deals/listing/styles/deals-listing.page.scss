@@ -1,0 +1,108 @@
+@import "../../../../../theme/mixins/ion-color";
+
+// Custom variables
+// Note:  These ones were added by us and have nothing to do with Ionic CSS Custom Properties
+:host {
+  --page-margin: var(--app-broad-margin);
+  --page-background: var(--app-background-shade);
+
+  --page-countdown-fill-shadow-color: rgba(var(--ion-color-darkest-rgb), 0.2);
+  --page-item-shadow-color: rgba(var(--ion-color-dark-rgb), .1);
+  --page-deal-code-height: 30px;
+  --page-countdown-gutter: 3px;
+
+  --page-expired-color: var(--ion-color-medium-tint);
+  --page-ends-soon-color: #FFAB6B;
+  --page-distant-end-color: #70DF70;
+
+  --page-deal-color: var(--ion-color-medium);
+  --page-deal-border-color: var(--ion-color-light-shade);
+
+  --page-color: #70DF70;
+
+  // Add custom colors to use with [color] property
+  @include ion-color('claim') {
+    --ion-color-claim: #70DF70;
+    --ion-color-claim-rgb: 112,223,112;
+    --ion-color-claim-contrast: #FFFFFF;
+    --ion-color-claim-contrast-rgb: 255,255,255;
+    --ion-color-claim-shade: #63C463;
+    --ion-color-claim-tint: #7EE27E;
+  }
+}
+
+// Note:  All the CSS variables defined below are overrides of Ionic elements CSS Custom Properties
+.deals-listing-content {
+  --background: var(--page-background);
+}
+
+ion-card {
+  background-color: white;
+}
+
+.question-content {
+  padding: 5%;
+
+  ion-col {
+    padding: 0;
+  }
+
+  .question-type {
+    color: rgb(84, 97, 239);
+    font-size: 0.8rem;
+  }
+
+  .question-date {
+    color: rgb(152, 169, 188);
+    font-size: 0.7rem;
+    font-weight: lighter;
+  }
+
+  .question-title {
+    margin-top: 3%;
+    font-size: 1.3rem;
+    color: rgb(37, 38, 49);
+  }
+
+  .question-divider {
+    margin: 5% 0;
+    width: 100%;
+    height: 2px;
+    background-color: rgb(232, 236, 239);
+  }
+
+  .question-chat {
+    ion-col {
+      padding: 0 3px;
+    }
+
+    ion-icon {
+      font-size: 1.2rem;
+    }
+
+    span {
+      font-size: 0.9rem;
+    }
+  }
+
+  .question-star {
+    ion-col {
+      padding: 0 3px;
+    }
+
+    ion-icon {
+      font-size: 1.2rem;
+      color: rgb(232, 236, 239);;
+    }
+
+    span {
+      font-size: 1.2rem;
+      color: rgb(29, 29, 29);
+    }
+  }
+}
+
+.question-marker {
+  width: 100%;
+  height: 7px;
+}
