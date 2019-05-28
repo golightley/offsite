@@ -37,17 +37,22 @@ export class IdeasPage implements OnInit {
     public loadingService: LoadingService
 
   ) {
+    
+  }
+
+  ngOnInit()
+  {
+   
+  }
+
+  ionViewWillEnter()
+  {
     firebase.auth().onAuthStateChanged(user => {
       if (user) {
         this.loadIdeas();
-        
       }
     });
   }
-
-  ngOnInit() { }
-
-  ionViewWillEnter() { }
 
   async setPopover(ev: Event, idea) {
     this.currentIdea = idea;
@@ -91,14 +96,13 @@ export class IdeasPage implements OnInit {
       const query = firebase.firestore().collection('chats')
         .where('ideaId', '==', ideaId)
         query.onSnapshot((snapshot) => {
-          // console.log('Listener attached');
-          // console.log('onSnapshot changed count = ' + ' ' + snapshot.size);
           const ideaMessageCount = snapshot.size.toString();
           const idea_index = that.ideas.findIndex(idea => idea.uid === ideaId);
+          console.log('[Ideas] message count = ' + ideaMessageCount);
           that.ideas[idea_index].messageCount = ideaMessageCount;
-
         });
   }
+
 
   async loadIdeas() {
 
@@ -108,11 +112,12 @@ export class IdeasPage implements OnInit {
       const that = this;
       that.ideas = [];
       if (typeof firebase.auth === 'function') {
-        const teamData = await this.surveyService.getTeamByUserId(firebase.auth().currentUser.uid);
-        if (teamData.exists) {
+        //const teamData = await this.surveyService.getTeamByUserId(firebase.auth().currentUser.uid);
+        const teamId = await this.surveyService.getTeamId(firebase.auth().currentUser.uid);
+        if (teamId.data().teamId) {
             // first fetch the team ID
-            console.log('Selected Team Name:', teamData.data().teamName);
-            that.teamId = teamData.id;
+            console.log('[Ideas] Selected Team ID:', teamId.data().teamId);
+            that.teamId = teamId.data().teamId;
             if (that.teamId === undefined) {
               console.log('No selected team! returned');
               return;
@@ -125,9 +130,7 @@ export class IdeasPage implements OnInit {
               .orderBy('score', 'desc')
               .orderBy('timestamp', 'asc');
             query.onSnapshot((snapshot) => {
-              // console.log(snapshot);
-              // retrieve anything that has changed
-              console.log('-- Changed ideas count: ' + that.ideas.length);
+              console.log('[Ideas] Listener attached >> idea count = ' + snapshot.size);
               const changedDocs = snapshot.docChanges();
               changedDocs.forEach((change) => {
                 // console.log('-- Ideas onSnapshot -- ' + change.type);

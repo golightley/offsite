@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {ActivatedRoute, Router} from '@angular/router';
+import {ActivatedRoute, Router, NavigationEnd} from '@angular/router';
 import * as firebase from 'firebase/app';
 import {SurveyServiceService} from '../../services/survey-service.service';
 
@@ -19,12 +19,31 @@ export class NotificationsPage implements OnInit {
   unsubscribe:any;
   empty = false;
   userId: string;
+  navigationSubscription;
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     public surveyService: SurveyServiceService,
 
-    ) {}
+    )
+    {
+      this.navigationSubscription = this.router.events.subscribe((e: any) => {
+        // If it is a NavigationEnd event re-initalise the component
+        if (e instanceof NavigationEnd) {
+          this.initialiseInvites();
+        }
+      });
+    }
+
+    initialiseInvites() {
+      // Set default values and re-fetch any data you need.
+      console.log("view entered")
+      this.notifications =[];
+      firebase.auth().onAuthStateChanged(user => {
+        this.userId = user.uid;
+        this.attachNotificationListener(this.userId);
+      });
+    }
 
   ngOnInit() {
 
@@ -44,7 +63,7 @@ export class NotificationsPage implements OnInit {
     // this.unsubscribe();
     console.log("Detach listner")
   }
-
+  
   updateListener(notificationData){
     this.notifications =[];
     this.notifications = notificationData;
@@ -88,4 +107,14 @@ export class NotificationsPage implements OnInit {
       this.router.navigateByUrl('/forms-filters');
     }
   }
+
+  ngOnDestroy() {
+    // avoid memory leaks here by cleaning up after ourselves. If we  
+    // don't then we will continue to run our initialiseInvites()   
+    // method on every navigationEnd event.
+    if (this.navigationSubscription) {  
+       this.navigationSubscription.unsubscribe();
+    }
+  }
+
 }
