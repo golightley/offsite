@@ -58,7 +58,8 @@ export class CreateTeamPage implements OnInit {
 
     // get the team we are inviting them to
     const data = await this.surveyService.createTeamByUserId(this.userId, this.createTeam);
-    if ( data && data.error === undefined && data.error != 'exist') {
+    console.log('[CreateTeam] result = ' + data.error);
+    if ( data && data.error === undefined && data.error !== 'exist') {
         console.log('Team created...');
         this.showToastMsg('The team has been created successfully!');
         const navigationExtras: NavigationExtras = {
@@ -68,7 +69,7 @@ export class CreateTeamPage implements OnInit {
           }
         };
         this.router.navigate(['/app/notifications'], navigationExtras);
-    } else if (data.error == 'exist') {
+    } else if (data.error === 'exist') {
       console.log('Team already exist!');
       this.showToastMsg('The team already exist!');
     }
