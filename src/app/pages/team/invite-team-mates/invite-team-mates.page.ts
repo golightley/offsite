@@ -68,8 +68,34 @@ export class InviteTeamMatesPage {
 
   }
 
+  async joinTeamWithName() { // join team does not work.
+    // get the team we are inviting them to
+    console.log('[JoinTeam at signup] teamName = ' + this.createTeam);
+    console.log('[JoinTeam at signup] userId = ' + this.userId);
+    const data = await this.surveyService.joinTeamWithName(this.userId, this.createTeam);
+    console.log('[JoinTeam] error = ' + data.error);
+    if ( data && data.error === undefined && data.error != 'Not found') {
+      this.surveyService.showToastMsg('You have joined the team successfully');
+      const navigationExtras: NavigationExtras = {
+        replaceUrl: true,
+        queryParams: {
+          fromLoginScreen: 'true'
+        }
+      };
+      this.router.navigate(['/app/notifications'], navigationExtras);
+    } else if (data.error == 'Not found') {
+      this.showToastMsg('Team not exist');
+    } else if (data.error == 'already exist') {
+      this.showToastMsg('The user has already joined the team.');
+    }
+    else {
+      this.showToastMsg(data.error);
+    }
+  }
+
   onClickBtnAddMember() {
     this.aryMembers.push(new InviteTeamMatesModel());
+    this.joinTeamWithName();
   }
 
   onClickBtnRemoveMember(index) {
