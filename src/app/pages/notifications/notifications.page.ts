@@ -37,7 +37,7 @@ export class NotificationsPage implements OnInit {
 
     initialiseInvites() {
       // Set default values and re-fetch any data you need.
-      console.log("view entered")
+      console.log("[Notification] initialiseInvites")
       this.notifications =[];
       firebase.auth().onAuthStateChanged(user => {
         this.userId = user.uid;
@@ -46,22 +46,16 @@ export class NotificationsPage implements OnInit {
     }
 
   ngOnInit() {
-
-    console.log("ngOnInit fired in notifications page ")
+    console.log("[Notification] ngOnInit")
   }
 
   ionViewWillEnter(){
-    console.log("view entered")
-    this.notifications =[];
-    firebase.auth().onAuthStateChanged(user => {
-      this.userId = user.uid;
-      this.attachNotificationListener(this.userId);
-    });
+    console.log("[Notification] ionViewWillEnter")
   }
 
   ionViewWillLeave(){
     // this.unsubscribe();
-    console.log("Detach listner")
+    console.log("[Notification] Detach listner")
   }
   
   updateListener(notificationData){
@@ -70,11 +64,9 @@ export class NotificationsPage implements OnInit {
   }
 
   attachNotificationListener(userID){
-    console.log('userID ' + userID);
     this.unsubscribe = firebase.firestore().collection("surveynotifications").where("user", "==",userID).where("active", "==", true)
     .onSnapshot((snapshot) => {
-      console.log("Listener attached");
-      console.log(snapshot);
+      console.log("[Notification] Listener attached notification count = " + snapshot.size);
       // retrieve anything that has changed
       const changedDocs = snapshot.docChanges();
       changedDocs.forEach((change) => {
