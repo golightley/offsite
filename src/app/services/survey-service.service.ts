@@ -239,29 +239,62 @@ export class SurveyServiceService {
     });
 
   }
+  async isExistedTeam(uid, teamName) {
+    const result = await this.loadingService.doFirebase(async() => {
+      return new Promise<any>((resolve, reject) => {
+        const docRef = firebase.firestore().collection('teams')
+        .where('createdBy', '==', uid)
+        .where("teamName", "==",teamName);
+        docRef.get().then(function (doc) {
+          doc.forEach(team => {
+            if (team.exists) {
+              reject('exists');
+            } else {
+              resolve(team.id);
+            }
+          })
+        }).catch(function (error) {
+          reject(error);
+        })
+      })
+    })
+    return result;
+  }
 
   async createTeamByUserId(uid, teamName) {
     const result = await this.loadingService.doFirebase(async() => {
       return new Promise<any>((resolve, reject) => {
         const that = this;
-        firebase.firestore().collection('teams').add({
-          active: true,
-          memembersids: [uid],
-          members: firebase.firestore.FieldValue.arrayUnion({ uid }),
-          teamName: teamName,
-          createdBy: uid,
-          teamCreated: firebase.firestore.FieldValue.serverTimestamp()
-        }).then(async(docRef) => {
-          console.log(' Team created with ID: ', docRef.id);
-          console.log(docRef);
-          // create survey questions for the team utilizing cloud functions
-          await to(that.callCreateSurveyCloudFunction(docRef.id));
-          await to(that.updateUserWithTeamId(uid, docRef.id));
-          resolve(docRef.id);
-        }).catch(function (error) {
-          console.error('Error creating sruvey document: ', error);
-          reject(error);
-        });
+
+        const docRef = firebase.firestore().collection('teams').where("teamName", "==",teamName);
+        docRef.get().then(function (ref) {
+          console.log('count = ' + ref.size);
+          if (ref.size == 0) {
+            firebase.firestore().collection('teams').add({
+              active: true,
+              memembersids: [uid],
+              members: firebase.firestore.FieldValue.arrayUnion({ uid }),
+              teamName: teamName,
+              createdBy: uid,
+              teamCreated: firebase.firestore.FieldValue.serverTimestamp()
+            }).then(async(docRef) => {
+              console.log(' Team created with ID: ', docRef.id);
+              console.log(docRef);
+              // create survey questions for the team utilizing cloud functions
+              await to(that.callCreateSurveyCloudFunction(docRef.id));
+              await to(that.updateUserWithTeamId(uid, docRef.id));
+              resolve(docRef.id);
+            }).catch(function (error) {
+              console.error('Error creating sruvey document: ', error);
+              reject(error);
+            });
+          } else {
+            console.error('[CreateTeam] Team already exist!');
+            reject('exist');
+          }
+        })
+
+        
       });
     });
     return result;
@@ -303,6 +336,7 @@ export class SurveyServiceService {
     return new Promise<any>((resolve, reject) => {
       const ref = firebase.firestore().collection('teams').doc(teamId);
 
+      
       // Set the 'capital' field of the city 'DC'
       return ref.update({
         memembersids: firebase.firestore.FieldValue.arrayUnion(uid),
@@ -312,7 +346,6 @@ export class SurveyServiceService {
           console.log('Team Document successfully updated!');
           console.log(docRef);
           resolve(docRef);
-
         })
         .catch(function (error) {
           // The document probably doesn't exist.
@@ -322,8 +355,75 @@ export class SurveyServiceService {
         });
 
     });
+  }
+
+  async showToastMsg(message) {
+    const toast = await this.toastController.create({
+      message: message,
+      closeButtonText: 'close',
+      showCloseButton: true,
+      duration: 2000
+    });
+    toast.present();
+  }
 
 
+  async joinTeamWithName(uid, teamName) {
+    const that = this;
+    const result = await this.loadingService.doFirebase(async() => {
+      return new Promise<any>((resolve, reject) => {
+        //const ref = firebase.firestore().collection('teams').doc(teamName);
+        const docRef = firebase.firestore().collection('teams').where("teamName", "==",teamName);
+        docRef.get().then(async function (ref) {
+          console.log('count = ' + ref.size);
+          if (ref.size == 0) {
+            console.log('[JoinTeam] Team not found!');
+            reject('Not found');
+          } else {
+            //const doc = ref.docs[0].ref;
+            console.log('[JoinTeam] found teamname = ' + ref.docs[0].data().teamName);
+            console.log('[JoinTeam] found team');
+            console.log('[JoinTeam] teamId = ' + ref.docs[0].id);
+            const docTeamRef = await firebase.firestore().collection('teams').doc(ref.docs[0].id);
+            docTeamRef.get().then(async function (doc) {
+              if (doc.exists) {
+                const members = doc.data().memembersids;
+                //console.log('[JoinTeam] members = ' + members);
+                const index =members.findIndex(member => member === uid);
+                console.log('[JoinTeam] index = ' + index);
+                if (index != -1) {
+                  console.log('[JoinTeam] This user has already registed team member.');
+                  //that.showToastMsg('This user has already registed for the team.');
+                  reject('already exist');
+                } else {
+                  console.log('start to regist...');
+                  //that.showToastMsg('sent invite email.');
+                  return ref.docs[0].ref.update({
+                    memembersids: firebase.firestore.FieldValue.arrayUnion(uid),
+                    members: firebase.firestore.FieldValue.arrayUnion({ uid }),
+                  })
+                  .then(function (docRef) {
+                      console.log('Team Document successfully updated!');
+                      console.log(ref.docs[0].data().teamName);
+                      resolve(ref.docs[0].data().teamName);
+                  })
+                  .catch(function (error) {
+                    // The document probably doesn't exist.
+                    console.error('Error updating document: ', error);
+                    reject(error);
+                  });
+                }
+              } else {
+                
+              }
+            })
+            
+          }
+        })
+        // Set the 'capital' field of the city 'DC'
+      });
+    })
+    return result;
   }
 
 
@@ -451,13 +551,7 @@ export class SurveyServiceService {
           reject(error)
         });
       });
-
-
-
     }
-
-
-
   }
 
   createFeedbackQuestion(surveyId: string, user: string, categoryName: string, name: string) {
@@ -570,7 +664,6 @@ export class SurveyServiceService {
 
 
   createNotification(surveyId: string, user: string, type: string, name: string, category: string) {
-
     console.log('creating notitfication')
     // Add a new document with a generated id.
     firebase.firestore().collection('surveynotifications').add({
@@ -591,6 +684,25 @@ export class SurveyServiceService {
     });
   }
 
+  async getUserIdFromEmail(email) {
+      return new Promise<any>((resolve, reject) => {
+        console.log('[InviteTeam] email = ' + email);
+        const docRef = firebase.firestore().collection('users').where("email", "==",email);
+        docRef.get().then(async function (ref) {
+          console.log('count = ' + ref.size);
+          if (ref.size == 0) {
+            resolve('not found');
+          } else {
+            console.log('[InviteTeam] found userId = ' + ref.docs[0].id);
+            resolve(ref.docs[0].id);
+          }
+        }).catch(error => {
+          reject(error);
+        })
+      })
+    //})
+  }
+
   // creates invite document for each person invited to the team
   async inviteTeamMembers(inviteMembersArray, teamId, teamName) {
     if ( inviteMembersArray[0].email === undefined ) {
@@ -605,7 +717,8 @@ export class SurveyServiceService {
       return;
     }
     let err, teamData;
-    await this.loadingService.doFirebase(async() => {
+    const that = this;
+    const result = await this.loadingService.doFirebase(async() => {
       if ( teamId === null || teamId === undefined ) {
         [err, teamData] = await to(this.getTeamByUserId(firebase.auth().currentUser.uid).then());
         if (err) {
@@ -622,29 +735,48 @@ export class SurveyServiceService {
         if (member.email === undefined) {
           continue;
         }
-        [err, teamData] = await to(this.checkIfInvitedtoAteamWithEmail(member.email).then());
-        if (err) {
-          throw new ErrorEvent(err);
+
+        const userId = await that.getUserIdFromEmail(member.email);
+        console.log('[InviteTeam] userId = ' + userId);
+        if ( userId && userId.error === undefined && userId != 'not found') {
+          const docRef = firebase.firestore().collection('teams').doc(teamId);
+          await docRef.get().then(function (doc) {
+            if (doc.exists) {
+              const members = doc.data().memembersids;
+              //console.log('[InviteMembers] members = ' + members);
+              //const isExist = that.isExistUserInTeam(members, userId);
+              const index =members.findIndex(member => member === userId);
+              console.log('[InivteTeam] index = ' + index);
+              if (index != -1) {
+                console.log('[InviteMembers] This user has already registed for the team.');
+                that.showToastMsg(member.email + ' was already invited.');
+                return;
+              } else {
+                console.log('no invited...');
+                to(that.sendEmailInvite(member, teamId, teamName));
+                //that.showToastMsg(member.email + ' sent invite email.');
+                that.showToastMsg('sent invite email.');
+                return;
+              }
+            } else {
+
+            }
+         });
+        } else if (userId == 'not found') {
+          console.log('not signed...');
+          to(that.sendEmailInvite(member, teamId, teamName));
+          //that.showToastMsg(member.email + ' sent invite email.');
+          that.showToastMsg('sent invite email.');
+          return;
         }
-        console.log('Invited team data...');
-        console.log(teamData);
-        if (teamData !== null) {
-          console.log('already invited...');
-          const toast = await this.toastController.create({
-            message: member.email + ' was already invited.',
-            closeButtonText: 'close',
-            showCloseButton: true,
-            cssClass: 'offsite-toast'
-          });
-          toast.present();
-        } else {
-          console.log('no invited...');
-          await to(this.sendEmailInvite(member, teamId, teamName));
+        else {
+          throw new ErrorEvent(userId.error);
         }
+
       }
     });
 
-    return;
+    return result;
   }
 
   async sendEmailInvite(member: any, teamId: string, teamName: string ) {
