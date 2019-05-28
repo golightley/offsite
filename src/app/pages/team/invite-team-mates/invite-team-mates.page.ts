@@ -52,17 +52,18 @@ export class InviteTeamMatesPage {
         console.log('invite-team-mates.teamname:' + this.invitedToTeamName + ',' + this.invitedToTeamId + ',' + this.fromLoginScreen);
 
         // stage determins to show a create a new team or already invited to a team
-        // if (this.invitedToTeamName !== null
-        //   && this.invitedToTeamName !== undefined
-        //   && this.invitedToTeamId != null
-        //   && this.invitedToTeamId !== undefined) {
-        //   this.stage = 'alreadyInvited';
-        // } else if (this.fromLoginScreen === 'true') {
-        //   this.stage = 'invite';
-        // } else {
-        //   this.stage = 'team';
-        // }
-        this.stage = 'team';
+        if (this.invitedToTeamName !== null
+          && this.invitedToTeamName !== undefined
+          && this.invitedToTeamId != null
+          && this.invitedToTeamId !== undefined) {
+          this.stage = 'alreadyInvited';
+        } else 
+        if (this.fromLoginScreen === 'true') {
+          this.stage = 'invite';
+        } else {
+          this.stage = 'team';
+        }
+        //this.stage = 'team';
       }
     });
 
