@@ -140,14 +140,14 @@ export class SurveyServiceService {
   }
 
   // pull questions for results tab
-  getTeamId(userID) {
+  getTeamId(userId: string) {
 
-    console.log('ServeyService.GetTeamId.UserID=' + userID)
+    console.log('ServeyService.GetTeamId.UserID=' + userId)
     // pull each question from firebase
     return new Promise<any>((resolve, reject) => {
       firebase.firestore()
         .collection('users')
-        .doc(userID)
+        .doc(userId)
         .get()
         .then((questionData) => {
           resolve(questionData);
@@ -172,6 +172,27 @@ export class SurveyServiceService {
           });
         }, err => reject(err));
     });
+  }
+  async getInvitedTeams(userEmail)
+  {
+    const result = await this.loadingService.doFirebase(async() => {
+      return new Promise<any>((resolve, reject) => {
+        const that = this;
+
+        const docRef = firebase.firestore().collection('emailInvites')
+          .where("email", "==",userEmail)
+          .where('active', '==', true);
+        docRef.get().then(async function (teams) {
+            if (teams.docs.length === 0) {
+              resolve(null);
+            } else {
+              resolve(teams.docs);
+            }
+        }).catch (error => {
+            reject(error);
+        })
+      })
+    })
   }
 
   // pull questions for results tab
@@ -261,6 +282,15 @@ export class SurveyServiceService {
     return result;
   }
 
+  async getUserTeams(userId)
+  {
+    const docTeams = await firebase.firestore().collection('teams')
+    .where('members', 'array-contains', { uid: userId });
+    docTeams.get().then(function (teams) {
+      console.log('[getUserTeams] team count = ' + teams.size);
+    })
+  }
+
   async createTeamByUserId(uid, teamName) {
     const result = await this.loadingService.doFirebase(async() => {
       return new Promise<any>((resolve, reject) => {
@@ -289,12 +319,10 @@ export class SurveyServiceService {
               reject(error);
             });
           } else {
-            console.error('[CreateTeam] Team already exist!');
+            console.log('[CreateTeam] Team already exist!');
             reject('exist');
           }
         })
-
-        
       });
     });
     return result;
@@ -392,7 +420,7 @@ export class SurveyServiceService {
                 const index =members.findIndex(member => member === uid);
                 console.log('[JoinTeam] index = ' + index);
                 if (index != -1) {
-                  console.log('[JoinTeam] This user has already registed team member.');
+                  console.log('[JoinTeam] This user has already registered for the team.');
                   //that.showToastMsg('This user has already registed for the team.');
                   reject('already exist');
                 } else {
@@ -748,7 +776,7 @@ export class SurveyServiceService {
               const index =members.findIndex(member => member === userId);
               console.log('[InivteTeam] index = ' + index);
               if (index != -1) {
-                console.log('[InviteMembers] This user has already registed for the team.');
+                console.log('[InviteMembers] This user has already registered for the team.');
                 that.showToastMsg(member.email + ' was already invited.');
                 return;
               } else {
