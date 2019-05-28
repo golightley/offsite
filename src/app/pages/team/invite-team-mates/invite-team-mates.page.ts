@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { InviteTeamMatesModel } from './invite-team-mates.model';
-import { Router } from '@angular/router';
+import { Router,NavigationExtras } from '@angular/router';
 import { SurveyServiceService } from '../../../services/survey-service.service';
 import * as firebase from 'firebase/app';
 import { ActivatedRoute } from '@angular/router';
@@ -25,7 +25,7 @@ export class InviteTeamMatesPage {
   invitedToTeamId: string;
   hasBeenAlreadyInvitedToATeam: boolean = false;
   fromLoginScreen: string = 'false';
-
+  userId: string = '';
 
   constructor(
     private router: Router,
@@ -36,6 +36,9 @@ export class InviteTeamMatesPage {
     this.aryMembers = [
       new InviteTeamMatesModel()
     ];
+    firebase.auth().onAuthStateChanged(user => {
+      this.userId = user.uid;
+    })
   }
 
   async ionViewWillEnter() {
@@ -49,16 +52,17 @@ export class InviteTeamMatesPage {
         console.log('invite-team-mates.teamname:' + this.invitedToTeamName + ',' + this.invitedToTeamId + ',' + this.fromLoginScreen);
 
         // stage determins to show a create a new team or already invited to a team
-        if (this.invitedToTeamName !== null
-          && this.invitedToTeamName !== undefined
-          && this.invitedToTeamId != null
-          && this.invitedToTeamId !== undefined) {
-          this.stage = 'alreadyInvited';
-        } else if (this.fromLoginScreen === 'true') {
-          this.stage = 'invite';
-        } else {
-          this.stage = 'team';
-        }
+        // if (this.invitedToTeamName !== null
+        //   && this.invitedToTeamName !== undefined
+        //   && this.invitedToTeamId != null
+        //   && this.invitedToTeamId !== undefined) {
+        //   this.stage = 'alreadyInvited';
+        // } else if (this.fromLoginScreen === 'true') {
+        //   this.stage = 'invite';
+        // } else {
+        //   this.stage = 'team';
+        // }
+        this.stage = 'team';
       }
     });
 
@@ -80,7 +84,6 @@ export class InviteTeamMatesPage {
   alreadyJoinedATeam() {
     this.joinTeamWithCode(this.invitedToTeamId);
     this.stage = 'invite';
-
   }
 
 
@@ -95,6 +98,16 @@ export class InviteTeamMatesPage {
     this.router.navigateByUrl('app/notifications');
   }
 
+  async showToastMsg(message) {
+    const toast = await this.toastController.create({
+      message: message,
+      closeButtonText: 'close',
+      showCloseButton: true,
+      duration: 2000
+    });
+    toast.present();
+  }
+
   async onClickCreateTeam() {
     if ( this.createTeam === '') {
       const toast = await this.toastController.create({
@@ -107,13 +120,34 @@ export class InviteTeamMatesPage {
       return;
     }
     // get the team we are inviting them to
-    const data = await this.surveyService.createTeamByUserId(firebase.auth().currentUser.uid, this.createTeam);
-    if ( data && data.error === undefined) {
+    
+    const data = await this.surveyService.createTeamByUserId(this.userId, this.createTeam);
+    // if ( data && data.error === undefined) {
+    //     console.log('Team created...');
+    //     this.teamId = data;
+    //     this.stage = 'invite';
+    // } else {
+    //   console.log(data.error);
+    // }
+
+    console.log('[CreateTeam] result = ' + data.error);
+    if ( data && data.error === undefined && data.error !== 'exist') {
         console.log('Team created...');
-        this.teamId = data;
-        this.stage = 'invite';
-    } else {
+        this.showToastMsg('The team has been created successfully!');
+        const navigationExtras: NavigationExtras = {
+          replaceUrl: true,
+          queryParams: {
+            fromLoginScreen: 'true'
+          }
+        };
+        this.router.navigate(['/app/notifications'], navigationExtras);
+    } else if (data.error === 'exist') {
+      console.log('Team already exist!');
+      this.showToastMsg('The team already exist!');
+    }
+    else {
       console.log(data.error);
+      this.showToastMsg('Failed to create the team.');
     }
   }
 
