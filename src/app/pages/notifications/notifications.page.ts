@@ -29,9 +29,9 @@ export class NotificationsPage implements OnInit {
     {
       this.navigationSubscription = this.router.events.subscribe((e: any) => {
         // If it is a NavigationEnd event re-initalise the component
-        //console.log('[Notification] router = ' + this.router.url);
+        console.log('[Notification] router = ' + this.router.url);
         if (e instanceof NavigationEnd 
-          && (this.router.url === '/app/notifications' || '/app/notifications?fromLoginScreen=true')) {
+          && (this.router.url === '/app/notifications' || this.router.url === '/app/notifications?fromLoginScreen=true')) {
           this.initialiseInvites();
         }
       });
@@ -66,8 +66,9 @@ export class NotificationsPage implements OnInit {
   }
 
   attachNotificationListener(userID){
-    firebase.firestore().collection("surveynotifications").where("user", "==",userID).where("active", "==", true)
-    .onSnapshot((snapshot) => {
+    this.unsubscribe = firebase.firestore().collection("surveynotifications").where("user", "==",userID).where("active", "==", true);
+    //console.log(this.unsubscribe);
+    this.unsubscribe.onSnapshot((snapshot) => {
       console.log("[Notification] Listener attached notification count = " + snapshot.size);
       // retrieve anything that has changed
       const changedDocs = snapshot.docChanges();
@@ -76,8 +77,8 @@ export class NotificationsPage implements OnInit {
           console.log("Added in listener")
           this.notifications.push(change.doc);
         } else if (change.type === 'modified') {
-          console.log("Modified")
-          console.log(change)  
+          console.log("Modified");
+          console.log(change);
           // this.notifications.push(change.doc);
         }
       });
