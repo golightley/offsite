@@ -29,7 +29,8 @@ export class NotificationsPage implements OnInit {
     {
       this.navigationSubscription = this.router.events.subscribe((e: any) => {
         // If it is a NavigationEnd event re-initalise the component
-        if (e instanceof NavigationEnd) {
+        //console.log('[Notification] router = ' + this.router.url);
+        if (e instanceof NavigationEnd && this.router.url === '/app/notifications') {
           this.initialiseInvites();
         }
       });
@@ -104,7 +105,7 @@ export class NotificationsPage implements OnInit {
     // avoid memory leaks here by cleaning up after ourselves. If we  
     // don't then we will continue to run our initialiseInvites()   
     // method on every navigationEnd event.
-    if (this.navigationSubscription) {  
+    if (this.navigationSubscription) {
        this.navigationSubscription.unsubscribe();
     }
   }
