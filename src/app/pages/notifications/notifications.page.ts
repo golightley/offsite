@@ -30,7 +30,8 @@ export class NotificationsPage implements OnInit {
       this.navigationSubscription = this.router.events.subscribe((e: any) => {
         // If it is a NavigationEnd event re-initalise the component
         //console.log('[Notification] router = ' + this.router.url);
-        if (e instanceof NavigationEnd && this.router.url === '/app/notifications') {
+        if (e instanceof NavigationEnd 
+          && (this.router.url === '/app/notifications' || '/app/notifications?fromLoginScreen=true')) {
           this.initialiseInvites();
         }
       });
@@ -65,7 +66,7 @@ export class NotificationsPage implements OnInit {
   }
 
   attachNotificationListener(userID){
-    this.unsubscribe = firebase.firestore().collection("surveynotifications").where("user", "==",userID).where("active", "==", true)
+    firebase.firestore().collection("surveynotifications").where("user", "==",userID).where("active", "==", true)
     .onSnapshot((snapshot) => {
       console.log("[Notification] Listener attached notification count = " + snapshot.size);
       // retrieve anything that has changed
