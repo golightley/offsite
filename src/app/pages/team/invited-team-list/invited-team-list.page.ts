@@ -4,6 +4,7 @@ import { LoadingService } from '../../../services/loading-service';
 import { InvitedTeamModel } from './invited-team-list.model';
 import { SurveyServiceService } from '../../../services/survey-service.service';
 import { ToastController } from '@ionic/angular';
+import { Router, NavigationExtras } from '@angular/router';
 
 require('firebase/auth');
 @Component({
@@ -15,12 +16,13 @@ export class InvitedTeamListPage implements OnInit {
   inviteEmails: any = [];
   userId: string = '';
   userEmail: string = '';
+  unsubscribe: any;
   constructor(
     public loadingService: LoadingService,
     public surveyService: SurveyServiceService,
     private toastController: ToastController,
-  )
-  {
+    private router: Router,
+  ) {
 
   }
 
@@ -29,7 +31,17 @@ export class InvitedTeamListPage implements OnInit {
       this.userId = user.uid;
       this.userEmail = user.email;
       this.getInvitedTeams(this.userEmail);
-    })
+    });
+  }
+
+  ionViewWillEnter() {
+    console.log('[InvitedList] ionViewWillEnter');
+  }
+  ionViewDidLeave() {
+    if (this.unsubscribe !== undefined) {
+      console.log('[InvitedList] call unsubscribe!');
+      this.unsubscribe();
+    }
   }
 
   async showToastMsg(message) {
@@ -44,6 +56,10 @@ export class InvitedTeamListPage implements OnInit {
 
   async getInvitedTeams(userEmail) {
     const that = this;
+    if (that.unsubscribe !== undefined) {
+      console.log('[InvitedList] call unsubscribe!');
+      this.unsubscribe();
+    }
     await this.loadingService.doFirebase(async () => {
       console.log('[InvitedList] userEmai = ' + userEmail);
       const query = await firebase.firestore().collection('emailInvites')
@@ -51,7 +67,7 @@ export class InvitedTeamListPage implements OnInit {
       .where('active', '==', true)
       .orderBy('timestamp', 'asc');
 
-      query.onSnapshot((snapshot) => {
+      this.unsubscribe = query.onSnapshot((snapshot) => {
         console.log('Invites Listener attached');
         // retrieve anything that has changed
           console.log('[InvitedList] invited email count = ', snapshot.size);
@@ -73,39 +89,48 @@ export class InvitedTeamListPage implements OnInit {
       });
     });
   }
-  async onAcceptInvite(inviteId: string, teamName: string)
-  {
+  async onAcceptInvite(inviteId: string, teamName: string) {
     console.log('[acceptInvite] team name = ' + teamName);
     console.log('[acceptInvite] doc id = ' + inviteId);
-    //await this.loadingService.doFirebase(async() => {
-      const data = await this.surveyService.joinTeamWithName(this.userId,teamName);
-      if ( data && data.error === undefined && data.error != 'Not found') {
+    const that = this;
+      const data = await that.surveyService.joinTeamWithName(that.userId, teamName);
+      if ( data && data.error === undefined && data.error !== 'Not found') {
         const ref = await firebase.firestore().collection('emailInvites').doc(inviteId);
         return ref.update({
           'active': false
         })
         .then(function (docRef) {
           console.log('EmailInvites Document successfully updated!');
-          this.surveyService.showToastMsg('You have joined the team successfully');
+          const navigationExtras: NavigationExtras = {
+            replaceUrl: true,
+            queryParams: {
+              fromLoginScreen: 'true'
+            }
+          };
+          that.router.navigate(['/app/notifications'], navigationExtras);
+          that.surveyService.showToastMsg('You have joined the team successfully');
         })
         .catch(function (error) {
           // The document probably doesn't exist.
-          console.error('Error updating document: ', error);
-          this.surveyService.showToastMsg(error);
+          that.surveyService.showToastMsg('accept error');
         });
 
       } else {
-        this.surveyService.showToastMsg('This user has already registered for the team');
+        that.surveyService.showToastMsg('This user has already registered for the team');
       }
-    //})
-    
   }
-  async onDeclineInvite(inviteId: string)
-  {
+  async onDeclineInvite(inviteId: string) {
     console.log(inviteId);
     const ref = await firebase.firestore().collection('emailInvites').doc(inviteId);
-        return ref.update({
+    const navigationExtras: NavigationExtras = {
+      replaceUrl: true,
+      queryParams: {
+        fromLoginScreen: 'true'
+      }
+    };
+    this.router.navigate(['/app/notifications'], navigationExtras);
+    return ref.update({
           'active': false
-     })
+    });
   }
 }
