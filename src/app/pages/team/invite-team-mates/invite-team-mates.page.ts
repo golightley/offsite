@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { InviteTeamMatesModel } from './invite-team-mates.model';
-import { Router,NavigationExtras } from '@angular/router';
+import { Router, NavigationExtras } from '@angular/router';
 import { SurveyServiceService } from '../../../services/survey-service.service';
 import * as firebase from 'firebase/app';
 import { ActivatedRoute } from '@angular/router';
@@ -38,12 +38,12 @@ export class InviteTeamMatesPage {
       new InviteTeamMatesModel()
     ];
     firebase.auth().onAuthStateChanged(user => {
-      that.userId = user.uid;
+      this.userId = user.uid;
     });
   }
 
   async ionViewWillEnter() {
-
+    const that = this;
     await this.route.queryParams.subscribe(params => {
       if (params) {
         // get data if team was invited and passed from the sign up page
@@ -57,9 +57,9 @@ export class InviteTeamMatesPage {
           && this.invitedToTeamName !== undefined
           && this.invitedToTeamId != null
           && this.invitedToTeamId !== undefined) {
-          this.stage = 'alreadyInvited';
-        } else
-        if (this.fromLoginScreen === 'true') {
+          //this.stage = 'alreadyInvited';
+          that.router.navigate(['/team/invited-team-list']);
+        } else if (this.fromLoginScreen === 'true') {
           this.stage = 'invite';
         } else {
           this.stage = 'team';
