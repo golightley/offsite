@@ -33,12 +33,13 @@ export class InviteTeamMatesPage {
     private route: ActivatedRoute,
     private toastController: ToastController
   ) {
+    const that = this;
     this.aryMembers = [
       new InviteTeamMatesModel()
     ];
     firebase.auth().onAuthStateChanged(user => {
-      this.userId = user.uid;
-    })
+      that.userId = user.uid;
+    });
   }
 
   async ionViewWillEnter() {
@@ -57,13 +58,12 @@ export class InviteTeamMatesPage {
           && this.invitedToTeamId != null
           && this.invitedToTeamId !== undefined) {
           this.stage = 'alreadyInvited';
-        } else 
+        } else
         if (this.fromLoginScreen === 'true') {
           this.stage = 'invite';
         } else {
           this.stage = 'team';
         }
-        //this.stage = 'team';
       }
     });
 
@@ -71,26 +71,26 @@ export class InviteTeamMatesPage {
 
   async joinTeamWithName() { // join team does not work.
     // get the team we are inviting them to
-    console.log('[JoinTeam at signup] teamName = ' + this.createTeam);
-    console.log('[JoinTeam at signup] userId = ' + this.userId);
-    const data = await this.surveyService.joinTeamWithName(this.userId, this.createTeam);
+    const that = this;
+    console.log('[JoinTeam at signup] teamName = ' + that.createTeam);
+    console.log('[JoinTeam at signup] userId = ' + that.userId);
+    const data = await this.surveyService.joinTeamWithName(that.userId, that.createTeam);
     console.log('[JoinTeam] error = ' + data.error);
-    if ( data && data.error === undefined && data.error != 'Not found') {
-      this.surveyService.showToastMsg('You have joined the team successfully');
+    if ( data && data.error === undefined && data.error !== 'Not found') {
+      that.surveyService.showToastMsg('You have joined the team successfully');
       const navigationExtras: NavigationExtras = {
         replaceUrl: true,
         queryParams: {
           fromLoginScreen: 'true'
         }
       };
-      this.router.navigate(['/app/notifications'], navigationExtras);
-    } else if (data.error == 'Not found') {
-      this.showToastMsg('Team not exist');
-    } else if (data.error == 'already exist') {
-      this.showToastMsg('The user has already joined the team.');
-    }
-    else {
-      this.showToastMsg(data.error);
+      that.router.navigate(['/app/notifications'], navigationExtras);
+    } else if (data.error === 'Not found') {
+      that.surveyService.showToastMsg('Team not exist');
+    } else if (data.error === 'already exist') {
+      that.surveyService.showToastMsg('The user has already joined the team.');
+    } else {
+      that.surveyService.showToastMsg(data.error);
     }
   }
 
@@ -125,17 +125,18 @@ export class InviteTeamMatesPage {
     this.router.navigateByUrl('app/notifications');
   }
 
-  async showToastMsg(message) {
-    const toast = await this.toastController.create({
-      message: message,
-      closeButtonText: 'close',
-      showCloseButton: true,
-      duration: 2000
-    });
-    toast.present();
-  }
+  // async showToastMsg(message) {
+  //   const toast = await this.toastController.create({
+  //     message: message,
+  //     closeButtonText: 'close',
+  //     showCloseButton: true,
+  //     duration: 2000
+  //   });
+  //   toast.present();
+  // }
 
   async onClickCreateTeam() {
+    const that = this;
     if ( this.createTeam === '') {
       const toast = await this.toastController.create({
         message: 'Please input your team name.',
@@ -147,7 +148,6 @@ export class InviteTeamMatesPage {
       return;
     }
     // get the team we are inviting them to
-    
     const data = await this.surveyService.createTeamByUserId(this.userId, this.createTeam);
     // if ( data && data.error === undefined) {
     //     console.log('Team created...');
@@ -160,7 +160,7 @@ export class InviteTeamMatesPage {
     console.log('[CreateTeam] result = ' + data.error);
     if ( data && data.error === undefined && data.error !== 'exist') {
         console.log('Team created...');
-        this.showToastMsg('The team has been created successfully!');
+        that.surveyService.showToastMsg('The team has been created successfully!');
         const navigationExtras: NavigationExtras = {
           replaceUrl: true,
           queryParams: {
@@ -170,11 +170,10 @@ export class InviteTeamMatesPage {
         this.router.navigate(['/app/notifications'], navigationExtras);
     } else if (data.error === 'exist') {
       console.log('Team already exist!');
-      this.showToastMsg('The team already exist!');
-    }
-    else {
+      that.surveyService.showToastMsg('The team already exist!');
+    } else {
       console.log(data.error);
-      this.showToastMsg('Failed to create the team.');
+      that.surveyService.showToastMsg('Failed to create the team.');
     }
   }
 
