@@ -697,6 +697,19 @@ export class SurveyServiceService {
     });
   }
 
+  async getActiveTeam(userId: string) {
+    console.log('[ActiveTeam] userID = ' + userId);
+    return new Promise<any>((resolve, reject) => {
+      firebase.firestore().collection('users').doc(userId).get().then(docUser => {
+        console.log('[ActiveTeam] teamID = ' + docUser.data().teamId);
+        resolve(docUser.data().teamId);
+      }).catch(error => {
+        console.log('[ActiveTeam] error = ' + error);
+        reject(error);
+      });
+    });
+  }
+
   async getUserIdFromEmail(email) {
       return new Promise<any>((resolve, reject) => {
         console.log('[InviteTeam] email = ' + email);

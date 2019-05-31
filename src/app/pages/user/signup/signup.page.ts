@@ -115,7 +115,8 @@ export class SignupPage implements OnInit {
           replaceUrl: true,
           queryParams: {
             teamName: teamData.data().team,
-            teamId: teamData.data().teamId
+            teamId: teamData.data().teamId,
+            fromLoginScreen: 'false'
           }
         };
         this.router.navigate(['team/invited-team-list']);
@@ -123,7 +124,14 @@ export class SignupPage implements OnInit {
       } else {
         console.log('empty team');
         //this.router.navigate(['/team/invite-team-mates']);
-        this.router.navigate(['/team/create-team']);
+        //this.router.navigate(['/team/create-team']);
+        const navigationExtras: NavigationExtras = {
+          replaceUrl: true,
+          queryParams: {
+            fromLoginScreen: 'false'
+          }
+        };
+        this.router.navigate(['/team/create-team'], navigationExtras);
       }
       return 'registered';
     });

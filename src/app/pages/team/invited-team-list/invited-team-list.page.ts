@@ -4,7 +4,7 @@ import { LoadingService } from '../../../services/loading-service';
 import { InvitedTeamModel } from './invited-team-list.model';
 import { SurveyServiceService } from '../../../services/survey-service.service';
 import { ToastController } from '@ionic/angular';
-import { Router, NavigationExtras } from '@angular/router';
+import { Router, NavigationExtras, ActivatedRoute } from '@angular/router';
 
 require('firebase/auth');
 @Component({
@@ -17,11 +17,14 @@ export class InvitedTeamListPage implements OnInit {
   userId: string = '';
   userEmail: string = '';
   unsubscribe: any;
+  fromLoginScreen = 'false';
+  isBack: string;
   constructor(
     public loadingService: LoadingService,
     public surveyService: SurveyServiceService,
     private toastController: ToastController,
     private router: Router,
+    private route: ActivatedRoute,
   ) {
 
   }
@@ -34,8 +37,22 @@ export class InvitedTeamListPage implements OnInit {
     });
   }
 
-  ionViewWillEnter() {
+  async ionViewWillEnter() {
     console.log('[InvitedList] ionViewWillEnter');
+    const that = this;
+    await that.route.queryParams.subscribe(params => {
+      if (params) {
+        // get data if team was invited and passed from the sign up page
+        that.fromLoginScreen = params.fromLoginScreen;
+    // const teamID = await this.surveyService.getActiveTeam(this.userId);
+     console.log('[InvitedTeam] fromLoginScreen = ' + that.fromLoginScreen);
+        if (that.fromLoginScreen === 'true') {
+          that.isBack = 'true';
+        } else {
+          that.isBack = 'false';
+        }
+      }
+    });
   }
   ionViewDidLeave() {
     if (this.unsubscribe !== undefined) {
@@ -83,9 +100,7 @@ export class InvitedTeamListPage implements OnInit {
               console.log('[InvitedList] doc id = ', change.doc.id);
               that.inviteEmails.splice(change.newIndex, 0, inviteEmail);
             }
-
           });
-
       });
     });
   }
@@ -122,13 +137,23 @@ export class InvitedTeamListPage implements OnInit {
   async onDeclineInvite(inviteId: string) {
     console.log(inviteId);
     const ref = await firebase.firestore().collection('emailInvites').doc(inviteId);
-    const navigationExtras: NavigationExtras = {
-      replaceUrl: true,
-      queryParams: {
-        fromLoginScreen: 'true'
-      }
-    };
-    this.router.navigate(['/app/notifications'], navigationExtras);
+    if (this.isBack === 'false') {
+      const navigationExtras: NavigationExtras = {
+        replaceUrl: true,
+        queryParams: {
+          fromLoginScreen: 'false'
+        }
+      };
+      this.router.navigate(['/team/create-team'], navigationExtras);
+    } else {
+      const navigationExtras: NavigationExtras = {
+        replaceUrl: true,
+        queryParams: {
+          fromLoginScreen: 'true'
+        }
+      };
+      this.router.navigate(['/app/notifications'], navigationExtras);
+    }
     return ref.update({
           'active': false
     });

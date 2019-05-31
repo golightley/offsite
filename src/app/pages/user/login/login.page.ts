@@ -3,7 +3,7 @@ import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {Router, NavigationExtras} from '@angular/router';
 import {MenuController} from '@ionic/angular';
 import {Firebase} from '@ionic-native/firebase/ngx';
-
+import { SurveyServiceService } from '../../../services/survey-service.service';
 import * as firebase from 'firebase/app';
 import { LoadingService } from '../../../services/loading-service';
 
@@ -22,7 +22,7 @@ export class LoginPage implements OnInit {
   email = '';
   password = '';
   respondErrorMsg = '';
-
+  isCreate: boolean;
   validation_messages = {
     'email': [
       { type: 'required', message: 'Email is required.' },
@@ -38,7 +38,8 @@ export class LoginPage implements OnInit {
     public router: Router,
     public menu: MenuController,
     private firebaseCordova: Firebase,
-    public loadingService: LoadingService
+    public loadingService: LoadingService,
+    public surveyService: SurveyServiceService,
   ) {
 
     this.loginForm = new FormGroup({
@@ -63,15 +64,35 @@ export class LoginPage implements OnInit {
       return resp;
     });
     if ( result && result.user) {
-      // console.log(result.user);
+      console.log('[Login] userID = ' + result.user.uid);
       this.updateUsers(firebase.auth().currentUser);
-      const navigationExtras: NavigationExtras = {
-        replaceUrl: true,
-        queryParams: {
-          fromLoginScreen: 'true'
-        }
-      };
-      this.router.navigate(['/app/notifications'], navigationExtras);
+
+      const teamID = await this.surveyService.getActiveTeam(result.user.uid);
+      console.log('[CreateTeam] teamID = ' + teamID);
+      if (teamID !== undefined) {
+        const navigationExtras: NavigationExtras = {
+          replaceUrl: true,
+          queryParams: {
+            fromLoginScreen: 'true'
+          }
+        };
+        this.router.navigate(['/team/invite-team-mates'], navigationExtras);
+      } else {
+        const navigationExtras: NavigationExtras = {
+          replaceUrl: true,
+          queryParams: {
+            fromLoginScreen: 'false'
+          }
+        };
+        this.router.navigate(['/team/create-team'], navigationExtras);
+      }
+      // const navigationExtras: NavigationExtras = {
+      //   replaceUrl: true,
+      //   queryParams: {
+      //     fromLoginScreen: 'true'
+      //   }
+      // };
+      // this.router.navigate(['/app/notifications'], navigationExtras);
     } else {
       console.log(result.error);
       if ( result.error.message ) {
