@@ -2,4 +2,9 @@ ion-list {
     &.list-ios {
         margin-bottom: 0;
     }
+
+    .selected_team {
+        --color: #ffffff;
+        --background: #3b5998;
+    }
 }
