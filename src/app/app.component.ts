@@ -92,7 +92,7 @@ export class AppComponent {
         if (doc.exists) {
           const userTeam = new UserTeamsModel(doc.data());
           that.activeTeamName = userTeam.teamName;
-          console.log('[TeamSwitching] ~~~~~~~~~~~~~~~~~~~~~active team name = ' + that.activeTeamName);
+          console.log('[TeamSwitching] ~~~ activated team name = ' + that.activeTeamName);
         }
       });
       }

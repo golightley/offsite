@@ -1,4 +1,4 @@
-import {Component,ViewChild} from '@angular/core';
+import {Component,ViewChild, OnInit} from '@angular/core';
 import {Router} from '@angular/router';
 import {SurveyServiceService} from '../../../services/survey-service.service';
 import {FeedbackCategoryModel, TeammatesModel} from './feedback-content.model';
@@ -12,11 +12,11 @@ require('firebase/auth');
   templateUrl: './feedback-content.page.html',
   styleUrls: ['./feedback-content.page.scss'],
 })
-export class FeedbackContentPage {
+export class FeedbackContentPage implements OnInit {
   page = 'what';
   categories: FeedbackCategoryModel[] = [];
   teammates: TeammatesModel[] = [];
-  message = "";
+  message = '';
 
   toggle:string;
   startSuggestions = [
@@ -26,14 +26,20 @@ export class FeedbackContentPage {
 
   @ViewChild('inputToFocus') inputToFocus;
 
-
-
   constructor(private surveyService: SurveyServiceService,
               private router: Router) {
     this.getFeedbackQuestions();
-    this.getTeamMembers();
   }
 
+  ngOnInit() {
+    // console.log('[feedback-content] NgInit - feedback content loaded - ');
+  }
+
+  ionViewWillEnter() {
+    console.log('[feedback-content] ViewWillEnter - feedback content loaded - ');
+    this.page = 'what';
+    this.getTeamMembers();
+  }
   private getFeedbackQuestions() {
     // get notification data from the survey service
     this.surveyService.getFeedbackCategories()
@@ -47,16 +53,16 @@ export class FeedbackContentPage {
     });
   }
 
-  private getTeamMembers() {
-    let userId = 'rFeEWfEvUOQMvrp7LADUEPKt3U23';
-    if (firebase.auth().currentUser && firebase.auth().currentUser.uid) {
-      userId = firebase.auth().currentUser.uid;
-    }
-
-    this.surveyService.getTeamMembers(userId)
-      .then(docs => {
-        this.teammates = docs;
-        console.log(this.teammates);
+  async getTeamMembers() {
+    await firebase.auth().onAuthStateChanged(async user => {
+      if (user) {
+        const userId = firebase.auth().currentUser.uid;
+        this.surveyService.getTeamMembers(userId)
+          .then(docs => {
+            this.teammates = docs;
+            console.log('[feedback-content] - finished get team members - ');
+        });
+      }
     });
   }
 

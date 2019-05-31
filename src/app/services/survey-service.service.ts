@@ -59,29 +59,28 @@ export class SurveyServiceService {
   // get notifications for tab 1 of interface
   async getTeamMembers(userId: string) {
     const aryMembers: TeammatesModel[] = [];
-
-    const docTeams = await firebase.firestore().collection('teams')
-      .where('members', 'array-contains', { uid: userId }).get();
-
-    docTeams.docs.forEach(doc => {
-      const dicTeam: any = doc.data();
-      if (dicTeam.hasOwnProperty('members')) {
-        const members = dicTeam['members'];
-        members.forEach(async dicMember => {
-          if (dicMember.hasOwnProperty('uid')) {
-            const memberId = dicMember['uid'];
-            if (userId !== memberId && 0 === aryMembers.filter(member => {
-              return member.uid === userId;
-            }).length) {
-              firebase.firestore().collection('users').doc(memberId).get().then(docUser => {
-                aryMembers.push(new TeammatesModel(docUser.id, docUser.data()));
-              });
+    await this.loadingService.doFirebase(async() => {
+      const teamId = await this.getActiveTeam(userId);
+      await firebase.firestore().collection('teams').doc(teamId).get().then(doc => {
+        const dicTeam: any = doc.data();
+        if (dicTeam.hasOwnProperty('members')) {
+          const members = dicTeam['members'];
+          members.forEach(async dicMember => {
+            if (dicMember.hasOwnProperty('uid')) {
+              const memberId = dicMember['uid'];
+              if (userId !== memberId && 0 === aryMembers.filter(member => {
+                return member.uid === userId;
+              }).length) {
+                console.log('My Team Members - memberid - ' + memberId);
+                firebase.firestore().collection('users').doc(memberId).get().then(docUser => {
+                  aryMembers.push(new TeammatesModel(docUser.id, docUser.data()));
+                });
+              }
             }
-          }
-        });
-      }
+          });
+        }
+      });
     });
-
     return aryMembers;
   }
 
