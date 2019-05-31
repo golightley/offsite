@@ -26,7 +26,7 @@ export class InviteTeamMatesPage {
   hasBeenAlreadyInvitedToATeam: boolean = false;
   fromLoginScreen: string = 'false';
   userId: string = '';
-
+  fromMenu: string;
   constructor(
     private router: Router,
     public surveyService: SurveyServiceService,
@@ -58,9 +58,11 @@ export class InviteTeamMatesPage {
         //   && this.invitedToTeamId != null
         //   && this.invitedToTeamId !== undefined) {
         //   this.stage = 'alreadyInvited';
-        // } 
-        if (this.fromLoginScreen === 'true') {
-          console.log('[InviteTeamMates] stage = invite');
+        // }
+        this.fromMenu = this.route.snapshot.paramMap.get('fromMenu');
+        console.log('[InviteTeam] fromMenu = ' + this.fromMenu);
+
+        if (this.fromMenu === 'true') {
           this.stage = 'invite';
         } else {
           this.stage = 'team';
@@ -89,7 +91,7 @@ export class InviteTeamMatesPage {
     } else if (data.error === 'Not found') {
       that.surveyService.showToastMsg('Team not exist');
     } else if (data.error === 'already exist') {
-      that.surveyService.showToastMsg('The user has already joined the team.');
+      that.surveyService.showToastMsg('You have already joined this team.');
     } else {
       that.surveyService.showToastMsg(data.error);
     }
@@ -97,7 +99,6 @@ export class InviteTeamMatesPage {
 
   onClickBtnAddMember() {
     this.aryMembers.push(new InviteTeamMatesModel());
-    //this.joinTeamWithName();
   }
 
   onClickBtnRemoveMember(index) {

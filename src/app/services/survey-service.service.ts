@@ -775,13 +775,13 @@ export class SurveyServiceService {
                     } else {
                       console.log('[InivteTeam] no invited...');
                       to(that.sendEmailInvite(member, teamId, teamName));
-                      that.showToastMsg('sent invite email.');
+                      that.showToastMsg('Invite email sent successfully.');
                       //return;
                     }
                   } else if (userId === 'not found') {
                     console.log('[InivteTeam] not signed...');
                     to(that.sendEmailInvite(member, teamId, teamName));
-                    that.showToastMsg('sent invite email.');
+                    that.showToastMsg('Invite email sent successfully.');
                     //return;
                   } else {
                     throw new ErrorEvent(userId.error);

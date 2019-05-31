@@ -17,7 +17,7 @@ export class InvitedTeamListPage implements OnInit {
   userId: string = '';
   userEmail: string = '';
   unsubscribe: any;
-  fromLoginScreen = 'false';
+  fromMenu = 'false';
   isBack: string;
   constructor(
     public loadingService: LoadingService,
@@ -40,19 +40,27 @@ export class InvitedTeamListPage implements OnInit {
   async ionViewWillEnter() {
     console.log('[InvitedList] ionViewWillEnter');
     const that = this;
-    await that.route.queryParams.subscribe(params => {
-      if (params) {
-        // get data if team was invited and passed from the sign up page
-        that.fromLoginScreen = params.fromLoginScreen;
-    // const teamID = await this.surveyService.getActiveTeam(this.userId);
-     console.log('[InvitedTeam] fromLoginScreen = ' + that.fromLoginScreen);
-        if (that.fromLoginScreen === 'true') {
-          that.isBack = 'true';
-        } else {
-          that.isBack = 'false';
-        }
-      }
-    });
+    this.fromMenu = this.route.snapshot.paramMap.get('fromMenu');
+    console.log('[InvitedTeam] fromMenu = ' + this.fromMenu);
+    if (that.fromMenu === 'true') {
+      that.isBack = 'true';
+    } else {
+      that.isBack = 'false';
+    }
+    // await that.route.queryParams.subscribe(params => {
+    //   if (params) {
+    //     // get data if team was invited and passed from the sign up page
+    //     that.fromLoginScreen = params.fromLoginScreen;
+    // // const teamID = await this.surveyService.getActiveTeam(this.userId);
+    //  console.log('[InvitedTeam] fromLoginScreen = ' + params.fromLoginScreen);
+    //  // console.log('[InvitedTeam] snapshot = ' + snapshot);
+    //     if (that.fromLoginScreen === 'true') {
+    //       that.isBack = 'true';
+    //     } else {
+    //       that.isBack = 'false';
+    //     }
+    //   }
+    // });
   }
   ionViewDidLeave() {
     if (this.unsubscribe !== undefined) {
@@ -138,21 +146,9 @@ export class InvitedTeamListPage implements OnInit {
     console.log(inviteId);
     const ref = await firebase.firestore().collection('emailInvites').doc(inviteId);
     if (this.isBack === 'false') {
-      const navigationExtras: NavigationExtras = {
-        replaceUrl: true,
-        queryParams: {
-          fromLoginScreen: 'false'
-        }
-      };
-      this.router.navigate(['/team/create-team'], navigationExtras);
+      this.router.navigate(['/team/create-team', {fromMenu: 'false'}]);
     } else {
-      const navigationExtras: NavigationExtras = {
-        replaceUrl: true,
-        queryParams: {
-          fromLoginScreen: 'true'
-        }
-      };
-      this.router.navigate(['/app/notifications'], navigationExtras);
+      this.router.navigate(['/app/notifications']);
     }
     return ref.update({
           'active': false

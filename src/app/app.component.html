@@ -23,7 +23,8 @@
           </ion-list-header>
           
           <ion-menu-toggle auto-hide="false" *ngFor="let p of accountPages; let i = index">
-            <ion-item [routerLink]="p.url" [queryParams]="{ fromLoginScreen: 'true'}">
+            <!-- <ion-item [routerLink]="p.url" [queryParams]="{ fromLoginScreen: 'false'}"> -->
+                <ion-item [routerLink]="[p.url,{fromMenu: 'true'}]">
               <ion-icon slot="start" [src]="p.icon"></ion-icon>
               <ion-label>
                 {{p.title}}

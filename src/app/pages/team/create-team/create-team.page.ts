@@ -12,10 +12,10 @@ require('firebase/auth');
   styleUrls: ['./create-team.page.scss'],
 })
 export class CreateTeamPage implements OnInit {
-  createTeam: string;
-  userId: string;
-  isCancel: string;
-  fromLoginScreen = 'false';
+  createTeam = '';
+  userId = '';
+  isCancel = '';
+  fromMenu: string;
   constructor(
     public surveyService: SurveyServiceService,
     private route: ActivatedRoute,
@@ -33,19 +33,25 @@ export class CreateTeamPage implements OnInit {
   }
   async ionViewWillEnter() {
     const that = this;
-    await this.route.queryParams.subscribe(params => {
-      if (params) {
-        // get data if team was invited and passed from the sign up page
-        this.fromLoginScreen = params.fromLoginScreen;
-    // const teamID = await this.surveyService.getActiveTeam(this.userId);
-     console.log('[CreateTeam] fromLoginScreen = ' + this.fromLoginScreen);
-        if (this.fromLoginScreen === 'true') {
-          this.isCancel = 'true';
-        } else {
-          that.isCancel = 'false';
-        }
-      }
-    });
+    that.createTeam = '';
+    this.fromMenu = this.route.snapshot.paramMap.get('fromMenu');
+    console.log('[CreateTeam] fromMenu = ' + this.fromMenu);
+    if (that.fromMenu === 'true') {
+      that.isCancel = 'true';
+    } else {
+      that.isCancel = 'false';
+    }
+    // await this.route.queryParams.subscribe(params => {
+    //   if (params) {
+    //     // get data if team was invited and passed from the sign up page
+    //     // const teamID = await this.surveyService.getActiveTeam(this.userId);
+    //     if (that.hasTeam === 'true') {
+    //       that.isCancel = 'true';
+    //     } else {
+    //       that.isCancel = 'false';
+    //     }
+    //   }
+    // });
   }
   skipInvites() {
     const navigationExtras: NavigationExtras = {
@@ -67,7 +73,7 @@ export class CreateTeamPage implements OnInit {
     const data = await this.surveyService.createTeamByUserId(this.userId, this.createTeam);
     if ( data && data.error === undefined && data.error !== 'exist') {
         console.log('Team created...');
-        this.surveyService.showToastMsg('The team has been created successfully!');
+        this.surveyService.showToastMsg('The team created successfully!');
         const navigationExtras: NavigationExtras = {
           replaceUrl: true,
           queryParams: {

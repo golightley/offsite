@@ -70,29 +70,12 @@ export class LoginPage implements OnInit {
       const teamID = await this.surveyService.getActiveTeam(result.user.uid);
       console.log('[CreateTeam] teamID = ' + teamID);
       if (teamID !== undefined) {
-        const navigationExtras: NavigationExtras = {
-          replaceUrl: true,
-          queryParams: {
-            fromLoginScreen: 'true'
-          }
-        };
-        this.router.navigate(['/team/invite-team-mates'], navigationExtras);
+        this.router.navigate(['/team/invite-team-mates', {fromMenu: 'true'}]);
+        //this.router.navigate(['/team/invite-team-mates'], navigationExtras);
       } else {
-        const navigationExtras: NavigationExtras = {
-          replaceUrl: true,
-          queryParams: {
-            fromLoginScreen: 'false'
-          }
-        };
-        this.router.navigate(['/team/create-team'], navigationExtras);
+        //this.router.navigate(['/team/create-team'], navigationExtras);
+        this.router.navigate(['/team/create-team', {fromMenu: 'false'}]);
       }
-      // const navigationExtras: NavigationExtras = {
-      //   replaceUrl: true,
-      //   queryParams: {
-      //     fromLoginScreen: 'true'
-      //   }
-      // };
-      // this.router.navigate(['/app/notifications'], navigationExtras);
     } else {
       console.log(result.error);
       if ( result.error.message ) {
