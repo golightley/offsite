@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, NgZone } from '@angular/core';
 import * as firebase from 'firebase/app';
 import { LoadingService } from '../../../services/loading-service';
 import { InvitedTeamModel } from './invited-team-list.model';
@@ -23,6 +23,7 @@ export class InvitedTeamListPage implements OnInit {
     public loadingService: LoadingService,
     public surveyService: SurveyServiceService,
     private toastController: ToastController,
+    private zone: NgZone,
     private router: Router,
     private route: ActivatedRoute,
   ) {
@@ -94,6 +95,8 @@ export class InvitedTeamListPage implements OnInit {
               console.log('[InvitedList] doc id = ', change.doc.id);
               that.inviteEmails.splice(change.newIndex, 0, inviteEmail);
             }
+            this.zone.run(() => {
+            });
           });
       });
     });
