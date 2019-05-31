@@ -697,6 +697,19 @@ export class SurveyServiceService {
     });
   }
 
+  async getActiveTeam(userId: string) {
+    console.log('[ActiveTeam] userID = ' + userId);
+    return new Promise<any>((resolve, reject) => {
+      firebase.firestore().collection('users').doc(userId).get().then(docUser => {
+        console.log('[ActiveTeam] teamID = ' + docUser.data().teamId);
+        resolve(docUser.data().teamId);
+      }).catch(error => {
+        console.log('[ActiveTeam] error = ' + error);
+        reject(error);
+      });
+    });
+  }
+
   async getUserIdFromEmail(email) {
       return new Promise<any>((resolve, reject) => {
         console.log('[InviteTeam] email = ' + email);
@@ -762,13 +775,13 @@ export class SurveyServiceService {
                     } else {
                       console.log('[InivteTeam] no invited...');
                       to(that.sendEmailInvite(member, teamId, teamName));
-                      that.showToastMsg('sent invite email.');
+                      that.showToastMsg('Invite email sent successfully.');
                       //return;
                     }
                   } else if (userId === 'not found') {
                     console.log('[InivteTeam] not signed...');
                     to(that.sendEmailInvite(member, teamId, teamName));
-                    that.showToastMsg('sent invite email.');
+                    that.showToastMsg('Invite email sent successfully.');
                     //return;
                   } else {
                     throw new ErrorEvent(userId.error);
