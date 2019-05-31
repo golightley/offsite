@@ -3,10 +3,10 @@
     <ion-label class="fw700">My Team List</ion-label>
   </ion-list-header>
 
-  <ion-item color="light" class="text-10"  *ngFor="let userTeam of userTeams" (click)="selectTeam(userTeam.id)">    
+  <ion-item [ngClass]="{'selected_team': activeTeam === userTeam.id}" *ngFor="let userTeam of userTeams" (click)="selectTeam(userTeam.id)">    
       <ion-icon *ngIf="activeTeam !== userTeam.id" size="small" name="star-outline" color="primary"></ion-icon>
-      <ion-icon  *ngIf="activeTeam === userTeam.id" size="small" name="star" color="primary"></ion-icon>
+      <ion-icon  *ngIf="activeTeam === userTeam.id" size="small" name="star" color="light"></ion-icon>
       <ion-label style="margin-left:10px;">{{ userTeam.teamName }}</ion-label>
-      <ion-icon *ngIf="activeTeam === userTeam.id" name="checkmark" color="primary"></ion-icon>
-    </ion-item>
+      <ion-icon *ngIf="activeTeam === userTeam.id" name="checkmark" color="light"></ion-icon>
+  </ion-item>
 </ion-list>
