@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, NgZone } from '@angular/core';
 import * as firebase from 'firebase/app';
 import { IdeaModel, CommentActionType } from './ideas.model';
 import { SurveyServiceService } from '../../services/survey-service.service';
@@ -36,8 +36,8 @@ export class IdeasPage implements OnInit {
     public modalController: ModalController,
     public popoverController: PopoverController,
     private router: Router,
-    public loadingService: LoadingService
-
+    public loadingService: LoadingService,
+    private zone: NgZone
   ) {
     this.navigationSubscription = this.router.events.subscribe((e: any) => {
       // If it is a NavigationEnd event re-initalise the component
@@ -171,6 +171,8 @@ export class IdeasPage implements OnInit {
                   that.ideas.splice(change.newIndex, 0, newIdea);
                   that.getMessageCount(change.doc.id);
                 }
+                // UI Refresh
+                this.zone.run(() => {});
               });
             });
           } else {
@@ -180,22 +182,6 @@ export class IdeasPage implements OnInit {
       }
     });
   }
-
-  /*improvementTypeChipSelected(type) {
-    console.log('stop');
-    if (type === 'start') {
-      this.color = 'green';
-      this.type = 'start';
-    } else if ( type === 'stop') {
-       this.color = 'red';
-       this.type = 'stop';
-    } else {
-       this.color = 'black';
-       this.type = 'keep';
-    }
-    this.loadSuggestions(type);
-    // this.loadIdeas(type);
-  }*/
 
   getCommentActionColor() {
     return this.color;
