@@ -59,6 +59,7 @@ export class SurveyServiceService {
   // get notifications for tab 1 of interface
   async getTeamMembers(userId: string) {
     const aryMembers: TeammatesModel[] = [];
+
     await this.loadingService.doFirebase(async() => {
       const teamId = await this.getActiveTeam(userId);
       await firebase.firestore().collection('teams').doc(teamId).get().then(doc => {
@@ -76,11 +77,30 @@ export class SurveyServiceService {
                   aryMembers.push(new TeammatesModel(docUser.id, docUser.data()));
                 });
               }
-            }
-          });
-        }
-      });
+
+  //   const docTeams = await firebase.firestore().collection('teams')
+  //   .where('members', 'array-contains', { uid: userId }).get();
+
+  // docTeams.docs.forEach(doc => {
+  //   const dicTeam: any = doc.data();
+  //   if (dicTeam.hasOwnProperty('members')) {
+  //     const members = dicTeam['members'];
+  //     members.forEach(async dicMember => {
+  //       if (dicMember.hasOwnProperty('uid')) {
+  //         const memberId = dicMember['uid'];
+  //         if (userId !== memberId && 0 === aryMembers.filter(member => {
+  //           return member.uid === userId;
+  //         }).length) {
+  //           firebase.firestore().collection('users').doc(memberId).get().then(docUser => {
+  //             aryMembers.push(new TeammatesModel(docUser.id, docUser.data()));
+  //           });
+  //           }
+           }
+         });
+      }
     });
+  });
+
     return aryMembers;
   }
 
@@ -138,7 +158,7 @@ export class SurveyServiceService {
   // pull questions for results tab
   getTeamId(userId: string) {
 
-    console.log('ServeyService.GetTeamId.UserID=' + userId)
+    console.log('ServeyService.GetTeamId.UserID=' + userId);
     // pull each question from firebase
     return new Promise<any>((resolve, reject) => {
       firebase.firestore()
@@ -512,18 +532,16 @@ export class SurveyServiceService {
     return result;
   }
 
-  createSurvey(teamMates, categories, inputText, toggle) {
+  async createSurvey(teamMates: any, categories: any, inputText: string, toggle: string) {
 
     const that = this;
     this.categories = categories;
-    console.log('Input text ==>' + inputText);
-
-    // people can either ask about a general cateogry 
+    // people can either ask about a general cateogry
     if (toggle === 'category') {
-      this.categories.forEach(category => {
-        return new Promise<any>((resolve, reject) => {
+      await that.loadingService.doFirebase(async () => {
+        await that.categories.forEach(async category => {
           // Add a new document with a generated id.
-          firebase.firestore().collection('surveys').add({
+          await firebase.firestore().collection('surveys').add({
             active: true,
             category: category.name,
             type: 'feedback',
@@ -532,22 +550,17 @@ export class SurveyServiceService {
             timestamp: firebase.firestore.FieldValue.serverTimestamp()
           }).then(function (docRef) {
             console.log(' Survey written with ID: ', docRef.id);
-
             // create the corresponding notitifcations
-            that.createFeedbackNotifications(teamMates, docRef.id, category, toggle)
-
-
-            resolve(docRef.id);
+            that.createFeedbackNotifications(teamMates, docRef.id, category, toggle);
           }).catch(function (error) {
             console.error('Error creating sruvey document: ', error);
-            reject(error);
           });
         });
       });
     } else {
-      return new Promise<any>((resolve, reject) => {
+      await that.loadingService.doFirebase(async () => {
         // Add a new document with a generated id.
-        firebase.firestore().collection('surveys').add({
+        await firebase.firestore().collection('surveys').add({
           active: true,
           category: inputText,
           type: 'feedback',
@@ -556,15 +569,11 @@ export class SurveyServiceService {
           timestamp: firebase.firestore.FieldValue.serverTimestamp()
         }).then(function (docRef) {
           console.log(' Survey written with ID: ', docRef.id);
-
           // create the corresponding notitifcations
-          that.createFeedbackNotifications(teamMates, docRef.id, inputText, toggle)
+          that.createFeedbackNotifications(teamMates, docRef.id, inputText, toggle);
           console.log('Created survey');
-
-          resolve(docRef.id);
         }).catch(function (error) {
           console.error('Error creating survey document: ', error);
-          reject(error);
         });
       });
     }
@@ -675,7 +684,7 @@ export class SurveyServiceService {
   // }
 
 
-  createNotification(surveyId: string, user: string, type: string, name: string, category: string) {
+  createNotification(surveyId: string, user: string, type: string, name: string, category: string, teamId: string) {
     console.log('creating notitfication');
     // Add a new document with a generated id.
     firebase.firestore().collection('surveynotifications').add({
@@ -687,6 +696,7 @@ export class SurveyServiceService {
       user: user,
       type: type,
       month: 'May',
+      teamId: teamId,
       from: firebase.auth().currentUser.uid,
       timestamp: firebase.firestore.FieldValue.serverTimestamp()
     }).then(function (docRef) {
@@ -1018,34 +1028,37 @@ export class SurveyServiceService {
     });
   }*/
 
-  createFeedbackNotifications(teamMates, surveyId, category, toggle) {
+  async createFeedbackNotifications(teamMates, surveyId, category, toggle) {
     console.log('in create feedback notificatino');
     console.log(teamMates);
     this.team = teamMates;
     // this.team = Object.entries(teamMates);
-
-    // cycle through team mates array
-    this.team.forEach(member => {
-      // loop through each category
-      //  this.categories.forEach(category =>{
-      // if selected is true
-      console.log('Looping...');
-      console.log(member);
-      console.log(category);
-      if (member.checked) {
-        if (category.checked || toggle === 'event') {
-          if (toggle === 'category') {
-            this.createSurveyQuestions(surveyId, member.uid, category.name, member.name);
-            this.createNotification(surveyId, member.uid, 'feedback', member.name, category.name)
-
-          } else {
-            this.createFeedbackQuestion(surveyId, member.uid, category, member.name);
-            this.createNotification(surveyId, member.uid, 'feedback', member.name, category)
-
+    const userId = firebase.auth().currentUser.uid;
+    const teamId = await this.getTeamId(firebase.auth().currentUser.uid);
+    console.log('[createFeedbackNotifications] team id = ' + teamId.data().teamId);
+    if (teamId.data().teamId) {
+      this.team.forEach(member => {
+        // loop through each category
+        //  this.categories.forEach(category =>{
+        // if selected is true
+        console.log('Looping...');
+        console.log(member);
+        console.log(category);
+        if (member.checked) {
+          if (category.checked || toggle === 'event') {
+            if (toggle === 'category') {
+              this.createSurveyQuestions(surveyId, member.uid, category.name, member.name);
+              this.createNotification(surveyId, member.uid, 'feedback', member.name, category.name, teamId.data().teamId);
+            } else {
+              this.createFeedbackQuestion(surveyId, member.uid, category, member.name);
+              this.createNotification(surveyId, member.uid, 'feedback', member.name, category, teamId.data().teamId);
+            }
           }
         }
-      }
-    });
+      });
+    } else {
+      console.log('[createFeedbackNotifications] did not get teamID');
+    }
   }
 
 }
