@@ -37,9 +37,9 @@ export class FormsFiltersPage implements OnInit {
   async getQuestions() {
     const surveyId = this.surveyService.myParam.data().survey;
     
-    console.log('form-filters.qetQuestions.Fetching questions with ID:'+surveyId)
+    console.log('form-filters.qetQuestions.Fetching questions with ID:' + surveyId);
     const questionData = await this.surveyService.getQuestions(surveyId);
-    if (questionData != 'error') {
+    if (questionData !== 'error') {
       questionData.forEach(data => {
         const question = new QuestionModel(data.id, data.data());
         this.questions.push(question);
@@ -50,15 +50,14 @@ export class FormsFiltersPage implements OnInit {
         }
       });
     } else {
-      
     }
     console.log(this.questions);
     console.log('Responses', this.responses);
   }
 
   async submitSurvey() {
-    // iterate through each survey response=
-    this.surveyService.responses = this.responses;  
+    // iterate through each survey response for pulse check=
+    this.surveyService.responses = this.responses;
     await this.surveyService.submitSurvey(this.responses);
     // this.presentAlert();
     this.surveyService.markSurveyComplete(this.surveyService.myParam.id);

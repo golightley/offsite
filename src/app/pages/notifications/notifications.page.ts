@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, NgZone} from '@angular/core';
 import {ActivatedRoute, Router, NavigationEnd} from '@angular/router';
 import * as firebase from 'firebase/app';
 import {SurveyServiceService} from '../../services/survey-service.service';
@@ -16,14 +16,16 @@ require('firebase/auth');
 export class NotificationsPage implements OnInit {
 
   notifications: any = [];
-  unsubscribe: any;
+  unsubFeedback: any;
+  unsubSurvey: any;
   userId: string;
   navigationSubscription;
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     public surveyService: SurveyServiceService,
-    public loadingService: LoadingService
+    public loadingService: LoadingService,
+    private zone: NgZone
     ) {
       this.navigationSubscription = this.router.events.subscribe((e: any) => {
         // If it is a NavigationEnd event re-initalise the component
@@ -36,11 +38,12 @@ export class NotificationsPage implements OnInit {
 
     initialiseInvites() {
       // Set default values and re-fetch any data you need.
-      console.log('[Notification] initialiseInvites unsubscrib = ' + this.unsubscribe);
-      if (this.unsubscribe !== undefined) {
+      console.log('[Notification] initialiseInvites unsubscrib');
+      /*if (this.unsubFeedback !== undefined) {
         console.log('[Notification] call unsubscribe!');
-        this.unsubscribe();
-      }
+        this.unsubFeedback();
+        this.unsubSurvey();
+      }*/
       this.notifications = [];
       firebase.auth().onAuthStateChanged(user => {
         this.userId = user.uid;
@@ -49,21 +52,22 @@ export class NotificationsPage implements OnInit {
     }
 
   ngOnInit() {
-    console.log('[Notification] ngOnInit');
+    // console.log('[Notification] ngOnInit');
   }
 
   ionViewWillEnter() {
-    console.log('[Notification] ionViewWillEnter');
+    // console.log('[Notification] ionViewWillEnter');
   }
 
   ionViewWillLeave() {
     // this.unsubscribe();
-    console.log('[Notification] Detach listner');
+    // console.log('[Notification] Detach listner');
   }
   ionViewDidLeave() {
-    if (this.unsubscribe !== undefined) {
+    if (this.unsubFeedback !== undefined) {
       console.log('[Notification] call unsubscribe!');
-      this.unsubscribe();
+      this.unsubSurvey();
+      this.unsubFeedback();
     }
   }
 
@@ -78,24 +82,56 @@ export class NotificationsPage implements OnInit {
       const teamId = await that.surveyService.getTeamId(firebase.auth().currentUser.uid);
       console.log('[Notification] team id = ' + teamId.data().teamId);
       if (teamId.data().teamId) {
-          const query = firebase.firestore().collection('surveynotifications')
+            // create snapshot for pulse check
+            const querySurvey = await firebase.firestore().collection('surveynotifications')
+            .where('user', '==', userID)
+            .where('teamId', '==', teamId.data().teamId)
+            .where('type', '==', 'pulse')
+            .where('timestamp', '<', new Date((new Date()).setDate((new Date).getDate() + 1)));
+          that.unsubSurvey = querySurvey.onSnapshot((snapshot1) => {
+            console.log('[Notification] Listener attached Survey notification count = ' + snapshot1.size);
+            // retrieve anything that has changed
+            const changedDocsSurvey = snapshot1.docChanges();
+            changedDocsSurvey.forEach((change) => {
+              console.log('@pulse survey onsnapshot');
+              if (change.oldIndex !== -1) {
+                // UI Refresh
+                this.zone.run(() => {
+                  that.notifications.splice(change.oldIndex, 1);
+                });
+              }
+              if (change.newIndex !== -1) {
+                console.log('[Notification] onSnapshot add >> display name = ' + change.doc.data().displayName);
+                this.zone.run(() => {
+                  that.notifications.splice(change.newIndex, 0, change.doc);
+                });
+              }
+            });
+          });
+          // create snapshot for feedback and instructional
+          const queryFeedback = await firebase.firestore().collection('surveynotifications')
             .where('user', '==', userID)
             .where('teamId', '==', teamId.data().teamId)
             .where('active', '==', true);
-          that.unsubscribe = query.onSnapshot((snapshot) => {
-          console.log('[Notification] Listener attached notification count = ' + snapshot.size);
-          // retrieve anything that has changed
-          const changedDocs = snapshot.docChanges();
-          changedDocs.forEach((change) => {
-            if (change.oldIndex !== -1) {
-              that.notifications.splice(change.oldIndex, 1);
-            }
-            if (change.newIndex !== -1) {
-              console.log('[Notification] onSnapshot add >> display name = ' + change.doc.data().displayName);
-              that.notifications.splice(change.newIndex, 0, change.doc);
-            }
+          that.unsubFeedback = queryFeedback.onSnapshot((snapshot) => {
+            console.log('[Notification] Listener attached Feed back notification count = ' + snapshot.size);
+            // retrieve anything that has changed
+            const changedDocsFeedback = snapshot.docChanges();
+            changedDocsFeedback.forEach((change) => {
+              console.log('@feedback onsnapshot');
+              if (change.oldIndex !== -1) {
+                // UI Refresh
+                this.zone.run(() => {
+                  that.notifications.splice(change.oldIndex, 1);
+                });
+              }
+              if (change.newIndex !== -1) {
+                this.zone.run(() => {
+                  that.notifications.splice(change.newIndex, 0, change.doc);
+                });
+              }
+            });
           });
-        });
       }
     });
   }
@@ -119,9 +155,10 @@ export class NotificationsPage implements OnInit {
     if (this.navigationSubscription) {
        this.navigationSubscription.unsubscribe();
     }
-    console.log('[Notification] ngOnDestroy unsubscribe = ' + this.unsubscribe);
-    if (this.unsubscribe) {
-      this.unsubscribe();
+    console.log('[Notification] ngOnDestroy unsubscribe');
+    if (this.unsubFeedback) {
+      this.unsubFeedback();
+      this.unsubSurvey();
     }
   }
 }

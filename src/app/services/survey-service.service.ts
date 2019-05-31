@@ -505,13 +505,13 @@ export class SurveyServiceService {
             this.createComment(response[0], response[1], 'feedback', '');
           }
         }
+        console.log('+++ finish survey for question +++ ');
       });
+
+      console.log('=== finish survey for all questions ===');
     });
     return result;
   }
-
-
-
 
   createSurvey(teamMates, categories, inputText, toggle) {
 
@@ -697,19 +697,6 @@ export class SurveyServiceService {
     });
   }
 
-  async getActiveTeam(userId: string) {
-    console.log('[ActiveTeam] userID = ' + userId);
-    return new Promise<any>((resolve, reject) => {
-      firebase.firestore().collection('users').doc(userId).get().then(docUser => {
-        console.log('[ActiveTeam] teamID = ' + docUser.data().teamId);
-        resolve(docUser.data().teamId);
-      }).catch(error => {
-        console.log('[ActiveTeam] error = ' + error);
-        reject(error);
-      });
-    });
-  }
-
   async getUserIdFromEmail(email) {
       return new Promise<any>((resolve, reject) => {
         console.log('[InviteTeam] email = ' + email);
@@ -775,13 +762,13 @@ export class SurveyServiceService {
                     } else {
                       console.log('[InivteTeam] no invited...');
                       to(that.sendEmailInvite(member, teamId, teamName));
-                      that.showToastMsg('Invite email sent successfully.');
+                      that.showToastMsg('sent invite email.');
                       //return;
                     }
                   } else if (userId === 'not found') {
                     console.log('[InivteTeam] not signed...');
                     to(that.sendEmailInvite(member, teamId, teamName));
-                    that.showToastMsg('Invite email sent successfully.');
+                    that.showToastMsg('sent invite email.');
                     //return;
                   } else {
                     throw new ErrorEvent(userId.error);
@@ -964,9 +951,11 @@ export class SurveyServiceService {
     const ref = firebase.firestore().collection('surveynotifications').doc(id);
     console.log('surveynotification' + id);
 
-    // Set the 'capital' field of the city 'DC'
+    // Set active field to false and Change the timestamp field to date after a month.
+
     return ref.update({
-      active: false
+      active: false,
+      timestamp: new Date((new Date()).setDate((new Date).getDate() + 30))
     })
       .then(function () {
         console.log('Document successfully updated!');
