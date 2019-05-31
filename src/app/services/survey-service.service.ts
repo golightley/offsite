@@ -742,14 +742,16 @@ export class SurveyServiceService {
                 teamId = teamData.data().teamId;
                 teamName = userTeam.teamName;
                 console.log('[InviteTeam] team name = ' + teamName);
+                console.log('[InviteTeam] invite count = ' + inviteMembersArray.length);
                 for (let i = 0; i < inviteMembersArray.length; i++ ) {
                   const member = inviteMembersArray[i];
+                  console.log('[InviteTeam] member mail = ' + member.email);
                   if (member.email === undefined) {
                     continue;
                   }
                   const userId = await that.getUserIdFromEmail(member.email);
                   console.log('[InviteTeam] invited userId = ' + userId);
-                  if ( userId && userId.error === undefined && userId !== 'not found') {
+                  if ( userId !== 'not found') {
                     const members = doc.data().memembersids;
                     const index = members.findIndex(inviteMember => inviteMember === userId);
                     console.log('[InivteTeam] index = ' + index);
@@ -761,13 +763,13 @@ export class SurveyServiceService {
                       console.log('[InivteTeam] no invited...');
                       to(that.sendEmailInvite(member, teamId, teamName));
                       that.showToastMsg('sent invite email.');
-                      return;
+                      //return;
                     }
                   } else if (userId === 'not found') {
                     console.log('[InivteTeam] not signed...');
                     to(that.sendEmailInvite(member, teamId, teamName));
                     that.showToastMsg('sent invite email.');
-                    return;
+                    //return;
                   } else {
                     throw new ErrorEvent(userId.error);
                   }

@@ -57,8 +57,7 @@ export class InviteTeamMatesPage {
           && this.invitedToTeamName !== undefined
           && this.invitedToTeamId != null
           && this.invitedToTeamId !== undefined) {
-          //this.stage = 'alreadyInvited';
-          that.router.navigate(['/team/invited-team-list']);
+          this.stage = 'alreadyInvited';
         } else if (this.fromLoginScreen === 'true') {
           this.stage = 'invite';
         } else {
@@ -96,7 +95,7 @@ export class InviteTeamMatesPage {
 
   onClickBtnAddMember() {
     this.aryMembers.push(new InviteTeamMatesModel());
-    this.joinTeamWithName();
+    //this.joinTeamWithName();
   }
 
   onClickBtnRemoveMember(index) {
@@ -115,7 +114,7 @@ export class InviteTeamMatesPage {
 
 
   async onClickBtnInvite() {
-    console.log('Team id-->' + this.teamId);
+    console.log('[InviteTeam] count = ' + this.aryMembers.length);
     await this.surveyService.inviteTeamMembers(this.aryMembers, this.teamId, this.createTeam);
     console.log(' **** Sent all invite email **** ');
     this.router.navigateByUrl('app/notifications');
