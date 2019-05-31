@@ -47,20 +47,6 @@ export class InvitedTeamListPage implements OnInit {
     } else {
       that.isBack = 'false';
     }
-    // await that.route.queryParams.subscribe(params => {
-    //   if (params) {
-    //     // get data if team was invited and passed from the sign up page
-    //     that.fromLoginScreen = params.fromLoginScreen;
-    // // const teamID = await this.surveyService.getActiveTeam(this.userId);
-    //  console.log('[InvitedTeam] fromLoginScreen = ' + params.fromLoginScreen);
-    //  // console.log('[InvitedTeam] snapshot = ' + snapshot);
-    //     if (that.fromLoginScreen === 'true') {
-    //       that.isBack = 'true';
-    //     } else {
-    //       that.isBack = 'false';
-    //     }
-    //   }
-    // });
   }
   ionViewDidLeave() {
     if (this.unsubscribe !== undefined) {

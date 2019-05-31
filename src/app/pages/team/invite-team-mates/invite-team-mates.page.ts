@@ -34,9 +34,6 @@ export class InviteTeamMatesPage {
     private toastController: ToastController
   ) {
     const that = this;
-    this.aryMembers = [
-      new InviteTeamMatesModel()
-    ];
     firebase.auth().onAuthStateChanged(user => {
       this.userId = user.uid;
     });
@@ -44,6 +41,9 @@ export class InviteTeamMatesPage {
 
   async ionViewWillEnter() {
     const that = this;
+    this.aryMembers = [
+      new InviteTeamMatesModel()
+    ];
     await this.route.queryParams.subscribe(params => {
       if (params) {
         // get data if team was invited and passed from the sign up page
