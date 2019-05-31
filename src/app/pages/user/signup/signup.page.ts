@@ -118,11 +118,12 @@ export class SignupPage implements OnInit {
             teamId: teamData.data().teamId
           }
         };
-        this.router.navigate(['/team/invite-team-mates'], navigationExtras);
+        this.router.navigate(['team/invited-team-list']);
+        //this.router.navigate(['/team/invite-team-mates'], navigationExtras);
       } else {
         console.log('empty team');
-        this.router.navigate(['/team/invite-team-mates']);
-        //this.router.navigate(['/team/create-team']);
+        //this.router.navigate(['/team/invite-team-mates']);
+        this.router.navigate(['/team/create-team']);
       }
       return 'registered';
     });
