@@ -1,5 +1,5 @@
-import { Component, OnInit, HostBinding, ViewChild } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { Component, OnInit, HostBinding, ViewChild, NgZone } from '@angular/core';
+import { ActivatedRoute, NavigationEnd } from '@angular/router';
 import {DealsListingModel, QuestionModel} from './deals-listing.model';
 import { SurveyServiceService } from '../../../services/survey-service.service';
 import * as firebase from 'firebase/app';
@@ -22,12 +22,14 @@ require('firebase/auth');
 export class DealsListingPage implements OnInit {
   listing: DealsListingModel;
   results: QuestionModel[] = [];
-  message = "what";
-  page = "what"
-  unsubscribe:any;
+  message = 'what';
+  page = 'what';
+  unsubscribe: any;
   @ViewChild('valueBarsCanvas') valueBarsCanvas;
-  valueBarsChart:any;
+  valueBarsChart: any;
   chartData = null;
+  navigationSubscription;
+  userId: string;
   @HostBinding('class.is-shell') get isShell() {
     return this.listing && this.listing.isShell;
   }
@@ -36,8 +38,49 @@ export class DealsListingPage implements OnInit {
     private route: ActivatedRoute,
     public surveyService: SurveyServiceService,
     private http: HttpClient,
-    private router: Router
-    ) { }
+    private router: Router,
+    private zone: NgZone
+    ) {
+      this.navigationSubscription = this.router.events.subscribe((e: any) => {
+        // If it is a NavigationEnd event re-initalise the component
+        if (e instanceof NavigationEnd
+          && (this.router.url === '/app/categories')) {
+          this.initialiseInvites();
+        }
+        //console.log('[Result] router url = ' + this.router.url);
+      });
+    }
+
+    initialiseInvites() {
+      // Set default values and re-fetch any data you need.
+      console.log('[Notification] initialiseInvites unsubscrib');
+      if (this.unsubscribe !== undefined) {
+          this.unsubscribe();
+      }
+      firebase.auth().onAuthStateChanged(user => {
+        this.userId = user.uid;
+        this.attachResultListener('pulse');
+      });
+    }
+
+    ionViewDidLeave() {
+      if (this.unsubscribe !== undefined) {
+        this.unsubscribe();
+      }
+    }
+     // tslint:disable-next-line:use-life-cycle-interface
+    ngOnDestroy() {
+      // avoid memory leaks here by cleaning up after ourselves. If we
+      // don't then we will continue to run our initialiseInvites()
+      // method on every navigationEnd event
+      if (this.navigationSubscription) {
+         this.navigationSubscription.unsubscribe();
+      }
+      console.log('[Notification] ngOnDestroy unsubscribe');
+      if (this.unsubscribe !== undefined) {
+        this.unsubscribe();
+      }
+    }
 
   ngOnInit(): void {
     if (this.route && this.route.data) {
@@ -46,13 +89,13 @@ export class DealsListingPage implements OnInit {
       console.log('Route Resolve Observable => promiseObservable: ', promiseObservable);
       // Get results to show for each card
       // this.getResults();
-      this.attachResultListener("pulse");
-      
+
+      //this.attachResultListener('pulse');
+
       if (promiseObservable) {
         promiseObservable.subscribe(promiseValue => {
           const dataObservable = promiseValue['data'];
           console.log('Subscribe to promiseObservable => dataObservable: ', dataObservable);
-
           if (dataObservable) {
             dataObservable.subscribe(observableValue => {
               const pageData: DealsListingModel = observableValue;
@@ -80,72 +123,67 @@ export class DealsListingPage implements OnInit {
     this.surveyService.getResults(firebase.auth().currentUser.uid,goal).then((resultsData: firebase.firestore.QueryDocumentSnapshot[]) => {
       resultsData.forEach(data => {
         this.results.push(new QuestionModel(data.id, data.data()));
-
       });
       console.log(this.results);
     });
   }
 
-  updateListner(goal){
+  updateListner(goal) {
     // this.unsubscribe();
     this.results = [];
     this.attachResultListener(goal);
-    this.createChart("1")
+    this.createChart('1');
   }
 
-  attachResultListener(goal){
+  attachResultListener(goal) {
     // entering attach listner
-    console.log("Entering attached listner")
+    console.log('[Result] Entering attached listner userID = ' + this.userId);
 
-    // get the team ID of the signed in user
-    var teamId; 
-    const DealsListingPage = this;
-    firebase.auth().onAuthStateChanged(user => {
-      if (user) {
-        var userId = user.uid;
-        // User is signed in.
-        console.log("User id"+ userId);
-        console.log("Goal"+goal);
-    
-        if(goal=='pulse') {
-          // get team id
-          DealsListingPage.surveyService.getTeamId(userId).then((teamId) => {
-            this.getQuestions(goal,teamId.data().teamId)
-          });
-        }else{
-          // get user id
-          this.getQuestions(goal,userId)
-        }
-      } else {
-        // No user is signed in.
-      }
-    });
+    if (goal === 'pulse') {
+      // get team id
+      this.surveyService.getTeamId(this.userId).then((team) => {
+        console.log('[ResultListener] getActiveTeam = ' + team.data().teamId);
+        this.getQuestions(goal, team.data().teamId);
+      });
+    } else {
+      // get user id
+      this.getQuestions(goal, this.userId);
+    }
   }
 
-  getQuestions(goal,teamId){
+  getQuestions(goal, teamId) {
         // teamID
-        console.log("Goal"+goal+"teamId: "+teamId)
+        console.log('[ResultListener] call listener goal = ' + goal + ' teamId = ' + teamId);
         // pull the questions associated with that team
         const questions = [];
-        this.unsubscribe = firebase.firestore()
-        .collection('questions')
-        .where("goal", "==",goal)
-        .where("teamId", "==",teamId)
-        .orderBy('lastUpdate', 'desc')
+        const that = this;
+        that.results = [];
+        this.unsubscribe = firebase.firestore().collection('questions')
+          .where('goal', '==', goal)
+          .where('teamId', '==', teamId)
+          .orderBy('lastUpdate', 'desc')
         .onSnapshot((snapshot) => {
           const changedDocs = snapshot.docChanges();
           changedDocs.forEach((change) => {
-            if (change.type === 'added') {
-              console.log("Added in listener")
-              this.results.push(new QuestionModel(change.doc.id, change.doc.data()));
-            } else if (change.type === 'modified') {
-              console.log("Modified")
-              console.log(change)
-              let index = change.oldIndex;
-              this.results[change.oldIndex] = new QuestionModel(change.doc.id, change.doc.data());
-              // this.results.push(new QuestionModel(change.doc.id, change.doc));
-    
+            if (change.oldIndex !== -1) {
+              that.results.splice(change.oldIndex, 1);
             }
+            if (change.newIndex !== -1) {
+              console.log('[ResultListener] onSnapshot >> add...');
+              const newQuestion = new QuestionModel(change.doc.id, change.doc.data());
+              that.results.splice(change.newIndex, 0, newQuestion);
+            }
+            // UI Refresh
+            this.zone.run(() => {});
+            // if (change.type === 'added') {
+            //   console.log('[Result] Added in listener');
+            //   this.results.push(new QuestionModel(change.doc.id, change.doc.data()));
+            // } else if (change.type === 'modified') {
+            //   console.log('[Result] modify in listener');
+            //   //let index = change.oldIndex;
+            //   this.results[change.oldIndex] = new QuestionModel(change.doc.id, change.doc.data());
+            //   // this.results.push(new QuestionModel(change.doc.id, change.doc));
+            // }
           });
           // this.notifications = notifications;
         });
@@ -153,32 +191,25 @@ export class DealsListingPage implements OnInit {
 
   getMarkColorStyle(question: QuestionModel) {
 
-    let score = question.avgScore;
-    if(score >= 3.5){
+    const score = question.avgScore;
+    if (score >= 3.5) {
       return '#20dc6a';
-    }
-    else if(score >= 3.0 && score <3.5){
+    } else if (score >= 3.0 && score < 3.5) {
       return '#7de8a7';
-    }
-    else if(score >=2 && score <3.0){
+    } else if (score >= 2 && score < 3.0) {
       return '#ff84b3';
-    }
-    else {
+    } else {
       return '#ff1a72';
     }
     // return 2.5 < question.avgScore ? '#20dc6a' : '#ff1a72';
   }
 
-  ionViewDidLoad(){
-    //download the data here
+  ionViewDidLoad() {
     // this.createChart("1")
     // this.updateListner("pulse");
-    this.attachResultListener("pulse");
-
-
-
+    //this.attachResultListener('pulse');
   }
-  createChart(dataa){
+  createChart(dataa) {
 
     // var data: [{
     //   x: 10,
@@ -202,7 +233,7 @@ export class DealsListingPage implements OnInit {
     // });
 
   }
-  updateChart(data){
+  updateChart(data) {
 
   }
 
@@ -210,14 +241,11 @@ export class DealsListingPage implements OnInit {
     // store question ID in service
     this.surveyService.myParam    = result;
 
-    if(result.goal == 'feedback' && result.type == 'input'){
+    if (result.goal === 'feedback' && result.type === 'input') {
         this.surveyService.showBottom = false;
-    }else{
+    } else {
       this.surveyService.showBottom = true;
-
     }
-
-    // this.router.navigateByUrl('/app/categories/friends');
     this.router.navigate(['/app/categories/friends', { question: result.question }]);
   }
   // like(result) {
