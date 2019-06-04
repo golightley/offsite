@@ -20,20 +20,20 @@ export class UserFriendsPage implements OnInit {
   data: UserFriendsModel;
 
   comments: CommentModel[] = [];
-  showBottom:boolean = true;
+  showBottom: boolean = true;
   message = '';
   messageType = 'keep';
   question = '';
 
-  public doughnutChartLabels:string[] = ["Stronly Disagree","Disagree","Agree","Strongly Agree"];
-  public doughnutChartData:number[]    = [1,1,1,1];
-  public doughnutChartType:string     = "doughnut"
+  public doughnutChartLabels: string[] = ['Stronly Disagree', 'Disagree', 'Agree', 'Strongly Agree'];
+  public doughnutChartData: number[]    = [1, 1, 1, 1];
+  public doughnutChartType: string     = 'doughnut';
   // public lineChartLabels:string[] = [];
 
-  public lineChartLabels:string[] = ['', '', '', '',''];
+  public lineChartLabels: string[] = ['', '', '', '', ''];
 
-  public lineChartType:string     = "line"
-  public doughnutColors:any[] = [
+  public lineChartType: string     = 'line';
+  public doughnutColors: any[] = [
     { backgroundColor: ["#ff1a72","#ff84b3", "#7de8a7","#20dc6a"] },
     { borderColor: ["#AEEBF2", "#FEFFC9"]     }
     ];
@@ -103,45 +103,39 @@ export class UserFriendsPage implements OnInit {
     await modal.present();
   } 
 
-  getData(doughnutChartData){
+  getData(doughnutChartData) {
     // get pie chart data from survey service
     // this.surveyService.getQuestionData(this.surveyService.myParam.id);
-    // save array data 
+    // save array data
 
       const questions = [];
-  
-      var docRef = firebase.firestore().collection("questions").doc(this.surveyService.myParam.id);
+      const docRef = firebase.firestore().collection('questions').doc(this.surveyService.myParam.id);
 
       docRef.get().then(function(doc) {
         if (doc.exists) {
-            console.log("Document data:", doc.data());
-            console.log(doc.data().piechart)
+            console.log('Document data:', doc.data());
+            console.log(doc.data().piechart);
             setTimeout(() => {
                   // this.chart.chart.config.data.datasets = this.datasets_lines;
                   // this.chart.chart.update();
                   doughnutChartData = doc.data().piechart;
-                  
                   // doughnutChartData.chart.update();
-              
           });
         } else {
             // doc.data() will be undefined in this case
-            console.log("No such document!");
+            console.log('No such document!');
         }
       }).catch(function(error) {
-          console.log("Error getting document:", error);
+          console.log('Error getting document:', error);
       });
-
-    
   }
 
   updateComment() {
 
     this.showBottom = this.surveyService.showBottom;
-    
     if (this.surveyService.myParam && this.surveyService.myParam.id) {
       const query = firebase.firestore().collection('comments')
-        .where('questionId', '==', this.surveyService.myParam.id)
+        .where('questionId', '==', this.surveyService.myParam.id);
         // .where('type', '==', 'comment');
       query.onSnapshot((snapshot) => {
         console.log(snapshot);

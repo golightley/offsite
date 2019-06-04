@@ -100,7 +100,6 @@ export class SurveyServiceService {
       }
     });
   });
-
     return aryMembers;
   }
 
@@ -189,14 +188,13 @@ export class SurveyServiceService {
         }, err => reject(err));
     });
   }
-  async getInvitedTeams(userEmail)
-  {
+  async getInvitedTeams(userEmail) {
     const result = await this.loadingService.doFirebase(async() => {
       return new Promise<any>((resolve, reject) => {
         const that = this;
 
         const docRef = firebase.firestore().collection('emailInvites')
-          .where("email", "==",userEmail)
+          .where('email', '==', userEmail)
           .where('active', '==', true);
         docRef.get().then(async function (teams) {
             if (teams.docs.length === 0) {
@@ -206,9 +204,9 @@ export class SurveyServiceService {
             }
         }).catch (error => {
             reject(error);
-        })
-      })
-    })
+        });
+      });
+    });
   }
 
   // pull questions for results tab
@@ -260,14 +258,14 @@ export class SurveyServiceService {
 
     return new Promise<any>((resolve, reject) => {
       console.log('Pulling team with this User ID');
-      console.log(userId)
+      console.log(userId);
       const docRef = firebase.firestore().collection('teams').where('memembersids', 'array-contains', userId);
       docRef.get().then(function (doc) {
         doc.forEach(team => {
-          console.log('Team found')
-          console.log(team)
+          console.log('Team found');
+          console.log(team);
           resolve(team);
-        })
+        });
 
       }).catch(function (error) {
         console.log('Error getting document:', error);
@@ -513,6 +511,7 @@ export class SurveyServiceService {
   async submitSurvey(surveyResponses) {
     console.log(Object.entries(surveyResponses));
     this.responses = Object.entries(surveyResponses);
+    console.log('[SubmitSurvey] response count = ' + this.responses.length);
     const result = await this.loadingService.doFirebase(async() => {
       this.responses.forEach((response) => {
         this.updateDocument(response);
@@ -533,7 +532,6 @@ export class SurveyServiceService {
   }
 
   async createSurvey(teamMates: any, categories: any, inputText: string, toggle: string) {
-
     const that = this;
     this.categories = categories;
     // people can either ask about a general cateogry
@@ -588,7 +586,7 @@ export class SurveyServiceService {
 
 
     // look up the teamplate 
-    let that = this;
+    const that = this;
     firebase.firestore().collection('questions').add({
       active: true,
       Question: 'What is one thing that ' + name + ' did well?',
@@ -622,20 +620,20 @@ export class SurveyServiceService {
   }
 
 
-  createSurveyQuestions(surveyId: string, user: string, categoryName: string, name: string) {
+  createSurveyQuestions(surveyId: string, user: string, categoryName: string, name: string, teamId: string) {
 
-    // look up the teamplate 
+    // look up the teamplate
     const questionTemplates: any[] = [];
-    let that = this;
+    const that = this;
 
     // pull each question from firebase
     firebase.firestore().collection('questionTemplate').where('category', '==', categoryName).get()
       .then((questionTemplate) => {
         questionTemplate.forEach((templates) => {
-          console.log('Create question template function')
-          console.log(templates)
-          console.log('Create question template data function')
-          console.log(templates.data().Questions)
+          console.log('Create question template function');
+          console.log(templates);
+          console.log('Create question template data function');
+          console.log(templates.data().Questions);
           let questions: any[] = [];
 
           questions = templates.data().Questions;
@@ -649,12 +647,13 @@ export class SurveyServiceService {
               questionText = 'Would you recommend ' + name + ' \'s ' + question.question;
             }
 
-            console.log(question)
+            console.log(question);
             firebase.firestore().collection('questions').add({
               active: true,
               Question: questionText,
               type: question.type,
               users: [user],
+              teamId: teamId,
               goal: 'feedback',
               surveys: [surveyId],
               from: firebase.auth().currentUser.uid,
@@ -671,13 +670,13 @@ export class SurveyServiceService {
   }
 
 
-  // add a question for each one in the template 
+  // add a question for each one in the template
 
 
   // console.log('creating survey questions')
   // // Add a new document with a generated id.
 
-  // } 
+  // }
 
   // createQuestion(){
 
@@ -843,41 +842,44 @@ export class SurveyServiceService {
   }
 
   updateDocument(response) {
+    console.log('[ResultUpdate] doc = ' + response[0]);
     // get data
-    var questionRef = firebase.firestore().collection('questions').doc(response[0]);
+    const questionRef = firebase.firestore().collection('questions').doc(response[0]);
 
     questionRef.get().then(function (doc) {
       if (doc.exists) {
         console.log('Document data:', doc.data());
-        let oldTotal = (doc.data().averagescore * doc.data().numresponses)
-        let newTotal = parseInt(response[1], 10) + oldTotal;
+        const oldTotal = (doc.data().averagescore * doc.data().numresponses);
+        const newTotal = parseInt(response[1], 10) + oldTotal;
         let newNumRes = doc.data().numresponses + 1;
         let newAvg = newTotal / newNumRes;
-        let newResp = parseInt(response[1], 10);
+        const newResp = parseInt(response[1], 10);
         let pieChart = doc.data().piechart;
         let lineChart = doc.data().linechart;
 
         // if the pie chart isn't set
-        if (pieChart == undefined) {
-          pieChart = [0, 0, 0, 0]
+        if (pieChart === undefined) {
+          pieChart = [0, 0, 0, 0];
         }
-        // update the pie chart 
-        if (newResp == 1) { pieChart[0] = pieChart[0] + 1 }
-        else if (newResp == 2) { pieChart[1] = pieChart[1] + 1 }
-        else if (newResp == 3) { pieChart[2] = pieChart[2] + 1 }
-        else { pieChart[3] = pieChart[3] + 1 }
+        // update the pie chart
+        if (newResp === 1) { pieChart[0] = pieChart[0] + 1; } else if (newResp === 2) {
+           pieChart[1] = pieChart[1] + 1; } else if (newResp === 3) {
+           pieChart[2] = pieChart[2] + 1;
+        } else {
+          pieChart[3] = pieChart[3] + 1;
+        }
 
         // if the line chart isn't set
-        if (lineChart == undefined) {
-          lineChart = []
+        if (lineChart === undefined) {
+          lineChart = [];
         }
         lineChart.push(newAvg);
 
-        // if Nan then first time 
-        if (isNaN(newAvg)) { newAvg = parseInt(response[1], 10); }
-        if (isNaN(newNumRes)) { newNumRes = 1 }
-
-
+        // if Nan then first time
+        if (isNaN(newAvg)) {
+           newAvg = parseInt(response[1], 10);
+        }
+        if (isNaN(newNumRes)) { newNumRes = 1; }
 
         console.log('Old total:' + oldTotal + 'new total:' + newTotal + 'new responses #' + newNumRes + 'New average' + newAvg)
 
@@ -891,7 +893,6 @@ export class SurveyServiceService {
           piechart: pieChart,
           linechart: lineChart,
           lastUpdate: firebase.firestore.FieldValue.serverTimestamp()
-
         })
           .then(function () {
             console.log('Document successfully updated!');
@@ -1047,7 +1048,7 @@ export class SurveyServiceService {
         if (member.checked) {
           if (category.checked || toggle === 'event') {
             if (toggle === 'category') {
-              this.createSurveyQuestions(surveyId, member.uid, category.name, member.name);
+              this.createSurveyQuestions(surveyId, member.uid, category.name, member.name, teamId.data().teamId);
               this.createNotification(surveyId, member.uid, 'feedback', member.name, category.name, teamId.data().teamId);
             } else {
               this.createFeedbackQuestion(surveyId, member.uid, category, member.name);
