@@ -254,8 +254,40 @@ export class SurveyServiceService {
 
   }
 
-  getTeamByUserId(userId) {
+  async isCreator(userId: string) {
+    const that = this;
+    //const result = await that.loadingService.doFirebase(async() => {
+      return new Promise<any>(async (resolve, reject) => {
+        console.log('[isCreator] userId = ' + userId);
+        const teamData = await that.getTeamId(userId);
+        console.log('[isCreator] team id = ' + teamData.data().teamId);
+        if (teamData.data().teamId) {
+          const docRef = await firebase.firestore().collection('teams').doc(teamData.data().teamId);
+          docRef.get().then(async function (doc) {
+            if (doc.exists) {
+              const userTeam = new UserTeamsModel(doc.data());
+              console.log('[isCreator] team creator = ' + userTeam.createdBy);
+              if (userTeam.createdBy === userId) {
+                console.log('[isCreator] you are team creator');
+                resolve('creator');
+              } else {
+                console.log('[isCreator] you are team member');
+                resolve('member');
+              }
+            }
+          }).catch(error => {
+            reject(error);
+          });
+        } else {
+          console.log('[isCreator] cannot find your team');
+          resolve('not found team');
+        }
+      });
+    //});
+    //return result;
+  }
 
+  getTeamByUserId(userId) {
     return new Promise<any>((resolve, reject) => {
       console.log('Pulling team with this User ID');
       console.log(userId);
