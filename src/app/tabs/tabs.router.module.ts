@@ -14,15 +14,18 @@ const routes: Routes = [
         children: [
           {
             path: '',
-            loadChildren: '../pages/deals/listing/deals-listing.module#DealsListingPageModule'
+            loadChildren: '../pages/deals/listing/deals-listing.module#DealsListingPageModule',
+            data: {
+              page: 'team',
+            }
           },
           {
             path: 'friends',
             loadChildren: '../pages/user/friends/user-friends.module#UserFriendsPageModule'
           },
-          { 
+          {
             path: 'modal',
-            loadChildren: '../pages/modal/modal.module#ModalPageModule' 
+            loadChildren: '../pages/modal/modal.module#ModalPageModule'
           }
 
         ]

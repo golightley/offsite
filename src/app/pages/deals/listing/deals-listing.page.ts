@@ -52,21 +52,30 @@ export class DealsListingPage implements OnInit {
       });
     }
 
+    ionViewWillEnter() {
+      console.log('[Deals] ionViewWillEnter');
+    }
     initialiseInvites() {
       // Set default values and re-fetch any data you need.
-      console.log('[Notification] initialiseInvites unsubscrib');
+      console.log('[Deals] initialiseInvites unsubscrib');
       if (this.teamUnsubscribe !== undefined) {
           this.teamUnsubscribe();
       }
       if (this.myUnsubscribe !== undefined) {
         this.myUnsubscribe();
       }
+
       if (this.router.url === '/app/categories') {
         this.page = 'team';
-      } else {
+      } else  {
         this.page = this.route.snapshot.paramMap.get('page');
       }
-console.log('[Deals] page = ' + this.page);
+      console.log('[Deals] page = ' + this.page);
+      // if (state !== undefined || state !== null) {
+      //   this.page = state;
+      // } else {
+      //   this.page = 'team';
+      // }
       firebase.auth().onAuthStateChanged(user => {
         this.userId = user.uid;
         if (this.page === 'team') {
@@ -149,6 +158,14 @@ console.log('[Deals] page = ' + this.page);
   }
 
   updateListner(goal) {
+    if (goal === 'pulse') {
+      console.log('[Deals] team');
+      this.page = 'team';
+    } else {
+      console.log('[Deals] my');
+      this.page = 'my';
+    }
+    console.log('[Deals] select tab >> page = ' + this.page);
     // this.unsubscribe();
     this.results = [];
     this.attachResultListener(goal);
@@ -281,7 +298,8 @@ console.log('[Deals] page = ' + this.page);
     } else {
       this.surveyService.showBottom = true;
     }
-    this.router.navigate(['/app/categories/friends', { question: result.question }]);
+    console.log('[Deals] router param >> page = ' + this.page);
+    this.router.navigate(['/app/categories/friends', { question: result.question, page: this.page }]);
   }
   // like(result) {
   //   console.log('Like function fired...');
