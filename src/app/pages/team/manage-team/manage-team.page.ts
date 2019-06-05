@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import {SurveyServiceService} from '../../../services/survey-service.service';
 import {FeedbackCategoryModel, TeammatesModel} from '../../feedback/feedback-content/feedback-content.model';
 import * as firebase from 'firebase/app';
+import { Events, MenuController, Platform, AlertController } from '@ionic/angular';
 require('firebase/auth');
 
 @Component({
@@ -15,6 +16,7 @@ export class ManageTeamPage implements OnInit {
   bCreator: string;
   constructor(
     private surveyService: SurveyServiceService,
+    private alertController: AlertController,
     ) {
     }
 
@@ -32,7 +34,7 @@ export class ManageTeamPage implements OnInit {
   async isCreator() {
     this.bCreator = '';
     const data = await this.surveyService.isCreator(this.userId);
-    console.log('[ManageTeam] !!!!!!!!!!!!!!!!!!! isCreator = ' + data);
+    console.log('[ManageTeam] isCreator = ' + data);
     if (data !== null && data !== undefined && data === 'creator' && data !== 'not found team') {
       this.bCreator = 'true';
     } else if (data !== null && data !== undefined && data === 'member' && data !== 'not found team') {
@@ -41,8 +43,29 @@ export class ManageTeamPage implements OnInit {
       this.bCreator = '';
     }
   }
-  async onRemove() {
-    console.log('[ManageTeam] called onRemove');
+  async onRemove(member: TeammatesModel) {
+    console.log('[ManageTeam] called onRemove >> member = ' + member.name);
+    const that = this;
+    if (this.bCreator === 'true') {
+      const alert = await this.alertController.create({
+        message: 'Are you sure you would like to delete this member?',
+        buttons: [
+          {
+            text: 'Cancel',
+            role: 'cancel',
+            cssClass: 'secondary'
+          },
+          {
+            text: 'Delete',
+            handler: async () => {
+              console.log('[ManageTeam] email = ' + member.email);
+              that.surveyService.deleteTeamMember(member.uid, this.userId, member.email);
+            }
+          }
+        ]
+      });
+      await alert.present();
+    }
   }
 
   private getTeamMembers() {

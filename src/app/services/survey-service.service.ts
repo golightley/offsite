@@ -254,6 +254,68 @@ export class SurveyServiceService {
 
   }
 
+  async deleteTeamMember(member: string, creator: string, memberEmail: string) {
+    const that = this;
+    console.log('[deleteTeamMember] member = ' + member);
+    await this.loadingService.doFirebase(async () => {
+      const teamData = await that.getTeamId(creator);
+      console.log('[deleteTeamMember] team id = ' + teamData.data().teamId);
+      const teamId = teamData.data().teamId;
+      let query;
+      if (teamId) {
+        const ref = firebase.firestore().collection('teams').doc(teamData.data().teamId);
+        //delete from teams collection.
+        ref.update({
+          memembersids: firebase.firestore.FieldValue.arrayRemove(member),
+          members: firebase.firestore.FieldValue.arrayRemove({ uid: member }),
+        }).then(function (docRef) {
+          //that.showToastMsg('Deleted the member successfully');
+          console.log('[deletedTeamMember] Deleted the member from teams collection');
+        });
+        
+        //delete from users collection.
+        const activeTeam = await that.getActiveTeam(member);
+        console.log('[deleteTeamMember] active teamID = ' + activeTeam);
+        if (activeTeam !== undefined && activeTeam === teamId) {
+          firebase.firestore().collection('users').doc(member).update({
+            'teamId': '',
+          }).then(async () => {
+            console.log('[deleteTeamMember] deleted from users collection');
+            
+          }).catch((error) => {
+            console.log(error);
+          });
+        }
+
+        //delete from emailInvites
+        query = await firebase.firestore().collection('emailInvites')
+          .where('email', '==', memberEmail)
+          .where('teamId', '==', teamId);
+        query.get().then((emailInvites) => {
+          emailInvites.forEach((email) => {
+            email.ref.delete();
+          });
+        });
+
+        //delete from surveynotifications collection.
+        // query = await firebase.firestore().collection('surveynotifications')
+        //   .where('user', '==', member)
+        //   .where('teamId', '==', teamId)
+        //   .where('active', '==', true);
+        // query.get().then((notifications) => {
+        //   notifications.forEach((notification) => {
+        //     notification.ref.delete();
+        //   });
+        // });
+
+        //delete from questions collection.
+
+      } else {
+        that.showToastMsg('Failed to delete!');
+      }
+    });
+  }
+
   async isCreator(userId: string) {
     const that = this;
     //const result = await that.loadingService.doFirebase(async() => {
