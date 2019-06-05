@@ -6,6 +6,7 @@ import * as firebase from 'firebase/app';
 import {HttpClient} from '@angular/common/http';
 import { ModalController } from '@ionic/angular';
 import { ModalPage } from '../../modal/modal.page';
+import { LoadingService } from '../../../services/loading-service';
 
 @Component({
   selector: 'app-user-friends',
@@ -42,7 +43,6 @@ export class UserFriendsPage implements OnInit {
     // { data: [120, 455, 100, 340], label: 'Account B' },
     { data: [4.5, 4.4, 4.0, 3.8], label: 'Your team' }
   ];
-  
   @HostBinding('class.is-shell') get isShell() {
     return this.data && this.data.isShell;
   }
@@ -53,6 +53,7 @@ export class UserFriendsPage implements OnInit {
     private http: HttpClient,
     public modalController: ModalController,
     public router: Router,
+    public loadingService: LoadingService
     ) {
 
     // charts.js
@@ -73,7 +74,7 @@ export class UserFriendsPage implements OnInit {
       console.log('hop' + hop);
       dataLine[0] =  Math.round(data.linechart[0] * 100) / 100;
       let x = 1;
-      for (const i = 0; i < len; i += hop) {
+      for (let i = 0; i < len; i += hop) {
         console.log('i' + Math.ceil(i) + 'x' + x);
         // console.log(dataLine)
         dataLine[x] =  Math.round(data.linechart[Math.ceil(i)] * 100) / 100;
@@ -110,28 +111,30 @@ export class UserFriendsPage implements OnInit {
       this.router.navigate(['/app/categories', {page: 'my'}]);
     }
   }
-  getData(doughnutChartData) {
+  async getData(doughnutChartData) {
     // get pie chart data from survey service
     // this.surveyService.getQuestionData(this.surveyService.myParam.id);
     // save array data
       const questions = [];
-      const docRef = firebase.firestore().collection('questions').doc(this.surveyService.myParam.id);
-      docRef.get().then(function(doc) {
-        if (doc.exists) {
-            console.log('Document data:', doc.data());
-            console.log(doc.data().piechart);
-            setTimeout(() => {
-                  // this.chart.chart.config.data.datasets = this.datasets_lines;
-                  // this.chart.chart.update();
-                  doughnutChartData = doc.data().piechart;
-                  // doughnutChartData.chart.update();
-          });
-        } else {
-            // doc.data() will be undefined in this case
-            console.log('No such document!');
-        }
-      }).catch(function(error) {
-          console.log('Error getting document:', error);
+      await this.loadingService.doFirebase(async () => {
+        const docRef = await firebase.firestore().collection('questions').doc(this.surveyService.myParam.id);
+        docRef.get().then(function(doc) {
+          if (doc.exists) {
+              console.log('Document data:', doc.data());
+              console.log(doc.data().piechart);
+              setTimeout(() => {
+                    // this.chart.chart.config.data.datasets = this.datasets_lines;
+                    // this.chart.chart.update();
+                    doughnutChartData = doc.data().piechart;
+                    // doughnutChartData.chart.update();
+            });
+          } else {
+              // doc.data() will be undefined in this case
+              console.log('No such document!');
+          }
+        }).catch(function(error) {
+            console.log('Error getting document:', error);
+        });
       });
   }
 
