@@ -26,6 +26,7 @@ export class UserFriendsPage implements OnInit {
   messageType = 'keep';
   question = '';
   page: string;
+  unsubscribe: any;
   public doughnutChartLabels: string[] = ['Stronly Disagree', 'Disagree', 'Agree', 'Strongly Agree'];
   public doughnutChartData: number[]    = [1, 1, 1, 1];
   public doughnutChartType: string     = 'doughnut';
@@ -87,9 +88,17 @@ export class UserFriendsPage implements OnInit {
     this.question = this.route.snapshot.paramMap.get('question');
     this.page = this.route.snapshot.paramMap.get('page');
     console.log('[DealsFriend] page = ' + this.page);
-
     // this.getData(this.doughnutChartData)
   }
+
+  ionViewDidLeave() {
+    console.log('[DealsFriend] ionViewDidLeave unsubscribe = ' + this.unsubscribe);
+    console.log(this.unsubscribe);
+    if (this.unsubscribe) {
+      this.unsubscribe();
+    }
+  }
+
   async inputFocus() {
     console.log('Ion focus...');
     const modal = await this.modalController.create({
@@ -141,10 +150,13 @@ export class UserFriendsPage implements OnInit {
   updateComment() {
     this.showBottom = this.surveyService.showBottom;
     if (this.surveyService.myParam && this.surveyService.myParam.id) {
+      if (this.unsubscribe) {
+        this.unsubscribe();
+      }
+      this.comments = [];
       const query = firebase.firestore().collection('comments')
-        .where('questionId', '==', this.surveyService.myParam.id)
-        // .where('type', '==', 'comment');
-      query.onSnapshot((snapshot) => {
+        .where('questionId', '==', this.surveyService.myParam.id);
+      this.unsubscribe = query.onSnapshot((snapshot) => {
         console.log(snapshot);
         // retrieve anything that has changed
         const changedDocs = snapshot.docChanges();
