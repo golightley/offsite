@@ -144,7 +144,7 @@ export class IdeasPage implements OnInit {
       if (typeof firebase.auth === 'function') {
         const teamId = await that.surveyService.getTeamId(firebase.auth().currentUser.uid);
         console.log('[Ideas] team id = ' + teamId.data().teamId);
-        if (teamId.data().teamId) {
+        if (teamId.data().teamId && teamId.data().teamId !== '') {
             // first fetch the team ID
             console.log('[Ideas] Selected Team ID:', teamId.data().teamId);
             that.teamId = teamId.data().teamId;
@@ -175,6 +175,8 @@ export class IdeasPage implements OnInit {
                 this.zone.run(() => {});
               });
             });
+          } else if (teamId.data().teamId === '') {
+            that.surveyService.showToastMsg('you have already been deleted from this team by team creator!');
           } else {
             // doc.data() will be undefined in this case
             console.log('[Ideas] No such document!');

@@ -172,14 +172,19 @@ export class DealsListingPage implements OnInit {
     this.createChart('1');
   }
 
-  attachResultListener(goal) {
+  async attachResultListener(goal) {
     // entering attach listner
     console.log('[Result] Entering attached listner userID = ' + this.userId);
       // get team id
-      this.surveyService.getTeamId(this.userId).then((team) => {
-        console.log('[ResultListener] getActiveTeam = ' + team.data().teamId);
-        this.getQuestions(goal, team.data().teamId);
-      });
+      const teamData = await this.surveyService.getTeamId(this.userId);
+      const teamId = teamData.data().teamId;
+      if (teamId && teamId !== '') {
+        console.log('[ResultListener] getActiveTeam = ' + teamId);
+        this.getQuestions(goal, teamId);
+      } else if (teamId === '') {
+        this.surveyService.showToastMsg('you have already been deleted from this team by team creator!');
+      } else {
+      }
   }
 
   getQuestions(goal, teamId) {

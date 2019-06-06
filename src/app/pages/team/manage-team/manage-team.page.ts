@@ -3,6 +3,8 @@ import {SurveyServiceService} from '../../../services/survey-service.service';
 import {FeedbackCategoryModel, TeammatesModel} from '../../feedback/feedback-content/feedback-content.model';
 import * as firebase from 'firebase/app';
 import { Events, MenuController, Platform, AlertController } from '@ionic/angular';
+import { Router, NavigationExtras, ActivatedRoute } from '@angular/router';
+
 require('firebase/auth');
 
 @Component({
@@ -17,6 +19,7 @@ export class ManageTeamPage implements OnInit {
   constructor(
     private surveyService: SurveyServiceService,
     private alertController: AlertController,
+    private router: Router,
     ) {
     }
 
@@ -59,7 +62,10 @@ export class ManageTeamPage implements OnInit {
             text: 'Delete',
             handler: async () => {
               console.log('[ManageTeam] email = ' + member.email);
-              that.surveyService.deleteTeamMember(member.uid, this.userId, member.email);
+              that.surveyService.deleteTeamMember(member.uid, this.userId, member.email)
+              .then(result => {
+                that.router.navigate(['/app/notifications']);
+              });
             }
           }
         ]
@@ -72,8 +78,7 @@ export class ManageTeamPage implements OnInit {
     this.surveyService.getTeamMembers(this.userId)
       .then(docs => {
         this.teammates = docs;
-        console.log(this.teammates);
+        console.log('[ManageTeam] members = ' + this.teammates);
     });
   }
-
 }

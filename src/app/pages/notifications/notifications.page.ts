@@ -81,7 +81,7 @@ export class NotificationsPage implements OnInit {
     await that.loadingService.doFirebase(async () => {
       const teamId = await that.surveyService.getTeamId(firebase.auth().currentUser.uid);
       console.log('[Notification] team id = ' + teamId.data().teamId);
-      if (teamId.data().teamId) {
+      if (teamId.data().teamId && teamId.data().teamId !== '') {
             // create snapshot for pulse check
             const querySurvey = await firebase.firestore().collection('surveynotifications')
             .where('user', '==', userID)
@@ -132,6 +132,9 @@ export class NotificationsPage implements OnInit {
               }
             });
           });
+      } else if (teamId.data().teamId === '') {
+        that.surveyService.showToastMsg('you have already been deleted from this team by team creator!');
+      } else {
       }
     });
   }
