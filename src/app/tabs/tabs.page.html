@@ -4,7 +4,7 @@
           <ion-icon name="notifications"></ion-icon>
           <ion-label class="tab-title">Notifications</ion-label>
           <!-- <div> -->
-          <ion-badge id="notifications-badge" color="danger">{{ ideaBadgeCnt }}</ion-badge>
+          <ion-badge *ngIf="notiBadgeCnt>0" id="notifications-badge" color="danger">{{ notiBadgeCnt }}</ion-badge>
           <!-- </div> -->
         </ion-tab-button>    
     <ion-tab-button tab="categories"> 
