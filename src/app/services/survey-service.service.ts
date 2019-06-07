@@ -784,6 +784,7 @@ export class SurveyServiceService {
       // user:'AKfOgVZrSTYsYN01JA0NUTicf703',
       user: user,
       type: type,
+      readFlag: 'unchecked',
       month: 'May',
       teamId: teamId,
       from: firebase.auth().currentUser.uid,

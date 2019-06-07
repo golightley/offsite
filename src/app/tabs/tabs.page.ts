@@ -24,50 +24,69 @@ export class TabsPage  {
   ideaBadgeCnt: number = 0;
   notiBadgeCnt: number = 0;
   navigationSubscription;
+  userId: string;
   constructor(
     public menu: MenuController,
     public surveyService: SurveyServiceService,
     private zone: NgZone,
     private router: Router,
   ) {
-    this.navigationSubscription = this.router.events.subscribe((e: any) => {
-      // If it is a NavigationEnd event re-initalise the component
-      // console.log('[Tabs] !!!!!!!!!!!! router url = ' + this.router.url);
-      if (e instanceof NavigationEnd
-        && (this.router.url === '/app/notifications')) {
-        console.log('[Tabs] router >> call app/notifications');
-        this.readNotifications();
+    const that = this;
+    firebase.auth().onAuthStateChanged(async user => {
+      if (user) {
+        console.log('[Tabs] Got user!!!!!!!!!! >> user ID = ' + user.email);
+        that.userId = user.uid;
+        // that.loadIdeas();
+        // that.attachNotificationListener(user.uid);
+        // console.log('[Tabs] !!!! router >> url = ' + that.router.url);
+        if (that.router.url === '/app/notifications' || that.router.url === '/app/notifications?fromLoginScreen=true') {
+          console.log('[Tabs] !!!!!!!!!!! router >> call app/notifications');
+          that.notiBadgeCnt = 0;
+          await that.readNotifications();
+        } else {
+          console.log('[Tabs] !!!!!!!!!!! router >> call other url = ' + that.router.url);
+          this.attachNotificationListener(this.userId);
+        }
       }
     });
   }
   async readNotifications() {
     this.notiBadgeCnt = 0;
+    const teamData = await this.surveyService.getTeamId(this.userId);
+    const teamId = teamData.data().teamId;
+    if (teamId && teamId !== '') {
+      console.log('[Tabs] !!!!! teamID = ' + teamId);
+      const query = await firebase.firestore().collection('surveynotifications')
+        .where('user', '==', this.userId)
+        .where('teamId', '==', teamId)
+        .where('readFlag', '==', 'unchecked')
+        .where('active', '==', true);
+      query.get().then((notifications) => {
+        notifications.forEach((notification) => {
+          notification.ref.update({
+            readFlag: 'checked',
+          });
+        });
+      });
+    }
   }
   async ionViewWillEnter() {
-    console.log('[Tabs] !!! ionViewWillEnter');
+    console.log('[Tabs] !!!!!!! ionViewWillEnter');
     this.menu.enable(true);
-    const that = this;
-    if (this.unsubFeedback !== undefined) {
-      that.notiBadgeCnt = 0;
-      this.unsubFeedback();
-      // this.unsubSurvey();
-      // this.unsubIdea();
-    }
-    await firebase.auth().onAuthStateChanged(async user => {
-      if (user) {
-        console.log('[Tabs] Got user >> user ID = ' + user.email);
-        that.loadIdeas();
-        that.attachNotificationListener(user.uid);
-      }
-    });
+    // this.attachNotificationListener(this.userId);
   }
 
   async attachNotificationListener(userID) {
     const that = this;
     that.notifications = [];
+    that.notiBadgeCnt = 0;
     const teamId = await that.surveyService.getTeamId(firebase.auth().currentUser.uid);
-    console.log('[Notification] team id = ' + teamId.data().teamId);
+    console.log('[Tabs] called attachNotificationListener >> team id = ' + teamId.data().teamId);
     if (teamId.data().teamId && teamId.data().teamId !== '') {
+      if (this.unsubFeedback !== undefined) {
+        console.log('[Tabs] stop Listener');
+        this.unsubFeedback();
+      }
       // create snapshot for pulse check
       // const querySurvey = await firebase.firestore().collection('surveynotifications')
       //   .where('user', '==', userID)
@@ -90,15 +109,16 @@ export class TabsPage  {
       //     }
       //   });
       // });
+
       // create snapshot for feedback and instructional
-      that.notiBadgeCnt = 0;
       const queryFeedback = await firebase.firestore().collection('surveynotifications')
         .where('user', '==', userID)
         .where('teamId', '==', teamId.data().teamId)
         .where('type', '==', 'feedback')
-        .where('active', '==', true);
+        .where('active', '==', true)
+        .where('readFlag', '==', 'unchecked');
       that.unsubFeedback = queryFeedback.onSnapshot((snapshot) => {
-        console.log('[Notification] Listener attached Feed back notification count = ' + snapshot.size);
+        console.log('[Tabs] Listener attached Feed back notification count = ' + snapshot.size);
         // retrieve anything that has changed
         const changedDocsFeedback = snapshot.docChanges();
         changedDocsFeedback.forEach((change) => {
@@ -109,6 +129,7 @@ export class TabsPage  {
           }
           if (change.newIndex !== -1) {
               // that.notifications.splice(change.newIndex, 0, change.doc);
+              console.log('[Tabs] !!!!!!!!! add >> router url = ' + that.router.url);
               that.notiBadgeCnt++;
               console.log('[Tabs] !!!!!!!!!!!!!!! Received feed >> so add.. count = ' + that.notiBadgeCnt);
           }
@@ -163,11 +184,25 @@ export class TabsPage  {
   }
   async onNotiClick() {
     console.log('[Tabs] !!!!! onNotiClick');
-    this.notiBadgeCnt = 0;
+  }
+
+  async onCateClick() {
+    console.log('[Tabs] !!!!! onCateClick');
+    this.attachNotificationListener(this.userId);
+  }
+
+  async onIdeasClick() {
+    console.log('[Tabs] !!!!! onIdeasClick');
+    this.attachNotificationListener(this.userId);
+  }
+
+  async onFeedbackClick() {
+    console.log('[Tabs] !!!!! onFeedbackClick');
+    this.attachNotificationListener(this.userId);
   }
 
   ngOnDestroy() {
-    console.log('[Tabs] !!!!! ngOnDestroy');
+    console.log('[Tabs] 111111111111111111111111111111111 ngOnDestroy');
     if (this.unsubFeedback !== undefined) {
       this.unsubFeedback();
       this.unsubSurvey();
