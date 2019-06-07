@@ -112,11 +112,11 @@ export class SignupPage implements OnInit {
       await firebase.firestore().collection('users').doc(userData.user.uid).set(params);
       // if they were invited to a team, then pass in the team data
       if (teamData !== null) {
-        //this.router.navigate(['/team/invited-team-list'], navigationExtras);
+        // this.router.navigate(['/team/invited-team-list'], navigationExtras);
         this.router.navigate(['/team/invited-team-list', {fromMenu: 'false'}]);
       } else {
         console.log('empty team');
-        //this.router.navigate(['/team/create-team'], navigationExtras);
+        // this.router.navigate(['/team/create-team'], navigationExtras);
         this.router.navigate(['/team/create-team', {fromMenu: 'false'}]);
       }
       return 'registered';

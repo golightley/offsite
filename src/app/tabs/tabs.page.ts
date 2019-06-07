@@ -36,21 +36,18 @@ export class TabsPage  {
       if (user) {
         console.log('[Tabs] Got user!!!!!!!!!! >> user ID = ' + user.email);
         that.userId = user.uid;
-        // that.loadIdeas();
-        // that.attachNotificationListener(user.uid);
-        // console.log('[Tabs] !!!! router >> url = ' + that.router.url);
         if (that.router.url === '/app/notifications' || that.router.url === '/app/notifications?fromLoginScreen=true') {
-          console.log('[Tabs] !!!!!!!!!!! router >> call app/notifications');
+          console.log('[Tabs] router >> call app/notifications');
           that.notiBadgeCnt = 0;
           await that.readNotifications();
           that.loadIdeas();
         } else if (that.router.url === '/app/ideas') {
-          console.log('[Tabs] !!!!!!!!!!! router >> call app/ideas');
+          console.log('[Tabs] router >> call app/ideas');
           that.ideaBadgeCnt = 0;
           that.readIdeas();
           that.attachNotificationListener(this.userId);
         } else {
-          console.log('[Tabs] !!!!!!!!!!! router >> call other url = ' + that.router.url);
+          console.log('[Tabs] router >> call other url = ' + that.router.url);
           that.attachNotificationListener(this.userId);
           that.loadIdeas();
         }
@@ -81,16 +78,15 @@ export class TabsPage  {
     firebase.firestore().collection('users').doc(this.userId).update({
       'readIdeaTime': firebase.firestore.FieldValue.serverTimestamp(),
     }).then(async () => {
-      console.log('[Tabs] !!!!! reset readIdeaTime = ' + firebase.firestore.FieldValue.serverTimestamp());
+      console.log('[Tabs] reset readIdeaTime = ' + firebase.firestore.FieldValue.serverTimestamp());
     }).catch((error) => {
-      console.log('[Tabs] !!!!! reset readIdeaTime error = ' + error);
+      console.log('[Tabs] reset reset readIdeaTime error = ' + error);
     });
   }
 
   async ionViewWillEnter() {
-    console.log('[Tabs] !!!!!!! ionViewWillEnter');
+    console.log('[Tabs] ionViewWillEnter');
     this.menu.enable(true);
-    // this.attachNotificationListener(this.userId);
   }
 
   async attachNotificationListener(userID) {
@@ -119,12 +115,10 @@ export class TabsPage  {
           console.log('@feedback onsnapshot');
           if (change.oldIndex !== -1) {
             // UI Refresh
-            // that.notifications.splice(change.oldIndex, 1);
           }
           if (change.newIndex !== -1) {
-              // that.notifications.splice(change.newIndex, 0, change.doc);
               that.notiBadgeCnt++;
-              console.log('[Tabs] !!!!!!!!!!!!!!! Received feed >> so add.. count = ' + that.notiBadgeCnt);
+              console.log('[Tabs] Received feedback >> so add.. count = ' + that.notiBadgeCnt);
           }
           this.zone.run(() => {});
         });
@@ -154,13 +148,13 @@ export class TabsPage  {
         }
         // now get the ideas based on that team
         firebase.firestore().collection('users').doc(that.userId).get().then(async docUser => {
-          console.log('[Tabs] !!!!!!!!!!!!!!!! readIdeaTime = ' + docUser.data().readIdeaTime);
+          console.log('[Tabs] readIdeaTime = ' + docUser.data().readIdeaTime);
           const readIdeaTime = docUser.data().readIdeaTime;
           if (readIdeaTime === undefined) {
             firebase.firestore().collection('users').doc(this.userId).update({
               'readIdeaTime': new Date(new Date(2000, 1, 1, 0, 0, 0)),
             }).then(async () => {
-              console.log('[Tabs] !!!!! reset readIdeaTime = ' + firebase.firestore.FieldValue.serverTimestamp());
+              console.log('[Tabs] reset readIdeaTime = ' + firebase.firestore.FieldValue.serverTimestamp());
               const query = await firebase.firestore().collection('ideas')
               .where('team', '==', that.teamId)
               .where('timestamp', '>', readIdeaTime)
@@ -224,27 +218,27 @@ export class TabsPage  {
     }
   }
   async onNotiClick() {
-    console.log('[Tabs] !!!!! onNotiClick');
+    console.log('[Tabs] onNotiClick');
     this.notiBadgeCnt = 0;
     await this.readNotifications();
     await this.loadIdeas();
   }
 
   async onCateClick() {
-    console.log('[Tabs] !!!!! onCateClick');
+    console.log('[Tabs] onCateClick');
     await this.attachNotificationListener(this.userId);
     await this.loadIdeas();
   }
 
   async onIdeasClick() {
-    console.log('[Tabs] !!!!! onIdeasClick');
+    console.log('[Tabs] onIdeasClick');
     this.ideaBadgeCnt = 0;
     this.readIdeas();
     this.attachNotificationListener(this.userId);
   }
 
   async onFeedbackClick() {
-    console.log('[Tabs] !!!!! onFeedbackClick');
+    console.log('[Tabs] onFeedbackClick');
     this.attachNotificationListener(this.userId);
     this.loadIdeas();
   }
