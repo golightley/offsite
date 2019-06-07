@@ -7,7 +7,7 @@ import { SurveyServiceService } from '../../../services/survey-service.service';
 import * as firebase from 'firebase/app';
 import { LoadingService } from '../../../services/loading-service';
 
-require('firebase/auth')
+require('firebase/auth');
 
 @Component({
   selector: 'app-login',

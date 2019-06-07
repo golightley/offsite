@@ -8,6 +8,7 @@ import { LoadingService } from './loading-service';
 import { UserTeamsModel } from '../pages/team/select-team/select-team.component.model';
 import to from 'await-to-js';
 import { ToastController } from '@ionic/angular';
+import { Router } from '@angular/router';
 @Injectable({
   providedIn: 'root'
 })
@@ -26,7 +27,8 @@ export class SurveyServiceService {
   constructor(
     private http: HttpClient,
     private loadingService: LoadingService,
-    private toastController: ToastController
+    private toastController: ToastController,
+    private router: Router,
   ) {
 
   }
@@ -59,7 +61,6 @@ export class SurveyServiceService {
   // get notifications for tab 1 of interface
   async getTeamMembers(userId: string) {
     const aryMembers: TeammatesModel[] = [];
-
     await this.loadingService.doFirebase(async() => {
       const teamId = await this.getActiveTeam(userId);
       await firebase.firestore().collection('teams').doc(teamId).get().then(doc => {
@@ -77,30 +78,11 @@ export class SurveyServiceService {
                   aryMembers.push(new TeammatesModel(docUser.id, docUser.data()));
                 });
               }
-
-  //   const docTeams = await firebase.firestore().collection('teams')
-  //   .where('members', 'array-contains', { uid: userId }).get();
-
-  // docTeams.docs.forEach(doc => {
-  //   const dicTeam: any = doc.data();
-  //   if (dicTeam.hasOwnProperty('members')) {
-  //     const members = dicTeam['members'];
-  //     members.forEach(async dicMember => {
-  //       if (dicMember.hasOwnProperty('uid')) {
-  //         const memberId = dicMember['uid'];
-  //         if (userId !== memberId && 0 === aryMembers.filter(member => {
-  //           return member.uid === userId;
-  //         }).length) {
-  //           firebase.firestore().collection('users').doc(memberId).get().then(docUser => {
-  //             aryMembers.push(new TeammatesModel(docUser.id, docUser.data()));
-  //           });
-  //           }
            }
          });
       }
     });
   });
-
     return aryMembers;
   }
 
@@ -166,7 +148,11 @@ export class SurveyServiceService {
         .doc(userId)
         .get()
         .then((questionData) => {
-          resolve(questionData);
+          if (questionData.exists) {
+            resolve(questionData);
+          } else {
+            resolve('not found!');
+          }
         }, err => reject(err));
     });
   }
@@ -189,14 +175,13 @@ export class SurveyServiceService {
         }, err => reject(err));
     });
   }
-  async getInvitedTeams(userEmail)
-  {
+  async getInvitedTeams(userEmail) {
     const result = await this.loadingService.doFirebase(async() => {
       return new Promise<any>((resolve, reject) => {
         const that = this;
 
         const docRef = firebase.firestore().collection('emailInvites')
-          .where("email", "==",userEmail)
+          .where('email', '==', userEmail)
           .where('active', '==', true);
         docRef.get().then(async function (teams) {
             if (teams.docs.length === 0) {
@@ -206,9 +191,9 @@ export class SurveyServiceService {
             }
         }).catch (error => {
             reject(error);
-        })
-      })
-    })
+        });
+      });
+    });
   }
 
   // pull questions for results tab
@@ -256,18 +241,119 @@ export class SurveyServiceService {
 
   }
 
-  getTeamByUserId(userId) {
+  async deleteTeamMember(member: string, creator: string, memberEmail: string) {
+    const that = this;
+    let result;
+    console.log('[deleteTeamMember] member = ' + member);
+    return new Promise<any>(async (resolve, reject) => {
+      await this.loadingService.doFirebase(async () => {
+        const teamData = await that.getTeamId(creator);
+        console.log('[deleteTeamMember] team id = ' + teamData.data().teamId);
+        const teamId = teamData.data().teamId;
+        let query;
+        if (teamId && teamId !== '') {
+          const ref = firebase.firestore().collection('teams').doc(teamData.data().teamId);
+          //delete from teams collection.
+          ref.update({
+            memembersids: firebase.firestore.FieldValue.arrayRemove(member),
+            members: firebase.firestore.FieldValue.arrayRemove({ uid: member }),
+          }).then(async function (docRef) {
+            //that.showToastMsg('Deleted the member successfully');
+            console.log('[deletedTeamMember] Deleted the member from teams collection');
+            //delete from users collection.
+            const activeTeam = await that.getActiveTeam(member);
+            console.log('[deleteTeamMember] active teamID = ' + activeTeam);
+            if (activeTeam !== undefined && activeTeam === teamId) {
+              firebase.firestore().collection('users').doc(member).update({
+                'teamId': '',
+              }).then(async () => {
+                console.log('[deleteTeamMember] deleted from users collection');
+                //delete from emailInvites
+                query = await firebase.firestore().collection('emailInvites')
+                  .where('email', '==', memberEmail)
+                  .where('teamId', '==', teamId);
+                query.get().then((emailInvites) => {
+                  emailInvites.forEach((email) => {
+                    email.ref.delete();
+                  });
+                  that.showToastMsg('Deleted the member successfully');
+                  //result = 'true';
+                  //that.router.navigate(['/app/notifications']);
+                  //delete from surveynotifications collection.
+                  // query = await firebase.firestore().collection('surveynotifications')
+                  //   .where('user', '==', member)
+                  //   .where('teamId', '==', teamId)
+                  //   .where('active', '==', true);
+                  // query.get().then((notifications) => {
+                  //   notifications.forEach((notification) => {
+                  //     notification.ref.delete();
+                  //   });
+                  // });
+                  //delete from questions collection.
+                  resolve('true');
+                });
+              }).catch((error) => {
+                console.log(error);
+                reject(error);
+              });
+            }
+          });
+        } else if (teamId === '') {
+          that.showToastMsg('you have already been deleted from this team by team creator!');
+          result = 'false';
+        } else {
+          that.showToastMsg('Failed to delete!');
+          result = 'false';
+        }
+        resolve(result);
+      });
+    });
+  }
 
+  async isCreator(userId: string) {
+    const that = this;
+    //const result = await that.loadingService.doFirebase(async() => {
+      return new Promise<any>(async (resolve, reject) => {
+        console.log('[isCreator] userId = ' + userId);
+        const teamData = await that.getTeamId(userId);
+        console.log('[isCreator] team id = ' + teamData.data().teamId);
+        if (teamData.data().teamId) {
+          const docRef = await firebase.firestore().collection('teams').doc(teamData.data().teamId);
+          docRef.get().then(async function (doc) {
+            if (doc.exists) {
+              const userTeam = new UserTeamsModel(doc.data());
+              console.log('[isCreator] team creator = ' + userTeam.createdBy);
+              if (userTeam.createdBy === userId) {
+                console.log('[isCreator] you are team creator');
+                resolve('creator');
+              } else {
+                console.log('[isCreator] you are team member');
+                resolve('member');
+              }
+            }
+          }).catch(error => {
+            reject(error);
+          });
+        } else {
+          console.log('[isCreator] cannot find your team');
+          resolve('not found team');
+        }
+      });
+    //});
+    //return result;
+  }
+
+  getTeamByUserId(userId) {
     return new Promise<any>((resolve, reject) => {
       console.log('Pulling team with this User ID');
-      console.log(userId)
+      console.log(userId);
       const docRef = firebase.firestore().collection('teams').where('memembersids', 'array-contains', userId);
       docRef.get().then(function (doc) {
         doc.forEach(team => {
-          console.log('Team found')
-          console.log(team)
+          console.log('Team found');
+          console.log(team);
           resolve(team);
-        })
+        });
 
       }).catch(function (error) {
         console.log('Error getting document:', error);
@@ -513,6 +599,7 @@ export class SurveyServiceService {
   async submitSurvey(surveyResponses) {
     console.log(Object.entries(surveyResponses));
     this.responses = Object.entries(surveyResponses);
+    console.log('[SubmitSurvey] response count = ' + this.responses.length);
     const result = await this.loadingService.doFirebase(async() => {
       this.responses.forEach((response) => {
         this.updateDocument(response);
@@ -533,7 +620,6 @@ export class SurveyServiceService {
   }
 
   async createSurvey(teamMates: any, categories: any, inputText: string, toggle: string) {
-
     const that = this;
     this.categories = categories;
     // people can either ask about a general cateogry
@@ -579,7 +665,7 @@ export class SurveyServiceService {
     }
   }
 
-  createFeedbackQuestion(surveyId: string, user: string, categoryName: string, name: string) {
+  createFeedbackQuestion(surveyId: string, user: string, categoryName: string, name: string, teamId: string) {
 
     console.log('Id: ' + surveyId);
     console.log('User: ' + user);
@@ -588,13 +674,14 @@ export class SurveyServiceService {
 
 
     // look up the teamplate 
-    let that = this;
+    const that = this;
     firebase.firestore().collection('questions').add({
       active: true,
       Question: 'What is one thing that ' + name + ' did well?',
       type: 'input',
       users: [user],
       goal: 'feedback',
+      teamId: teamId,
       surveys: [surveyId],
       from: firebase.auth().currentUser.uid,
       timestamp: firebase.firestore.FieldValue.serverTimestamp()
@@ -611,6 +698,7 @@ export class SurveyServiceService {
       type: 'input',
       users: [user],
       goal: 'feedback',
+      teamId: teamId,
       surveys: [surveyId],
       from: firebase.auth().currentUser.uid,
       timestamp: firebase.firestore.FieldValue.serverTimestamp()
@@ -622,20 +710,20 @@ export class SurveyServiceService {
   }
 
 
-  createSurveyQuestions(surveyId: string, user: string, categoryName: string, name: string) {
+  createSurveyQuestions(surveyId: string, user: string, categoryName: string, name: string, teamId: string) {
 
-    // look up the teamplate 
+    // look up the teamplate
     const questionTemplates: any[] = [];
-    let that = this;
+    const that = this;
 
     // pull each question from firebase
     firebase.firestore().collection('questionTemplate').where('category', '==', categoryName).get()
       .then((questionTemplate) => {
         questionTemplate.forEach((templates) => {
-          console.log('Create question template function')
-          console.log(templates)
-          console.log('Create question template data function')
-          console.log(templates.data().Questions)
+          console.log('Create question template function');
+          console.log(templates);
+          console.log('Create question template data function');
+          console.log(templates.data().Questions);
           let questions: any[] = [];
 
           questions = templates.data().Questions;
@@ -649,12 +737,13 @@ export class SurveyServiceService {
               questionText = 'Would you recommend ' + name + ' \'s ' + question.question;
             }
 
-            console.log(question)
+            console.log(question);
             firebase.firestore().collection('questions').add({
               active: true,
               Question: questionText,
               type: question.type,
               users: [user],
+              teamId: teamId,
               goal: 'feedback',
               surveys: [surveyId],
               from: firebase.auth().currentUser.uid,
@@ -671,13 +760,13 @@ export class SurveyServiceService {
   }
 
 
-  // add a question for each one in the template 
+  // add a question for each one in the template
 
 
   // console.log('creating survey questions')
   // // Add a new document with a generated id.
 
-  // } 
+  // }
 
   // createQuestion(){
 
@@ -695,6 +784,7 @@ export class SurveyServiceService {
       // user:'AKfOgVZrSTYsYN01JA0NUTicf703',
       user: user,
       type: type,
+      readFlag: 'unchecked',
       month: 'May',
       teamId: teamId,
       from: firebase.auth().currentUser.uid,
@@ -756,7 +846,7 @@ export class SurveyServiceService {
       console.log('[InviteTeam] userId = ' + firebase.auth().currentUser.uid);
       teamData = await that.getTeamId(firebase.auth().currentUser.uid);
         console.log('[InviteTeam] team id = ' + teamData.data().teamId);
-        if (teamData.data().teamId) {
+        if (teamData.data().teamId && teamData.data().teamId !== '') {
           const docRef = await firebase.firestore().collection('teams').doc(teamData.data().teamId);
              docRef.get().then(async function (doc) {
               if (doc.exists) {
@@ -798,6 +888,9 @@ export class SurveyServiceService {
                 }
               }
             });
+        } else if (teamData.data().teamId === '') {
+            that.showToastMsg('you have already been deleted from this team by team creator!');
+        } else {
         }
     });
     return result;
@@ -843,41 +936,44 @@ export class SurveyServiceService {
   }
 
   updateDocument(response) {
+    console.log('[ResultUpdate] doc = ' + response[0]);
     // get data
-    var questionRef = firebase.firestore().collection('questions').doc(response[0]);
+    const questionRef = firebase.firestore().collection('questions').doc(response[0]);
 
     questionRef.get().then(function (doc) {
       if (doc.exists) {
         console.log('Document data:', doc.data());
-        let oldTotal = (doc.data().averagescore * doc.data().numresponses)
-        let newTotal = parseInt(response[1], 10) + oldTotal;
+        const oldTotal = (doc.data().averagescore * doc.data().numresponses);
+        const newTotal = parseInt(response[1], 10) + oldTotal;
         let newNumRes = doc.data().numresponses + 1;
         let newAvg = newTotal / newNumRes;
-        let newResp = parseInt(response[1], 10);
+        const newResp = parseInt(response[1], 10);
         let pieChart = doc.data().piechart;
         let lineChart = doc.data().linechart;
 
         // if the pie chart isn't set
-        if (pieChart == undefined) {
-          pieChart = [0, 0, 0, 0]
+        if (pieChart === undefined) {
+          pieChart = [0, 0, 0, 0];
         }
-        // update the pie chart 
-        if (newResp == 1) { pieChart[0] = pieChart[0] + 1 }
-        else if (newResp == 2) { pieChart[1] = pieChart[1] + 1 }
-        else if (newResp == 3) { pieChart[2] = pieChart[2] + 1 }
-        else { pieChart[3] = pieChart[3] + 1 }
+        // update the pie chart
+        if (newResp === 1) { pieChart[0] = pieChart[0] + 1; } else if (newResp === 2) {
+           pieChart[1] = pieChart[1] + 1; } else if (newResp === 3) {
+           pieChart[2] = pieChart[2] + 1;
+        } else {
+          pieChart[3] = pieChart[3] + 1;
+        }
 
         // if the line chart isn't set
-        if (lineChart == undefined) {
-          lineChart = []
+        if (lineChart === undefined) {
+          lineChart = [];
         }
         lineChart.push(newAvg);
 
-        // if Nan then first time 
-        if (isNaN(newAvg)) { newAvg = parseInt(response[1], 10); }
-        if (isNaN(newNumRes)) { newNumRes = 1 }
-
-
+        // if Nan then first time
+        if (isNaN(newAvg)) {
+           newAvg = parseInt(response[1], 10);
+        }
+        if (isNaN(newNumRes)) { newNumRes = 1; }
 
         console.log('Old total:' + oldTotal + 'new total:' + newTotal + 'new responses #' + newNumRes + 'New average' + newAvg)
 
@@ -891,7 +987,6 @@ export class SurveyServiceService {
           piechart: pieChart,
           linechart: lineChart,
           lastUpdate: firebase.firestore.FieldValue.serverTimestamp()
-
         })
           .then(function () {
             console.log('Document successfully updated!');
@@ -1036,7 +1131,7 @@ export class SurveyServiceService {
     const userId = firebase.auth().currentUser.uid;
     const teamId = await this.getTeamId(firebase.auth().currentUser.uid);
     console.log('[createFeedbackNotifications] team id = ' + teamId.data().teamId);
-    if (teamId.data().teamId) {
+    if (teamId.data().teamId && teamId.data().teamId !== '') {
       this.team.forEach(member => {
         // loop through each category
         //  this.categories.forEach(category =>{
@@ -1047,15 +1142,17 @@ export class SurveyServiceService {
         if (member.checked) {
           if (category.checked || toggle === 'event') {
             if (toggle === 'category') {
-              this.createSurveyQuestions(surveyId, member.uid, category.name, member.name);
+              this.createSurveyQuestions(surveyId, member.uid, category.name, member.name, teamId.data().teamId);
               this.createNotification(surveyId, member.uid, 'feedback', member.name, category.name, teamId.data().teamId);
             } else {
-              this.createFeedbackQuestion(surveyId, member.uid, category, member.name);
+              this.createFeedbackQuestion(surveyId, member.uid, category, member.name, teamId.data().teamId);
               this.createNotification(surveyId, member.uid, 'feedback', member.name, category, teamId.data().teamId);
             }
           }
         }
       });
+    } else if (teamId.data().teamId === '') {
+      this.showToastMsg('you have already been deleted from this team by team creator!');
     } else {
       console.log('[createFeedbackNotifications] did not get teamID');
     }

@@ -1,11 +1,12 @@
 import {Component, HostBinding, OnInit} from '@angular/core';
-import {ActivatedRoute} from '@angular/router';
+import { Router, ActivatedRoute} from '@angular/router';
 import {SurveyServiceService} from '../../../services/survey-service.service';
 import {CommentActionType, CommentModel, UserFriendsModel} from './user-friends.model';
 import * as firebase from 'firebase/app';
 import {HttpClient} from '@angular/common/http';
 import { ModalController } from '@ionic/angular';
 import { ModalPage } from '../../modal/modal.page';
+import { LoadingService } from '../../../services/loading-service';
 
 @Component({
   selector: 'app-user-friends',
@@ -20,29 +21,29 @@ export class UserFriendsPage implements OnInit {
   data: UserFriendsModel;
 
   comments: CommentModel[] = [];
-  showBottom:boolean = true;
+  showBottom: boolean = true;
   message = '';
   messageType = 'keep';
   question = '';
-
-  public doughnutChartLabels:string[] = ["Stronly Disagree","Disagree","Agree","Strongly Agree"];
-  public doughnutChartData:number[]    = [1,1,1,1];
-  public doughnutChartType:string     = "doughnut"
+  page: string;
+  unsubscribe: any;
+  public doughnutChartLabels: string[] = ['Stronly Disagree', 'Disagree', 'Agree', 'Strongly Agree'];
+  public doughnutChartData: number[]    = [1, 1, 1, 1];
+  public doughnutChartType: string     = 'doughnut';
   // public lineChartLabels:string[] = [];
 
-  public lineChartLabels:string[] = ['', '', '', '',''];
+  public lineChartLabels: string[] = ['', '', '', '', ''];
 
-  public lineChartType:string     = "line"
-  public doughnutColors:any[] = [
-    { backgroundColor: ["#ff1a72","#ff84b3", "#7de8a7","#20dc6a"] },
-    { borderColor: ["#AEEBF2", "#FEFFC9"]     }
+  public lineChartType: string     = 'line';
+  public doughnutColors: any[] = [
+    { backgroundColor: ['#ff1a72', '#ff84b3', '#7de8a7', '#20dc6a'] },
+    { borderColor: ['#AEEBF2', '#FEFFC9']     }
     ];
-    
   public lineChartData   = [
     // { data: [330, 600, 260, 700], label: 'Account A' },
     // { data: [120, 455, 100, 340], label: 'Account B' },
     { data: [4.5, 4.4, 4.0, 3.8], label: 'Your team' }
-  ]
+  ];
   @HostBinding('class.is-shell') get isShell() {
     return this.data && this.data.isShell;
   }
@@ -52,8 +53,8 @@ export class UserFriendsPage implements OnInit {
     public surveyService: SurveyServiceService,
     private http: HttpClient,
     public modalController: ModalController,
-    
-
+    public router: Router,
+    public loadingService: LoadingService
     ) {
 
     // charts.js
@@ -62,88 +63,100 @@ export class UserFriendsPage implements OnInit {
   }
 
   ngOnInit(): void {
-    this.doughnutChartData = [1,1,1,1] 
+    this.doughnutChartData = [1, 1, 1, 1];
     this.surveyService.getQuestionData(this.surveyService.myParam.id).then(data => {
       this.doughnutChartData = data.piechart;
-      // build line chart 
+      // build line chart
       // first point
-      var dataLine = [];
+      let dataLine = [];
       const len = data.linechart.length;
-      console.log("len"+len);
+      console.log('len' + len);
       const hop = len / 5;
-      console.log("hop"+hop);
-      dataLine[0] =  Math.round(data.linechart[0] * 100) /100
-      var x =1; 
-      for (var i=0; i<len; i+= hop) {
-        console.log("i"+Math.ceil(i)+"x"+x)
+      console.log('hop' + hop);
+      dataLine[0] =  Math.round(data.linechart[0] * 100) / 100;
+      let x = 1;
+      for (let i = 0; i < len; i += hop) {
+        console.log('i' + Math.ceil(i) + 'x' + x);
         // console.log(dataLine)
-        dataLine[x] =  Math.round(data.linechart[Math.ceil(i)] * 100) /100
-        console.log(dataLine)
+        dataLine[x] =  Math.round(data.linechart[Math.ceil(i)] * 100) / 100;
+        console.log(dataLine);
         x++;
       }
-    
       this.lineChartData[0].data = dataLine;
       // this.lineChartData[0].data =[1,2,3,4]
-
-    })
+    });
     this.question = this.route.snapshot.paramMap.get('question');
-
+    this.page = this.route.snapshot.paramMap.get('page');
+    console.log('[DealsFriend] page = ' + this.page);
     // this.getData(this.doughnutChartData)
   }
-  async inputFocus(){
-    console.log("Ion focus...")
+
+  ionViewDidLeave() {
+    console.log('[DealsFriend] ionViewDidLeave unsubscribe = ' + this.unsubscribe);
+    console.log(this.unsubscribe);
+    if (this.unsubscribe) {
+      this.unsubscribe();
+    }
+  }
+
+  async inputFocus() {
+    console.log('Ion focus...');
     const modal = await this.modalController.create({
       component: ModalPage,
       componentProps: {
-        'prop1': "test",
-        'prop2': "test2"
+        'prop1': 'test',
+        'prop2': 'test2'
       }
     });
 
     await modal.present();
-  } 
+  }
 
-  getData(doughnutChartData){
+  onBack() {
+    console.log('[DealsFriend] onBack called!');
+    if (this.page === 'team') {
+      this.router.navigate(['/app/categories', {page: 'team'}]);
+    } else {
+      this.router.navigate(['/app/categories', {page: 'my'}]);
+    }
+  }
+  async getData(doughnutChartData) {
     // get pie chart data from survey service
     // this.surveyService.getQuestionData(this.surveyService.myParam.id);
-    // save array data 
-
+    // save array data
       const questions = [];
-  
-      var docRef = firebase.firestore().collection("questions").doc(this.surveyService.myParam.id);
-
-      docRef.get().then(function(doc) {
-        if (doc.exists) {
-            console.log("Document data:", doc.data());
-            console.log(doc.data().piechart)
-            setTimeout(() => {
-                  // this.chart.chart.config.data.datasets = this.datasets_lines;
-                  // this.chart.chart.update();
-                  doughnutChartData = doc.data().piechart;
-                  
-                  // doughnutChartData.chart.update();
-              
-          });
-        } else {
-            // doc.data() will be undefined in this case
-            console.log("No such document!");
-        }
-      }).catch(function(error) {
-          console.log("Error getting document:", error);
+      await this.loadingService.doFirebase(async () => {
+        const docRef = await firebase.firestore().collection('questions').doc(this.surveyService.myParam.id);
+        docRef.get().then(function(doc) {
+          if (doc.exists) {
+              console.log('Document data:', doc.data());
+              console.log(doc.data().piechart);
+              setTimeout(() => {
+                    // this.chart.chart.config.data.datasets = this.datasets_lines;
+                    // this.chart.chart.update();
+                    doughnutChartData = doc.data().piechart;
+                    // doughnutChartData.chart.update();
+            });
+          } else {
+              // doc.data() will be undefined in this case
+              console.log('No such document!');
+          }
+        }).catch(function(error) {
+            console.log('Error getting document:', error);
+        });
       });
-
-    
   }
 
   updateComment() {
-
     this.showBottom = this.surveyService.showBottom;
-    
     if (this.surveyService.myParam && this.surveyService.myParam.id) {
+      if (this.unsubscribe) {
+        this.unsubscribe();
+      }
+      this.comments = [];
       const query = firebase.firestore().collection('comments')
-        .where('questionId', '==', this.surveyService.myParam.id)
-        // .where('type', '==', 'comment');
-      query.onSnapshot((snapshot) => {
+        .where('questionId', '==', this.surveyService.myParam.id);
+      this.unsubscribe = query.onSnapshot((snapshot) => {
         console.log(snapshot);
         // retrieve anything that has changed
         const changedDocs = snapshot.docChanges();

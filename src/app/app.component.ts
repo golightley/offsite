@@ -8,6 +8,7 @@ import { PopoverController } from '@ionic/angular';
 import { SelectTeamComponent } from './pages/team/select-team/select-team.component';
 import { LoadingService } from './services/loading-service';
 import { UserTeamsModel, UserModel } from './pages/team/select-team/select-team.component.model';
+//import { FCM } from '@ionic-native/fcm/ngx';
 require('firebase/auth');
 
 @Component({
@@ -67,6 +68,8 @@ export class AppComponent {
     public popoverController: PopoverController,
     private alertController: AlertController,
     public loadingService: LoadingService,
+    //private fcm: FCM,
+    private router: Router,
   ) {
     this.initializeApp();
   }
@@ -127,6 +130,26 @@ export class AppComponent {
     this.platform.ready().then(() => {
       this.statusBar.styleDefault();
       this.splashScreen.hide();
+
+      // this.fcm.onNotification().subscribe(data => {
+      //   console.log(data);
+      //   if (data.wasTapped) {
+      //     console.log('Received in background');
+      //     this.router.navigate([data.landing_page, data.price]);
+      //   } else {
+      //     console.log('Received in foreground');
+      //     this.router.navigate([data.landing_page, data.price]);
+      //   }
+      // });
+
+      // this.fcm.onTokenRefresh().subscribe(token => {
+      //   console.log(token);
+      // });
+
+      // this.fcm.getToken().then(token => {
+      //   console.log(token);
+      // });
+      // //this.fcm.subscribeToTopic('people');
     });
     firebase.auth().onAuthStateChanged(user => {
       if (user.uid !== null) {

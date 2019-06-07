@@ -1,9 +1,10 @@
-import {Component,ViewChild, OnInit} from '@angular/core';
+import {Component, ViewChild, OnInit} from '@angular/core';
 import {Router} from '@angular/router';
 import {SurveyServiceService} from '../../../services/survey-service.service';
 import {FeedbackCategoryModel, TeammatesModel} from './feedback-content.model';
 import * as firebase from 'firebase/app';
 import { MessageChannel } from 'worker_threads';
+import { LoadingService } from '../../../services/loading-service';
 
 require('firebase/auth');
 
@@ -18,16 +19,18 @@ export class FeedbackContentPage implements OnInit {
   teammates: TeammatesModel[] = [];
   message = '';
 
-  toggle:string;
+  toggle: string;
   startSuggestions = [
-    {text:'How did the presentation go?'},
-    {text:'How did I lead that meeting?'},
+    {text: 'How did the presentation go?'},
+    {text: 'How did I lead that meeting?'},
   ];
 
   @ViewChild('inputToFocus') inputToFocus;
 
   constructor(private surveyService: SurveyServiceService,
-              private router: Router) {
+              private router: Router,
+              public loadingService: LoadingService
+  ) {
     this.getFeedbackQuestions();
   }
 
@@ -82,16 +85,14 @@ export class FeedbackContentPage implements OnInit {
   }
 
   submitFeedback() {
-    console.log("Submitted...")
-    console.log(this.categories)
-    console.log(this.teammates)
-    this.surveyService.createSurvey(this.teammates, this.categories,this.message,this.toggle);
-    this.router.navigateByUrl('app/feedback/feedback-request');
+     console.log('Submitted...');
+     this.surveyService.createSurvey(this.teammates, this.categories, this.message, this.toggle);
+     this.router.navigateByUrl('app/feedback/feedback-request');
   }
 
-  makeSuggestion(suggestion){
-    console.log("Make suggestion")
-    console.log(suggestion)
+  makeSuggestion(suggestion) {
+    console.log('Make suggestion');
+    console.log(suggestion);
     this.message = suggestion.text;
     this.inputToFocus.setFocus();
   }
@@ -99,16 +100,15 @@ export class FeedbackContentPage implements OnInit {
   segmentChanged(ev: any) {
     console.log('Segment changed', ev);
     this.toggle = ev.detail.value;
-    console.log("Value is "+this.toggle);
+    console.log('Value is ' + this.toggle);
   }
 
-  goToWho(){
+  goToWho() {
     this.page = 'who';
-
   }
 
-  getCommentActionColor(){
-    return "grey";
+  getCommentActionColor() {
+    return 'grey';
   }
 
 }

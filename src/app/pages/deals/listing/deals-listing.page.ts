@@ -22,9 +22,9 @@ require('firebase/auth');
 export class DealsListingPage implements OnInit {
   listing: DealsListingModel;
   results: QuestionModel[] = [];
-  message = 'what';
-  page = 'what';
-  unsubscribe: any;
+  page = 'team';
+  teamUnsubscribe: any;
+  myUnsubscribe: any;
   @ViewChild('valueBarsCanvas') valueBarsCanvas;
   valueBarsChart: any;
   chartData = null;
@@ -44,28 +44,54 @@ export class DealsListingPage implements OnInit {
       this.navigationSubscription = this.router.events.subscribe((e: any) => {
         // If it is a NavigationEnd event re-initalise the component
         if (e instanceof NavigationEnd
-          && (this.router.url === '/app/categories')) {
+          && (this.router.url === '/app/categories;page=my' || this.router.url === '/app/categories;page=team'
+          || this.router.url === '/app/categories')) {
           this.initialiseInvites();
         }
         //console.log('[Result] router url = ' + this.router.url);
       });
     }
 
+    ionViewWillEnter() {
+      console.log('[Deals] ionViewWillEnter');
+    }
     initialiseInvites() {
       // Set default values and re-fetch any data you need.
-      console.log('[Notification] initialiseInvites unsubscrib');
-      if (this.unsubscribe !== undefined) {
-          this.unsubscribe();
+      console.log('[Deals] initialiseInvites unsubscrib');
+      if (this.teamUnsubscribe !== undefined) {
+          this.teamUnsubscribe();
       }
+      if (this.myUnsubscribe !== undefined) {
+        this.myUnsubscribe();
+      }
+
+      if (this.router.url === '/app/categories') {
+        this.page = 'team';
+      } else  {
+        this.page = this.route.snapshot.paramMap.get('page');
+      }
+      console.log('[Deals] page = ' + this.page);
+      // if (state !== undefined || state !== null) {
+      //   this.page = state;
+      // } else {
+      //   this.page = 'team';
+      // }
       firebase.auth().onAuthStateChanged(user => {
         this.userId = user.uid;
-        this.attachResultListener('pulse');
+        if (this.page === 'team') {
+          this.attachResultListener('pulse');
+        } else {
+          this.attachResultListener('feedback');
+        }
       });
     }
 
     ionViewDidLeave() {
-      if (this.unsubscribe !== undefined) {
-        this.unsubscribe();
+      if (this.teamUnsubscribe !== undefined) {
+        this.teamUnsubscribe();
+      }
+      if (this.myUnsubscribe !== undefined) {
+        this.myUnsubscribe();
       }
     }
      // tslint:disable-next-line:use-life-cycle-interface
@@ -77,8 +103,11 @@ export class DealsListingPage implements OnInit {
          this.navigationSubscription.unsubscribe();
       }
       console.log('[Notification] ngOnDestroy unsubscribe');
-      if (this.unsubscribe !== undefined) {
-        this.unsubscribe();
+      if (this.teamUnsubscribe !== undefined) {
+        this.teamUnsubscribe();
+      }
+      if (this.myUnsubscribe !== undefined) {
+        this.myUnsubscribe();
       }
     }
 
@@ -120,7 +149,7 @@ export class DealsListingPage implements OnInit {
   }
 
   getResults(goal) {
-    this.surveyService.getResults(firebase.auth().currentUser.uid,goal).then((resultsData: firebase.firestore.QueryDocumentSnapshot[]) => {
+    this.surveyService.getResults(firebase.auth().currentUser.uid, goal).then((resultsData: firebase.firestore.QueryDocumentSnapshot[]) => {
       resultsData.forEach(data => {
         this.results.push(new QuestionModel(data.id, data.data()));
       });
@@ -129,64 +158,93 @@ export class DealsListingPage implements OnInit {
   }
 
   updateListner(goal) {
+    if (goal === 'pulse') {
+      console.log('[Deals] team');
+      this.page = 'team';
+    } else {
+      console.log('[Deals] my');
+      this.page = 'my';
+    }
+    console.log('[Deals] select tab >> page = ' + this.page);
     // this.unsubscribe();
     this.results = [];
     this.attachResultListener(goal);
     this.createChart('1');
   }
 
-  attachResultListener(goal) {
+  async attachResultListener(goal) {
     // entering attach listner
     console.log('[Result] Entering attached listner userID = ' + this.userId);
-
-    if (goal === 'pulse') {
       // get team id
-      this.surveyService.getTeamId(this.userId).then((team) => {
-        console.log('[ResultListener] getActiveTeam = ' + team.data().teamId);
-        this.getQuestions(goal, team.data().teamId);
-      });
-    } else {
-      // get user id
-      this.getQuestions(goal, this.userId);
-    }
+      const teamData = await this.surveyService.getTeamId(this.userId);
+      const teamId = teamData.data().teamId;
+      if (teamId && teamId !== '') {
+        console.log('[ResultListener] getActiveTeam = ' + teamId);
+        this.getQuestions(goal, teamId);
+      } else if (teamId === '') {
+        this.surveyService.showToastMsg('you have already been deleted from this team by team creator!');
+      } else {
+      }
   }
 
   getQuestions(goal, teamId) {
         // teamID
-        console.log('[ResultListener] call listener goal = ' + goal + ' teamId = ' + teamId);
+        console.log('[ResultListener] call listener goal = ' + goal);
+
         // pull the questions associated with that team
         const questions = [];
         const that = this;
         that.results = [];
-        this.unsubscribe = firebase.firestore().collection('questions')
+        if (goal === 'pulse') {
+          if (this.teamUnsubscribe !== undefined) {
+            this.teamUnsubscribe();
+          }
+          this.teamUnsubscribe = firebase.firestore().collection('questions')
           .where('goal', '==', goal)
           .where('teamId', '==', teamId)
           .orderBy('lastUpdate', 'desc')
-        .onSnapshot((snapshot) => {
-          const changedDocs = snapshot.docChanges();
-          changedDocs.forEach((change) => {
-            if (change.oldIndex !== -1) {
-              that.results.splice(change.oldIndex, 1);
-            }
-            if (change.newIndex !== -1) {
-              console.log('[ResultListener] onSnapshot >> add...');
-              const newQuestion = new QuestionModel(change.doc.id, change.doc.data());
-              that.results.splice(change.newIndex, 0, newQuestion);
-            }
-            // UI Refresh
-            this.zone.run(() => {});
-            // if (change.type === 'added') {
-            //   console.log('[Result] Added in listener');
-            //   this.results.push(new QuestionModel(change.doc.id, change.doc.data()));
-            // } else if (change.type === 'modified') {
-            //   console.log('[Result] modify in listener');
-            //   //let index = change.oldIndex;
-            //   this.results[change.oldIndex] = new QuestionModel(change.doc.id, change.doc.data());
-            //   // this.results.push(new QuestionModel(change.doc.id, change.doc));
-            // }
+          .onSnapshot((snapshot) => {
+            const changedDocs = snapshot.docChanges();
+            changedDocs.forEach((change) => {
+              if (change.oldIndex !== -1) {
+                that.results.splice(change.oldIndex, 1);
+              }
+              if (change.newIndex !== -1) {
+                console.log('[ResultListener] onSnapshot >> add...');
+                const newQuestion = new QuestionModel(change.doc.id, change.doc.data());
+                that.results.splice(change.newIndex, 0, newQuestion);
+              }
+              // UI Refresh
+              this.zone.run(() => {});
+            });
+            // this.notifications = notifications;
           });
-          // this.notifications = notifications;
-        });
+        } else {
+          if (this.myUnsubscribe !== undefined) {
+            this.myUnsubscribe();
+          }
+          this.myUnsubscribe = firebase.firestore().collection('questions')
+          .where('goal', '==', goal)
+          .where('from', '==', this.userId)
+          .where('teamId', '==', teamId)
+          .orderBy('lastUpdate', 'desc')
+          .onSnapshot((snapshot) => {
+            const changedDocs = snapshot.docChanges();
+            changedDocs.forEach((change) => {
+              if (change.oldIndex !== -1) {
+                that.results.splice(change.oldIndex, 1);
+              }
+              if (change.newIndex !== -1) {
+                console.log('[ResultListener] onSnapshot >> add...');
+                const newQuestion = new QuestionModel(change.doc.id, change.doc.data());
+                that.results.splice(change.newIndex, 0, newQuestion);
+              }
+              // UI Refresh
+              this.zone.run(() => {});
+            });
+            // this.notifications = notifications;
+          });
+        }
   }
 
   getMarkColorStyle(question: QuestionModel) {
@@ -210,7 +268,6 @@ export class DealsListingPage implements OnInit {
     //this.attachResultListener('pulse');
   }
   createChart(dataa) {
-
     // var data: [{
     //   x: 10,
     //   y: 20
@@ -246,7 +303,8 @@ export class DealsListingPage implements OnInit {
     } else {
       this.surveyService.showBottom = true;
     }
-    this.router.navigate(['/app/categories/friends', { question: result.question }]);
+    console.log('[Deals] router param >> page = ' + this.page);
+    this.router.navigate(['/app/categories/friends', { question: result.question, page: this.page }]);
   }
   // like(result) {
   //   console.log('Like function fired...');
