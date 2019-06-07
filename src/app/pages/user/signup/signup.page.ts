@@ -106,6 +106,7 @@ export class SignupPage implements OnInit {
       const params = {
         name: this.name,
         email: userData.user.email,
+        readIdeaTime: new Date(new Date(2000, 1, 1, 0, 0, 0)),
         loggedAt: Date.now()
       };
       await firebase.firestore().collection('users').doc(userData.user.uid).set(params);

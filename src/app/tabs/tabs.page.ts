@@ -43,9 +43,16 @@ export class TabsPage  {
           console.log('[Tabs] !!!!!!!!!!! router >> call app/notifications');
           that.notiBadgeCnt = 0;
           await that.readNotifications();
+          that.loadIdeas();
+        } else if (that.router.url === '/app/ideas') {
+          console.log('[Tabs] !!!!!!!!!!! router >> call app/ideas');
+          that.ideaBadgeCnt = 0;
+          that.readIdeas();
+          that.attachNotificationListener(this.userId);
         } else {
           console.log('[Tabs] !!!!!!!!!!! router >> call other url = ' + that.router.url);
-          this.attachNotificationListener(this.userId);
+          that.attachNotificationListener(this.userId);
+          that.loadIdeas();
         }
       }
     });
@@ -70,6 +77,16 @@ export class TabsPage  {
       });
     }
   }
+  async readIdeas() {
+    firebase.firestore().collection('users').doc(this.userId).update({
+      'readIdeaTime': firebase.firestore.FieldValue.serverTimestamp(),
+    }).then(async () => {
+      console.log('[Tabs] !!!!! reset readIdeaTime = ' + firebase.firestore.FieldValue.serverTimestamp());
+    }).catch((error) => {
+      console.log('[Tabs] !!!!! reset readIdeaTime error = ' + error);
+    });
+  }
+
   async ionViewWillEnter() {
     console.log('[Tabs] !!!!!!! ionViewWillEnter');
     this.menu.enable(true);
@@ -84,32 +101,9 @@ export class TabsPage  {
     console.log('[Tabs] called attachNotificationListener >> team id = ' + teamId.data().teamId);
     if (teamId.data().teamId && teamId.data().teamId !== '') {
       if (this.unsubFeedback !== undefined) {
-        console.log('[Tabs] stop Listener');
+        console.log('[Tabs] Stop Feedback Listener');
         this.unsubFeedback();
       }
-      // create snapshot for pulse check
-      // const querySurvey = await firebase.firestore().collection('surveynotifications')
-      //   .where('user', '==', userID)
-      //   .where('teamId', '==', teamId.data().teamId)
-      //   .where('type', '==', 'pulse')
-      //   .where('timestamp', '<', new Date((new Date()).setDate((new Date).getDate() + 1)));
-      // that.unsubSurvey = querySurvey.onSnapshot((snapshot1) => {
-      //   console.log('[Notification] Listener attached Survey notification count = ' + snapshot1.size);
-      //   // retrieve anything that has changed
-      //   const changedDocsSurvey = snapshot1.docChanges();
-      //   changedDocsSurvey.forEach((change) => {
-      //     console.log('@pulse survey onsnapshot');
-      //     if (change.oldIndex !== -1) {
-      //       // UI Refresh
-      //       // that.notifications.splice(change.oldIndex, 1);
-      //     }
-      //     if (change.newIndex !== -1) {
-      //       console.log('[Notification] onSnapshot add >> display name = ' + change.doc.data().displayName);
-      //       //  that.notifications.splice(change.newIndex, 0, change.doc);
-      //     }
-      //   });
-      // });
-
       // create snapshot for feedback and instructional
       const queryFeedback = await firebase.firestore().collection('surveynotifications')
         .where('user', '==', userID)
@@ -129,7 +123,6 @@ export class TabsPage  {
           }
           if (change.newIndex !== -1) {
               // that.notifications.splice(change.newIndex, 0, change.doc);
-              console.log('[Tabs] !!!!!!!!! add >> router url = ' + that.router.url);
               that.notiBadgeCnt++;
               console.log('[Tabs] !!!!!!!!!!!!!!! Received feed >> so add.. count = ' + that.notiBadgeCnt);
           }
@@ -142,67 +135,122 @@ export class TabsPage  {
   }
 
   async loadIdeas() {
-    console.log('== load Ideas ==');
     const that = this;
     that.ideas = [];
     if (typeof firebase.auth === 'function') {
       const teamId = await that.surveyService.getTeamId(firebase.auth().currentUser.uid);
-      console.log('[Ideas] team id = ' + teamId.data().teamId);
+      console.log('[Tabs] team id = ' + teamId.data().teamId);
       if (teamId.data().teamId && teamId.data().teamId !== '') {
           // first fetch the team ID
-        console.log('[Ideas] Selected Team ID:', teamId.data().teamId);
+        console.log('[Tabs] Selected Team ID:', teamId.data().teamId);
         that.teamId = teamId.data().teamId;
         if (that.teamId === undefined) {
-          console.log('[Ideas] No selected team! returned');
+          console.log('[Tabs] No selected team! returned');
           return;
         }
+        if (that.unsubIdea !== undefined) {
+          console.log('[Tabs] Stop Idea Listener');
+          that.unsubIdea();
+        }
         // now get the ideas based on that team
-        const query = await firebase.firestore().collection('ideas')
-          .where('team', '==', that.teamId)
-          .where('reported', '==', false);
-        this.unsubIdea = query.onSnapshot((snapshot) => {
-          console.log('[Ideas] Listener attached >> idea count = ' + snapshot.size);
-          const changedDocs = snapshot.docChanges();
-          changedDocs.forEach((change) => {
-            if (change.oldIndex !== -1) {
-              // that.ideas.splice(change.oldIndex, 1);
+        firebase.firestore().collection('users').doc(that.userId).get().then(async docUser => {
+          console.log('[Tabs] !!!!!!!!!!!!!!!! readIdeaTime = ' + docUser.data().readIdeaTime);
+          const readIdeaTime = docUser.data().readIdeaTime;
+          if (readIdeaTime === undefined) {
+            firebase.firestore().collection('users').doc(this.userId).update({
+              'readIdeaTime': new Date(new Date(2000, 1, 1, 0, 0, 0)),
+            }).then(async () => {
+              console.log('[Tabs] !!!!! reset readIdeaTime = ' + firebase.firestore.FieldValue.serverTimestamp());
+              const query = await firebase.firestore().collection('ideas')
+              .where('team', '==', that.teamId)
+              .where('timestamp', '>', readIdeaTime)
+              .where('reported', '==', false);
+              this.unsubIdea = query.onSnapshot((snapshot) => {
+              console.log('[Tabs] Listener attached >> idea count = ' + snapshot.size);
+              const changedDocs = snapshot.docChanges();
+              changedDocs.forEach((change) => {
+                if (change.oldIndex !== -1) {
+                  // that.ideas.splice(change.oldIndex, 1);
+                }
+                if (change.newIndex !== -1) {
+                  if (that.router.url === '/app/ideas') {
+                    this.ideaBadgeCnt = 0;
+                    this.readIdeas();
+                  } else {
+                    console.log('[Tabs] ideas onSnapshot >> add...');
+                    that.ideaBadgeCnt++;
+                  }
+                  this.zone.run(() => {});
+                }
+                // UI Refresh
+                });
+              });
+            }).catch((error) => {
+              console.log('[Tabs] !!!!! reset readIdeaTime error = ' + error);
+            });
+          } else {
+              const query = await firebase.firestore().collection('ideas')
+                .where('team', '==', that.teamId)
+                .where('timestamp', '>', readIdeaTime)
+                // .where('timestamp', '>', new Date((new Date()).setDate((new Date).getDate() + 1)))
+                .where('reported', '==', false);
+              this.unsubIdea = query.onSnapshot((snapshot) => {
+              console.log('[Tabs] !!!!! Listener attached >> idea count = ' + snapshot.size + ' url = ' + this.router.url);
+              const changedDocs = snapshot.docChanges();
+              changedDocs.forEach((change) => {
+                if (change.oldIndex !== -1) {
+                  // that.ideas.splice(change.oldIndex, 1);
+                }
+                if (change.newIndex !== -1) {
+                  if (that.router.url === '/app/ideas') {
+                    this.ideaBadgeCnt = 0;
+                    this.readIdeas();
+                  } else {
+                    console.log('[Tabs] ideas onSnapshot >> add...');
+                    that.ideaBadgeCnt++;
+                  }
+                  this.zone.run(() => {});
+                }
+                // UI Refresh
+                });
+              });
             }
-            if (change.newIndex !== -1) {
-              console.log('[Ideas] onSnapshot >> add...');
-              // const newIdea = new IdeaModel(change.doc.id, change.doc.data());
-              // that.ideas.splice(change.newIndex, 0, newIdea);
-            }
-            // UI Refresh
-          });
         });
       } else if (teamId.data().teamId === '') {
       } else {
         // doc.data() will be undefined in this case
-        console.log('[Ideas] No such document!');
+        console.log('[Tabs] No such document!');
       }
     }
   }
   async onNotiClick() {
     console.log('[Tabs] !!!!! onNotiClick');
+    this.notiBadgeCnt = 0;
+    await this.readNotifications();
+    await this.loadIdeas();
   }
 
   async onCateClick() {
     console.log('[Tabs] !!!!! onCateClick');
-    this.attachNotificationListener(this.userId);
+    await this.attachNotificationListener(this.userId);
+    await this.loadIdeas();
   }
 
   async onIdeasClick() {
     console.log('[Tabs] !!!!! onIdeasClick');
+    this.ideaBadgeCnt = 0;
+    this.readIdeas();
     this.attachNotificationListener(this.userId);
   }
 
   async onFeedbackClick() {
     console.log('[Tabs] !!!!! onFeedbackClick');
     this.attachNotificationListener(this.userId);
+    this.loadIdeas();
   }
 
   ngOnDestroy() {
-    console.log('[Tabs] 111111111111111111111111111111111 ngOnDestroy');
+    console.log('[Tabs] ngOnDestroy');
     if (this.unsubFeedback !== undefined) {
       this.unsubFeedback();
       this.unsubSurvey();

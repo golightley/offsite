@@ -3,9 +3,7 @@
       <ion-tab-button tab="notifications" id="notification-button" (click)="onNotiClick()">
           <ion-icon name="notifications"></ion-icon>
           <ion-label class="tab-title">Notifications</ion-label>
-          <!-- <div> -->
           <ion-badge *ngIf="notiBadgeCnt>0" id="notifications-badge" color="danger">{{ notiBadgeCnt }}</ion-badge>
-          <!-- </div> -->
         </ion-tab-button>    
     <ion-tab-button tab="categories" (click)="onCateClick()"> 
       <ion-icon name="list"></ion-icon>
@@ -15,6 +13,7 @@
     <ion-tab-button tab="ideas" (click)="onIdeasClick()">
         <ion-icon name="bulb"></ion-icon>
         <ion-label class="tab-title">Ideas</ion-label>
+        <ion-badge *ngIf="ideaBadgeCnt>0" id="notifications-badge" color="danger">{{ ideaBadgeCnt }}</ion-badge>
       </ion-tab-button>
     <ion-tab-button tab="feedback" (click)="onFeedbackClick()">
       <ion-icon name="create"></ion-icon>
