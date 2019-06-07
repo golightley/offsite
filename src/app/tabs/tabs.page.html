@@ -1,13 +1,17 @@
  <ion-tabs>
   <ion-tab-bar slot="bottom">
-      <ion-tab-button tab="notifications">
+      <ion-tab-button tab="notifications" id="notification-button" (click)="onNotiClick()">
           <ion-icon name="notifications"></ion-icon>
           <ion-label class="tab-title">Notifications</ion-label>
+          <!-- <div> -->
+          <ion-badge id="notifications-badge" color="danger">{{ ideaBadgeCnt }}</ion-badge>
+          <!-- </div> -->
         </ion-tab-button>    
-    <ion-tab-button tab="categories">
+    <ion-tab-button tab="categories"> 
       <ion-icon name="list"></ion-icon>
       <ion-label class="tab-title">Results</ion-label>
     </ion-tab-button>
+    
     <ion-tab-button tab="ideas">
         <ion-icon name="bulb"></ion-icon>
         <ion-label class="tab-title">Ideas</ion-label>
