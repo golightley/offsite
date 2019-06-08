@@ -66,7 +66,8 @@ export class FormsFiltersPage implements OnInit {
     if (this.page === 'pulse') {
       this.router.navigate(['/app/categories', {page: 'team'}]);
     } else {
-      this.router.navigate(['/app/categories', {page: 'my'}]);
+      // this.router.navigate(['/app/categories', {page: 'my'}]);
+      this.router.navigate(['/app/notifications']);
     }
   }
 
