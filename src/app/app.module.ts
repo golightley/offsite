@@ -17,7 +17,7 @@ import {ChartsModule} from 'ng2-charts';
 import * as firebase from 'firebase/app';
 import 'firebase/firestore';
 import { SelectTeamComponent } from './pages/team/select-team/select-team.component';
-//import { FCM } from '@ionic-native/fcm/ngx';
+import { FCM } from '@ionic-native/fcm/ngx';
 
 const config = {
   apiKey: 'AIzaSyD7_p-5IpsI1LY76bz8zvteCi00KvoMP18',
@@ -39,7 +39,6 @@ firebase.initializeApp(config);
     ComponentsModule,
     HttpClientModule,
     ChartsModule,
-    //FCM,
     ServiceWorkerModule.register('/ngsw-worker.js', { enabled: environment.production })
   ],
   entryComponents: [SelectTeamComponent],
@@ -49,6 +48,7 @@ firebase.initializeApp(config);
     SplashScreen,
     Keyboard,
     Vibration,
+    FCM,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
   ],
   bootstrap: [AppComponent]

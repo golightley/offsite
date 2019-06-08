@@ -8,7 +8,7 @@ import { PopoverController } from '@ionic/angular';
 import { SelectTeamComponent } from './pages/team/select-team/select-team.component';
 import { LoadingService } from './services/loading-service';
 import { UserTeamsModel, UserModel } from './pages/team/select-team/select-team.component.model';
-//import { FCM } from '@ionic-native/fcm/ngx';
+import { FCM } from '@ionic-native/fcm/ngx';
 require('firebase/auth');
 
 @Component({
@@ -68,7 +68,7 @@ export class AppComponent {
     public popoverController: PopoverController,
     private alertController: AlertController,
     public loadingService: LoadingService,
-    //private fcm: FCM,
+    private fcm: FCM,
     private router: Router,
   ) {
     this.initializeApp();
@@ -131,25 +131,26 @@ export class AppComponent {
       this.statusBar.styleDefault();
       this.splashScreen.hide();
 
-      // this.fcm.onNotification().subscribe(data => {
-      //   console.log(data);
-      //   if (data.wasTapped) {
-      //     console.log('Received in background');
-      //     this.router.navigate([data.landing_page, data.price]);
-      //   } else {
-      //     console.log('Received in foreground');
-      //     this.router.navigate([data.landing_page, data.price]);
-      //   }
-      // });
+      this.fcm.onNotification().subscribe(data => {
+        console.log(data);
+        if (data.wasTapped) {
+          console.log('Received in background');
+          // add code when receive push notification  from firebase FCM in background mode.
+        } else {
+          console.log('Received in foreground');
+          // add code when receive push notification  from firebase FCM in foreground mode.
+        }
+      });
 
-      // this.fcm.onTokenRefresh().subscribe(token => {
-      //   console.log(token);
-      // });
+      this.fcm.onTokenRefresh().subscribe(token => {
+        // when change token information.
+        console.log(token);
+      });
 
-      // this.fcm.getToken().then(token => {
-      //   console.log(token);
-      // });
-      // //this.fcm.subscribeToTopic('people');
+      this.fcm.getToken().then(token => {
+        console.log(token);
+      });
+      // this.fcm.subscribeToTopic('ideas');
     });
     firebase.auth().onAuthStateChanged(user => {
       if (user.uid !== null) {
