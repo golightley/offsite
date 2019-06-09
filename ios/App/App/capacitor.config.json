@@ -1,0 +1,6 @@
+{
+  "appId": "com.bigbowieventures.offsiteapp",
+  "appName": "Offsite",
+  "bundledWebRuntime": false,
+  "webDir": "www"
+}
