@@ -10,6 +10,8 @@ import { LoadingService } from './services/loading-service';
 import { UserTeamsModel, UserModel } from './pages/team/select-team/select-team.component.model';
 import { FCM } from '@ionic-native/fcm/ngx';
 require('firebase/auth');
+import { Firebase } from '@ionic-native/firebase';
+
 
 @Component({
   selector: 'app-root',
