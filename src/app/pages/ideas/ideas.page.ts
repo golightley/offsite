@@ -173,6 +173,7 @@ export class IdeasPage implements OnInit {
                 }
                 // UI Refresh
                 this.zone.run(() => {});
+                
               });
             });
           } else if (teamId.data().teamId === '') {
