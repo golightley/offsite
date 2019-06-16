@@ -27,6 +27,10 @@ export class UserFriendsPage implements OnInit {
   question = '';
   page: string;
   unsubscribe: any;
+  questionType: any;
+  responses:any = [];
+
+
   public doughnutChartLabels: string[] = ['Stronly Disagree', 'Disagree', 'Agree', 'Strongly Agree'];
   public doughnutChartData: number[]    = [1, 1, 1, 1];
   public doughnutChartType: string     = 'doughnut';
@@ -65,6 +69,13 @@ export class UserFriendsPage implements OnInit {
   ngOnInit(): void {
     this.doughnutChartData = [1, 1, 1, 1];
     this.surveyService.getQuestionData(this.surveyService.myParam.id).then(data => {
+
+      // some feedback prompts don't have data so we need to check
+      this.questionType = data.type;
+      this.responses    = data.responses;
+      console.log('[DealsFriend] question type = ' + this.questionType);
+      console.log('[DealsFriend] question responses = ' + this.responses);
+
       this.doughnutChartData = data.piechart;
       // build line chart
       // first point
