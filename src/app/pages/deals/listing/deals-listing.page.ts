@@ -38,9 +38,10 @@ export class DealsListingPage implements OnInit {
   public barChartData: number[]    = [];
   public barChartType: string     = 'horizontalBar';
   public barColors: any[] = [
-    { backgroundColor: ['#ff1a72', '#ff84b3', '#7de8a7', '#20dc6a'] },
-    { borderColor: ['#AEEBF2', '#FEFFC9']     }
+    { backgroundColor: [] },
+    { borderColor: []     }
     ];
+  // public barColors: any[] = [];
 
   public doughnutChartLabels: string[] = ['Sustainable', 'Support', 'Valuable', 'Learning'];
   public doughnutChartData: number[]    = [4.2, 3.1, 4.5, 4.4];
@@ -178,16 +179,25 @@ export class DealsListingPage implements OnInit {
    // remove old data
     this.barChartLabels = [];
     this.barChartData = [];
-    this.barColors = [];
+    this.barColors = [
+      { backgroundColor: [] },
+      { borderColor: []     }
+      ];
+
 
     results.forEach((question)=>{
       console.log('[Deals] updating summary bary chart. Question ' + question);
       console.log('[Deals] updating summary bary chart.  avgScore ' + question.avgScore);
+      console.log('[Deals] updating summary bary chart.  category ' + question.category);
+
       console.log(question)
       this.barChartLabels.push(question.category);
       this.barChartData.push(Number(question.avgScore));
-      this.barColors.push("#AEEBF2")
+      console.log(this.barColors);
+      this.barColors[0].backgroundColor.push(this.getMarkColorStyle(question))
       console.log('[Deals] updating summary bary chart.  avgScore ' + this.barChartData);
+      console.log('[Deals] updating summary bary chart.  barColors ' + this.barColors);
+
       console.log(this.barChartData)
 
     })

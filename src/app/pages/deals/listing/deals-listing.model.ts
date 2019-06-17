@@ -30,6 +30,7 @@ export class QuestionModel {
   question: string;
   commentsCount = 0;
   avgScore = 0;
+  category: string;
   updatedAt: Date;
   type = QuestionType.input;
   goal: string;
@@ -38,6 +39,8 @@ export class QuestionModel {
     this.id = id;
     this.goal = data['goal'];
     this.question = data['Question'];
+    this.category = data['category'];
+
     if (data['commentsCount']) {
       this.commentsCount = data['commentsCount'];
     }

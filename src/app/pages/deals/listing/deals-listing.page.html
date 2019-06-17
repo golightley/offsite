@@ -20,7 +20,20 @@
     </ion-segment>
     <div [ngSwitch]="page">
 
-  <ion-card>
+    <ion-card *ngIf="results.length == 0">
+          <ion-card-header>
+                <ion-card-title> No results yet!</ion-card-title>
+                <!-- <ion-card-subtitle>Ideas to improve your team will show up here</ion-card-subtitle> -->
+            </ion-card-header>
+            <ion-card-content>
+                    Your team's survey results will show up here. Get started by taking the first pulse check on the notifications tab!.
+                    <img src="assets/images/charts.svg" alt="Feedback Logo"/>
+            </ion-card-content>
+
+    </ion-card>
+  
+
+  <ion-card *ngIf="results.length != 0">
       <ion-card-header>
           <ion-card-subtitle>Team Summary</ion-card-subtitle>
       </ion-card-header>
@@ -35,7 +48,7 @@
         </div>
   </ion-card>
 
-  <ion-card>
+  <!-- <ion-card>
       <ion-card-header>
           <ion-card-subtitle>Attrition risk</ion-card-subtitle>
       </ion-card-header>
@@ -48,7 +61,7 @@
               [legend]="false"                >
           </canvas>
         </div>
-  </ion-card>
+  </ion-card> -->
 
   <ion-card  *ngFor="let question of results">
     <div class="question-content" (click)="viewComments(question)">
