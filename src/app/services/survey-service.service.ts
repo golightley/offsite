@@ -5,8 +5,10 @@ import { TeammatesModel } from '../pages/feedback/feedback-content/feedback-cont
 // import {NotificationsPage} from '../notifications/notifications.page';
 import { HttpClientModule, HttpClient } from '@angular/common/http';
 import { LoadingService } from './loading-service';
+import { UserTeamsModel } from '../pages/team/select-team/select-team.component.model';
 import to from 'await-to-js';
 import { ToastController } from '@ionic/angular';
+import { Router } from '@angular/router';
 @Injectable({
   providedIn: 'root'
 })
@@ -25,13 +27,12 @@ export class SurveyServiceService {
   constructor(
     private http: HttpClient,
     private loadingService: LoadingService,
-    private toastController: ToastController
-  )
-  {
+    private toastController: ToastController,
+    private router: Router,
+  ) {
 
   }
 
-  //get notifcations for tab 1 of interface
   getNotifications(userID) {
     let notifications = [];
     return new Promise<any>((resolve, reject) => {
@@ -39,7 +40,7 @@ export class SurveyServiceService {
         .then((docs) => {
           docs.forEach((doc) => {
             notifications.push(doc);
-          })
+          });
           resolve(notifications);
         }, err => reject(err));
     });
@@ -60,30 +61,28 @@ export class SurveyServiceService {
   // get notifications for tab 1 of interface
   async getTeamMembers(userId: string) {
     const aryMembers: TeammatesModel[] = [];
-
-    const docTeams = await firebase.firestore().collection('teams')
-      .where('members', 'array-contains', { uid: userId }).get();
-
-    docTeams.docs.forEach(doc => {
-      const dicTeam: any = doc.data();
-      if (dicTeam.hasOwnProperty('members')) {
-        const members = dicTeam['members'];
-        members.forEach(async dicMember => {
-          if (dicMember.hasOwnProperty('uid')) {
-            const memberId = dicMember['uid'];
-            if (userId !== memberId && 0 === aryMembers.filter(member => {
-              return member.uid === userId;
-            }).length) {
-              firebase.firestore().collection('users').doc(memberId).get().then(docUser => {
-                aryMembers.push(new TeammatesModel(docUser.id, docUser.data()));
-
-              })
-            }
-          }
-        });
+    await this.loadingService.doFirebase(async() => {
+      const teamId = await this.getActiveTeam(userId);
+      await firebase.firestore().collection('teams').doc(teamId).get().then(doc => {
+        const dicTeam: any = doc.data();
+        if (dicTeam.hasOwnProperty('members')) {
+          const members = dicTeam['members'];
+          members.forEach(async dicMember => {
+            if (dicMember.hasOwnProperty('uid')) {
+              const memberId = dicMember['uid'];
+              if (userId !== memberId && 0 === aryMembers.filter(member => {
+                return member.uid === userId;
+              }).length) {
+                console.log('My Team Members - memberid - ' + memberId);
+                firebase.firestore().collection('users').doc(memberId).get().then(docUser => {
+                  aryMembers.push(new TeammatesModel(docUser.id, docUser.data()));
+                });
+              }
+           }
+         });
       }
     });
-
+  });
     return aryMembers;
   }
 
@@ -93,7 +92,7 @@ export class SurveyServiceService {
     const questions = [];
 
     return new Promise<any>((resolve, reject) => {
-      var docRef = firebase.firestore().collection('questions').doc(surveyId);
+      const docRef = firebase.firestore().collection('questions').doc(surveyId);
       docRef.get().then(function (doc) {
         resolve(doc.data());
       }).catch(function (error) {
@@ -101,7 +100,6 @@ export class SurveyServiceService {
         reject(error);
       });
     });
-
   }
 
   async getQuestions(surveyId: string) {
@@ -115,12 +113,12 @@ export class SurveyServiceService {
       })
       .catch(error => {
         return 'error';
-      })
+      });
     return questions;
-  })
+  });
   return result;
 }
- 
+
   // pull questions for results tab
   getResults(userID, goal) {
     const questions = [];
@@ -140,17 +138,21 @@ export class SurveyServiceService {
   }
 
   // pull questions for results tab
-  getTeamId(userID) {
+  getTeamId(userId: string) {
 
-    console.log('ServeyService.GetTeamId.UserID=' + userID)
+    console.log('ServeyService.GetTeamId.UserID=' + userId);
     // pull each question from firebase
     return new Promise<any>((resolve, reject) => {
       firebase.firestore()
         .collection('users')
-        .doc(userID)
+        .doc(userId)
         .get()
         .then((questionData) => {
-          resolve(questionData);
+          if (questionData.exists) {
+            resolve(questionData);
+          } else {
+            resolve('not found!');
+          }
         }, err => reject(err));
     });
   }
@@ -171,6 +173,26 @@ export class SurveyServiceService {
             resolve(doc.data().teamName);
           });
         }, err => reject(err));
+    });
+  }
+  async getInvitedTeams(userEmail) {
+    const result = await this.loadingService.doFirebase(async() => {
+      return new Promise<any>((resolve, reject) => {
+        const that = this;
+
+        const docRef = firebase.firestore().collection('emailInvites')
+          .where('email', '==', userEmail)
+          .where('active', '==', true);
+        docRef.get().then(async function (teams) {
+            if (teams.docs.length === 0) {
+              resolve(null);
+            } else {
+              resolve(teams.docs);
+            }
+        }).catch (error => {
+            reject(error);
+        });
+      });
     });
   }
 
@@ -219,18 +241,119 @@ export class SurveyServiceService {
 
   }
 
-  getTeamByUserId(userId) {
+  async deleteTeamMember(member: string, creator: string, memberEmail: string) {
+    const that = this;
+    let result;
+    console.log('[deleteTeamMember] member = ' + member);
+    return new Promise<any>(async (resolve, reject) => {
+      await this.loadingService.doFirebase(async () => {
+        const teamData = await that.getTeamId(creator);
+        console.log('[deleteTeamMember] team id = ' + teamData.data().teamId);
+        const teamId = teamData.data().teamId;
+        let query;
+        if (teamId && teamId !== '') {
+          const ref = firebase.firestore().collection('teams').doc(teamData.data().teamId);
+          //delete from teams collection.
+          ref.update({
+            memembersids: firebase.firestore.FieldValue.arrayRemove(member),
+            members: firebase.firestore.FieldValue.arrayRemove({ uid: member }),
+          }).then(async function (docRef) {
+            //that.showToastMsg('Deleted the member successfully');
+            console.log('[deletedTeamMember] Deleted the member from teams collection');
+            //delete from users collection.
+            const activeTeam = await that.getActiveTeam(member);
+            console.log('[deleteTeamMember] active teamID = ' + activeTeam);
+            if (activeTeam !== undefined && activeTeam === teamId) {
+              firebase.firestore().collection('users').doc(member).update({
+                'teamId': '',
+              }).then(async () => {
+                console.log('[deleteTeamMember] deleted from users collection');
+                //delete from emailInvites
+                query = await firebase.firestore().collection('emailInvites')
+                  .where('email', '==', memberEmail)
+                  .where('teamId', '==', teamId);
+                query.get().then((emailInvites) => {
+                  emailInvites.forEach((email) => {
+                    email.ref.delete();
+                  });
+                  that.showToastMsg('Deleted the member successfully');
+                  //result = 'true';
+                  //that.router.navigate(['/app/notifications']);
+                  //delete from surveynotifications collection.
+                  // query = await firebase.firestore().collection('surveynotifications')
+                  //   .where('user', '==', member)
+                  //   .where('teamId', '==', teamId)
+                  //   .where('active', '==', true);
+                  // query.get().then((notifications) => {
+                  //   notifications.forEach((notification) => {
+                  //     notification.ref.delete();
+                  //   });
+                  // });
+                  //delete from questions collection.
+                  resolve('true');
+                });
+              }).catch((error) => {
+                console.log(error);
+                reject(error);
+              });
+            }
+          });
+        } else if (teamId === '') {
+          that.showToastMsg('you have already been deleted from this team by team creator!');
+          result = 'false';
+        } else {
+          that.showToastMsg('Failed to delete!');
+          result = 'false';
+        }
+        resolve(result);
+      });
+    });
+  }
 
+  async isCreator(userId: string) {
+    const that = this;
+    //const result = await that.loadingService.doFirebase(async() => {
+      return new Promise<any>(async (resolve, reject) => {
+        console.log('[isCreator] userId = ' + userId);
+        const teamData = await that.getTeamId(userId);
+        console.log('[isCreator] team id = ' + teamData.data().teamId);
+        if (teamData.data().teamId) {
+          const docRef = await firebase.firestore().collection('teams').doc(teamData.data().teamId);
+          docRef.get().then(async function (doc) {
+            if (doc.exists) {
+              const userTeam = new UserTeamsModel(doc.data());
+              console.log('[isCreator] team creator = ' + userTeam.createdBy);
+              if (userTeam.createdBy === userId) {
+                console.log('[isCreator] you are team creator');
+                resolve('creator');
+              } else {
+                console.log('[isCreator] you are team member');
+                resolve('member');
+              }
+            }
+          }).catch(error => {
+            reject(error);
+          });
+        } else {
+          console.log('[isCreator] cannot find your team');
+          resolve('not found team');
+        }
+      });
+    //});
+    //return result;
+  }
+
+  getTeamByUserId(userId) {
     return new Promise<any>((resolve, reject) => {
       console.log('Pulling team with this User ID');
-      console.log(userId)
+      console.log(userId);
       const docRef = firebase.firestore().collection('teams').where('memembersids', 'array-contains', userId);
       docRef.get().then(function (doc) {
         doc.forEach(team => {
-          console.log('Team found')
-          console.log(team)
+          console.log('Team found');
+          console.log(team);
           resolve(team);
-        })
+        });
 
       }).catch(function (error) {
         console.log('Error getting document:', error);
@@ -244,7 +367,7 @@ export class SurveyServiceService {
       return new Promise<any>((resolve, reject) => {
         const docRef = firebase.firestore().collection('teams')
         .where('createdBy', '==', uid)
-        .where("teamName", "==",teamName);
+        .where('teamName', '==', teamName);
         docRef.get().then(function (doc) {
           doc.forEach(team => {
             if (team.exists) {
@@ -252,13 +375,21 @@ export class SurveyServiceService {
             } else {
               resolve(team.id);
             }
-          })
+          });
         }).catch(function (error) {
           reject(error);
-        })
-      })
-    })
+        });
+      });
+    });
     return result;
+  }
+
+  async getUserTeams(userId) {
+    const docTeams = await firebase.firestore().collection('teams')
+    .where('members', 'array-contains', { uid: userId });
+    docTeams.get().then(function (teams) {
+      console.log('[getUserTeams] team count = ' + teams.size);
+    });
   }
 
   async createTeamByUserId(uid, teamName) {
@@ -266,10 +397,10 @@ export class SurveyServiceService {
       return new Promise<any>((resolve, reject) => {
         const that = this;
 
-        const docRef = firebase.firestore().collection('teams').where("teamName", "==",teamName);
+        const docRef = firebase.firestore().collection('teams').where('teamName', '==', teamName);
         docRef.get().then(function (ref) {
           console.log('count = ' + ref.size);
-          if (ref.size == 0) {
+          if (ref.size === 0) {
             firebase.firestore().collection('teams').add({
               active: true,
               memembersids: [uid],
@@ -277,37 +408,37 @@ export class SurveyServiceService {
               teamName: teamName,
               createdBy: uid,
               teamCreated: firebase.firestore.FieldValue.serverTimestamp()
-            }).then(async(docRef) => {
-              console.log(' Team created with ID: ', docRef.id);
-              console.log(docRef);
+            }).then(async(teamData) => {
+              console.log(' Team created with ID: ', teamData.id);
+              console.log(teamData);
               // create survey questions for the team utilizing cloud functions
-              await to(that.callCreateSurveyCloudFunction(docRef.id));
-              await to(that.updateUserWithTeamId(uid, docRef.id));
-              resolve(docRef.id);
+              await to(that.callCreateSurveyCloudFunction(teamData.id, 'create'));
+              await to(that.updateUserWithTeamId(uid, teamData.id));
+              resolve(teamData.id);
             }).catch(function (error) {
               console.error('Error creating sruvey document: ', error);
               reject(error);
             });
           } else {
-            console.error('[CreateTeam] Team already exist!');
+            console.log('[CreateTeam] Team already exist!');
             reject('exist');
           }
-        })
-
-        
+        });
       });
     });
     return result;
   }
 
-  async callCreateSurveyCloudFunction(teamId) {
-    console.log('Calling cloud function... ');
+  async callCreateSurveyCloudFunction(teamId: string, isTeamCreate: string) {
+    console.log('Calling createPulseChecks cloud function... team id = ' + teamId);
+    console.log('Calling createPulseChecks cloud function... state = ' + isTeamCreate);
     const body = {
       teamId: teamId,
-      userId: firebase.auth().currentUser.uid
+      userId: firebase.auth().currentUser.uid,
+      isTeamCreate: isTeamCreate
     };
     try {
-      const resp = await this.http.post('//us-central1-offsite-9f67c.cloudfunctions.net/createPulseChecks', JSON.stringify(body), {
+      const resp = await this.http.post('https://us-central1-offsite-9f67c.cloudfunctions.net/createPulseChecks/', JSON.stringify(body), {
         responseType: 'text'
       }).toPromise();
       console.log(resp);
@@ -332,11 +463,8 @@ export class SurveyServiceService {
   }
 
   joinTeamWithCode(uid, teamId) {
-
     return new Promise<any>((resolve, reject) => {
       const ref = firebase.firestore().collection('teams').doc(teamId);
-
-      
       // Set the 'capital' field of the city 'DC'
       return ref.update({
         memembersids: firebase.firestore.FieldValue.arrayUnion(uid),
@@ -351,9 +479,7 @@ export class SurveyServiceService {
           // The document probably doesn't exist.
           console.error('Error updating document: ', error);
           reject(error);
-
         });
-
     });
   }
 
@@ -372,39 +498,41 @@ export class SurveyServiceService {
     const that = this;
     const result = await this.loadingService.doFirebase(async() => {
       return new Promise<any>((resolve, reject) => {
-        //const ref = firebase.firestore().collection('teams').doc(teamName);
-        const docRef = firebase.firestore().collection('teams').where("teamName", "==",teamName);
+        const docRef = firebase.firestore().collection('teams').where('teamName', '==', teamName);
         docRef.get().then(async function (ref) {
           console.log('count = ' + ref.size);
-          if (ref.size == 0) {
+          if (ref.size === 0) {
             console.log('[JoinTeam] Team not found!');
             reject('Not found');
           } else {
-            //const doc = ref.docs[0].ref;
             console.log('[JoinTeam] found teamname = ' + ref.docs[0].data().teamName);
             console.log('[JoinTeam] found team');
             console.log('[JoinTeam] teamId = ' + ref.docs[0].id);
+            firebase.firestore().collection('users').doc(uid).update({
+              'teamId': ref.docs[0].id,
+            }).then(async () => {
+              console.log('[JoinTeam] user team is updated successfully!');
+            });
             const docTeamRef = await firebase.firestore().collection('teams').doc(ref.docs[0].id);
             docTeamRef.get().then(async function (doc) {
               if (doc.exists) {
                 const members = doc.data().memembersids;
-                //console.log('[JoinTeam] members = ' + members);
-                const index =members.findIndex(member => member === uid);
+                const index = members.findIndex(member => member === uid);
                 console.log('[JoinTeam] index = ' + index);
-                if (index != -1) {
-                  console.log('[JoinTeam] This user has already registed team member.');
-                  //that.showToastMsg('This user has already registed for the team.');
+                if (index !== -1) {
+                  console.log('[JoinTeam] This user has already registered for the team.');
                   reject('already exist');
                 } else {
                   console.log('start to regist...');
-                  //that.showToastMsg('sent invite email.');
                   return ref.docs[0].ref.update({
                     memembersids: firebase.firestore.FieldValue.arrayUnion(uid),
                     members: firebase.firestore.FieldValue.arrayUnion({ uid }),
                   })
-                  .then(function (docRef) {
+                  .then(async function(docRef) {
                       console.log('Team Document successfully updated!');
                       console.log(ref.docs[0].data().teamName);
+                      console.log('[JoinTeam] team name = ' + ref.docs[0].data().teamName);
+                      await to(that.callCreateSurveyCloudFunction(ref.docs[0].id, 'join'));
                       resolve(ref.docs[0].data().teamName);
                   })
                   .catch(function (error) {
@@ -414,15 +542,12 @@ export class SurveyServiceService {
                   });
                 }
               } else {
-                
               }
-            })
-            
+            });
           }
-        })
-        // Set the 'capital' field of the city 'DC'
+        });
       });
-    })
+    });
     return result;
   }
 
@@ -474,6 +599,7 @@ export class SurveyServiceService {
   async submitSurvey(surveyResponses) {
     console.log(Object.entries(surveyResponses));
     this.responses = Object.entries(surveyResponses);
+    console.log('[SubmitSurvey] response count = ' + this.responses.length);
     const result = await this.loadingService.doFirebase(async() => {
       this.responses.forEach((response) => {
         this.updateDocument(response);
@@ -485,26 +611,23 @@ export class SurveyServiceService {
             this.createComment(response[0], response[1], 'feedback', '');
           }
         }
+        console.log('+++ finish survey for question +++ ');
       });
+
+      console.log('=== finish survey for all questions ===');
     });
     return result;
   }
 
-
-
-
-  createSurvey(teamMates, categories, inputText, toggle) {
-
-    var that = this;
+  async createSurvey(teamMates: any, categories: any, inputText: string, toggle: string) {
+    const that = this;
     this.categories = categories;
-    console.log('Input text ==>' + inputText);
-
-    // people can either ask about a general cateogry 
-    if (toggle == 'category') {
-      this.categories.forEach(category => {
-        return new Promise<any>((resolve, reject) => {
+    // people can either ask about a general cateogry
+    if (toggle === 'category') {
+      await that.loadingService.doFirebase(async () => {
+        await that.categories.forEach(async category => {
           // Add a new document with a generated id.
-          firebase.firestore().collection('surveys').add({
+          await firebase.firestore().collection('surveys').add({
             active: true,
             category: category.name,
             type: 'feedback',
@@ -513,25 +636,17 @@ export class SurveyServiceService {
             timestamp: firebase.firestore.FieldValue.serverTimestamp()
           }).then(function (docRef) {
             console.log(' Survey written with ID: ', docRef.id);
-
             // create the corresponding notitifcations
-            that.createFeedbackNotifications(teamMates, docRef.id, category, toggle)
-
-
-            resolve(docRef.id);
+            that.createFeedbackNotifications(teamMates, docRef.id, category, toggle);
           }).catch(function (error) {
             console.error('Error creating sruvey document: ', error);
-            reject(error)
           });
         });
       });
-    }
-    // or a specific event
-    else {
-
-      return new Promise<any>((resolve, reject) => {
+    } else {
+      await that.loadingService.doFirebase(async () => {
         // Add a new document with a generated id.
-        firebase.firestore().collection('surveys').add({
+        await firebase.firestore().collection('surveys').add({
           active: true,
           category: inputText,
           type: 'feedback',
@@ -540,21 +655,17 @@ export class SurveyServiceService {
           timestamp: firebase.firestore.FieldValue.serverTimestamp()
         }).then(function (docRef) {
           console.log(' Survey written with ID: ', docRef.id);
-
           // create the corresponding notitifcations
-          that.createFeedbackNotifications(teamMates, docRef.id, inputText, toggle)
+          that.createFeedbackNotifications(teamMates, docRef.id, inputText, toggle);
           console.log('Created survey');
-
-          resolve(docRef.id);
         }).catch(function (error) {
           console.error('Error creating survey document: ', error);
-          reject(error)
         });
       });
     }
   }
 
-  createFeedbackQuestion(surveyId: string, user: string, categoryName: string, name: string) {
+  createFeedbackQuestion(surveyId: string, user: string, categoryName: string, name: string, teamId: string) {
 
     console.log('Id: ' + surveyId);
     console.log('User: ' + user);
@@ -563,13 +674,14 @@ export class SurveyServiceService {
 
 
     // look up the teamplate 
-    let that = this;
+    const that = this;
     firebase.firestore().collection('questions').add({
       active: true,
       Question: 'What is one thing that ' + name + ' did well?',
       type: 'input',
       users: [user],
       goal: 'feedback',
+      teamId: teamId,
       surveys: [surveyId],
       from: firebase.auth().currentUser.uid,
       timestamp: firebase.firestore.FieldValue.serverTimestamp()
@@ -586,6 +698,7 @@ export class SurveyServiceService {
       type: 'input',
       users: [user],
       goal: 'feedback',
+      teamId: teamId,
       surveys: [surveyId],
       from: firebase.auth().currentUser.uid,
       timestamp: firebase.firestore.FieldValue.serverTimestamp()
@@ -597,20 +710,20 @@ export class SurveyServiceService {
   }
 
 
-  createSurveyQuestions(surveyId: string, user: string, categoryName: string, name: string) {
+  createSurveyQuestions(surveyId: string, user: string, categoryName: string, name: string, teamId: string) {
 
-    // look up the teamplate 
+    // look up the teamplate
     const questionTemplates: any[] = [];
-    let that = this;
+    const that = this;
 
     // pull each question from firebase
     firebase.firestore().collection('questionTemplate').where('category', '==', categoryName).get()
       .then((questionTemplate) => {
         questionTemplate.forEach((templates) => {
-          console.log('Create question template function')
-          console.log(templates)
-          console.log('Create question template data function')
-          console.log(templates.data().Questions)
+          console.log('Create question template function');
+          console.log(templates);
+          console.log('Create question template data function');
+          console.log(templates.data().Questions);
           let questions: any[] = [];
 
           questions = templates.data().Questions;
@@ -624,12 +737,14 @@ export class SurveyServiceService {
               questionText = 'Would you recommend ' + name + ' \'s ' + question.question;
             }
 
-            console.log(question)
+            console.log(question);
             firebase.firestore().collection('questions').add({
               active: true,
               Question: questionText,
               type: question.type,
+              category:question.category,
               users: [user],
+              teamId: teamId,
               goal: 'feedback',
               surveys: [surveyId],
               from: firebase.auth().currentUser.uid,
@@ -641,30 +756,26 @@ export class SurveyServiceService {
             });
           });
           // templates.questions.forEach(template => {
-
-
-          // });
-
         });
-      })
+      });
   }
 
 
-  // add a question for each one in the template 
+  // add a question for each one in the template
 
 
   // console.log('creating survey questions')
   // // Add a new document with a generated id.
 
-  // } 
+  // }
 
   // createQuestion(){
 
   // }
 
 
-  createNotification(surveyId: string, user: string, type: string, name: string, category: string) {
-    console.log('creating notitfication')
+  createNotification(surveyId: string, user: string, type: string, name: string, category: string, teamId: string) {
+    console.log('creating notitfication');
     // Add a new document with a generated id.
     firebase.firestore().collection('surveynotifications').add({
       active: true,
@@ -674,7 +785,9 @@ export class SurveyServiceService {
       // user:'AKfOgVZrSTYsYN01JA0NUTicf703',
       user: user,
       type: type,
+      readFlag: 'unchecked',
       month: 'May',
+      teamId: teamId,
       from: firebase.auth().currentUser.uid,
       timestamp: firebase.firestore.FieldValue.serverTimestamp()
     }).then(function (docRef) {
@@ -684,13 +797,26 @@ export class SurveyServiceService {
     });
   }
 
+  async getActiveTeam(userId: string) {
+    console.log('[ActiveTeam] userID = ' + userId);
+    return new Promise<any>((resolve, reject) => {
+      firebase.firestore().collection('users').doc(userId).get().then(docUser => {
+        console.log('[ActiveTeam] teamID = ' + docUser.data().teamId);
+        resolve(docUser.data().teamId);
+      }).catch(error => {
+        console.log('[ActiveTeam] error = ' + error);
+        reject(error);
+      });
+    });
+  }
+
   async getUserIdFromEmail(email) {
       return new Promise<any>((resolve, reject) => {
         console.log('[InviteTeam] email = ' + email);
-        const docRef = firebase.firestore().collection('users').where("email", "==",email);
+        const docRef = firebase.firestore().collection('users').where('email', '==', email);
         docRef.get().then(async function (ref) {
           console.log('count = ' + ref.size);
-          if (ref.size == 0) {
+          if (ref.size === 0) {
             resolve('not found');
           } else {
             console.log('[InviteTeam] found userId = ' + ref.docs[0].id);
@@ -698,9 +824,8 @@ export class SurveyServiceService {
           }
         }).catch(error => {
           reject(error);
-        })
-      })
-    //})
+        });
+      });
   }
 
   // creates invite document for each person invited to the team
@@ -716,66 +841,59 @@ export class SurveyServiceService {
       toast.present();
       return;
     }
-    let err, teamData;
+    let teamData;
     const that = this;
     const result = await this.loadingService.doFirebase(async() => {
-      if ( teamId === null || teamId === undefined ) {
-        [err, teamData] = await to(this.getTeamByUserId(firebase.auth().currentUser.uid).then());
-        if (err) {
-          throw new ErrorEvent(err);
-        }
-        console.log('Current user\'s team data...' + ' Team Name: ' + teamData.data().teamName);
-        if (teamData.id) {
-          teamId = teamData.id;
-          teamName = teamData.data().teamName;
-        }
-      }
-      for (let i = 0; i < inviteMembersArray.length; i++ ) {
-        const member = inviteMembersArray[i];
-        if (member.email === undefined) {
-          continue;
-        }
-
-        const userId = await that.getUserIdFromEmail(member.email);
-        console.log('[InviteTeam] userId = ' + userId);
-        if ( userId && userId.error === undefined && userId != 'not found') {
-          const docRef = firebase.firestore().collection('teams').doc(teamId);
-          await docRef.get().then(function (doc) {
-            if (doc.exists) {
-              const members = doc.data().memembersids;
-              //console.log('[InviteMembers] members = ' + members);
-              //const isExist = that.isExistUserInTeam(members, userId);
-              const index =members.findIndex(member => member === userId);
-              console.log('[InivteTeam] index = ' + index);
-              if (index != -1) {
-                console.log('[InviteMembers] This user has already registed for the team.');
-                that.showToastMsg(member.email + ' was already invited.');
-                return;
-              } else {
-                console.log('no invited...');
-                to(that.sendEmailInvite(member, teamId, teamName));
-                //that.showToastMsg(member.email + ' sent invite email.');
-                that.showToastMsg('sent invite email.');
-                return;
+      console.log('[InviteTeam] userId = ' + firebase.auth().currentUser.uid);
+      teamData = await that.getTeamId(firebase.auth().currentUser.uid);
+        console.log('[InviteTeam] team id = ' + teamData.data().teamId);
+        if (teamData.data().teamId && teamData.data().teamId !== '') {
+          const docRef = await firebase.firestore().collection('teams').doc(teamData.data().teamId);
+             docRef.get().then(async function (doc) {
+              if (doc.exists) {
+                const userTeam = new UserTeamsModel(doc.data());
+                teamId = teamData.data().teamId;
+                teamName = userTeam.teamName;
+                console.log('[InviteTeam] team name = ' + teamName);
+                console.log('[InviteTeam] invite count = ' + inviteMembersArray.length);
+                for (let i = 0; i < inviteMembersArray.length; i++ ) {
+                  const member = inviteMembersArray[i];
+                  console.log('[InviteTeam] member mail = ' + member.email);
+                  if (member.email === undefined) {
+                    continue;
+                  }
+                  const userId = await that.getUserIdFromEmail(member.email);
+                  console.log('[InviteTeam] invited userId = ' + userId);
+                  if ( userId !== 'not found') {
+                    const members = doc.data().memembersids;
+                    const index = members.findIndex(inviteMember => inviteMember === userId);
+                    console.log('[InivteTeam] index = ' + index);
+                    if (index !== -1) {
+                      console.log('[InivteTeam] This user has already registered for the team.');
+                      that.showToastMsg(member.email + ' was already invited.');
+                      return;
+                    } else {
+                      console.log('[InivteTeam] no invited...');
+                      to(that.sendEmailInvite(member, teamId, teamName));
+                      that.showToastMsg('Invite email sent successfully.');
+                      //return;
+                    }
+                  } else if (userId === 'not found') {
+                    console.log('[InivteTeam] not signed...');
+                    to(that.sendEmailInvite(member, teamId, teamName));
+                    that.showToastMsg('Invite email sent successfully.');
+                    //return;
+                  } else {
+                    throw new ErrorEvent(userId.error);
+                  }
+                }
               }
-            } else {
-
-            }
-         });
-        } else if (userId == 'not found') {
-          console.log('not signed...');
-          to(that.sendEmailInvite(member, teamId, teamName));
-          //that.showToastMsg(member.email + ' sent invite email.');
-          that.showToastMsg('sent invite email.');
-          return;
+            });
+        } else if (teamData.data().teamId === '') {
+            that.showToastMsg('you have already been deleted from this team by team creator!');
+        } else {
         }
-        else {
-          throw new ErrorEvent(userId.error);
-        }
-
-      }
     });
-
     return result;
   }
 
@@ -819,41 +937,44 @@ export class SurveyServiceService {
   }
 
   updateDocument(response) {
+    console.log('[ResultUpdate] doc = ' + response[0]);
     // get data
-    var questionRef = firebase.firestore().collection('questions').doc(response[0]);
+    const questionRef = firebase.firestore().collection('questions').doc(response[0]);
 
     questionRef.get().then(function (doc) {
       if (doc.exists) {
         console.log('Document data:', doc.data());
-        let oldTotal = (doc.data().averagescore * doc.data().numresponses)
-        let newTotal = parseInt(response[1], 10) + oldTotal;
+        const oldTotal = (doc.data().averagescore * doc.data().numresponses);
+        const newTotal = parseInt(response[1], 10) + oldTotal;
         let newNumRes = doc.data().numresponses + 1;
         let newAvg = newTotal / newNumRes;
-        let newResp = parseInt(response[1], 10);
+        const newResp = parseInt(response[1], 10);
         let pieChart = doc.data().piechart;
         let lineChart = doc.data().linechart;
 
         // if the pie chart isn't set
-        if (pieChart == undefined) {
-          pieChart = [0, 0, 0, 0]
+        if (pieChart === undefined) {
+          pieChart = [0, 0, 0, 0];
         }
-        // update the pie chart 
-        if (newResp == 1) { pieChart[0] = pieChart[0] + 1 }
-        else if (newResp == 2) { pieChart[1] = pieChart[1] + 1 }
-        else if (newResp == 3) { pieChart[2] = pieChart[2] + 1 }
-        else { pieChart[3] = pieChart[3] + 1 }
+        // update the pie chart
+        if (newResp === 1) { pieChart[0] = pieChart[0] + 1; } else if (newResp === 2) {
+           pieChart[1] = pieChart[1] + 1; } else if (newResp === 3) {
+           pieChart[2] = pieChart[2] + 1;
+        } else {
+          pieChart[3] = pieChart[3] + 1;
+        }
 
         // if the line chart isn't set
-        if (lineChart == undefined) {
-          lineChart = []
+        if (lineChart === undefined) {
+          lineChart = [];
         }
         lineChart.push(newAvg);
 
-        // if Nan then first time 
-        if (isNaN(newAvg)) { newAvg = parseInt(response[1], 10); }
-        if (isNaN(newNumRes)) { newNumRes = 1 }
-
-
+        // if Nan then first time
+        if (isNaN(newAvg)) {
+           newAvg = parseInt(response[1], 10);
+        }
+        if (isNaN(newNumRes)) { newNumRes = 1; }
 
         console.log('Old total:' + oldTotal + 'new total:' + newTotal + 'new responses #' + newNumRes + 'New average' + newAvg)
 
@@ -867,7 +988,6 @@ export class SurveyServiceService {
           piechart: pieChart,
           linechart: lineChart,
           lastUpdate: firebase.firestore.FieldValue.serverTimestamp()
-
         })
           .then(function () {
             console.log('Document successfully updated!');
@@ -946,12 +1066,14 @@ export class SurveyServiceService {
 
 
   markSurveyComplete(id: string) {
-    var ref = firebase.firestore().collection('surveynotifications').doc(id);
+    const ref = firebase.firestore().collection('surveynotifications').doc(id);
     console.log('surveynotification' + id);
 
-    // Set the 'capital' field of the city 'DC'
+    // Set active field to false and Change the timestamp field to date after a month.
+
     return ref.update({
-      active: false
+      active: false,
+      timestamp: new Date((new Date()).setDate((new Date).getDate() + 30))
     })
       .then(function () {
         console.log('Document successfully updated!');
@@ -963,7 +1085,7 @@ export class SurveyServiceService {
   }
   reportIdea(id: string) {
 
-    var ref = firebase.firestore().collection('ideas').doc(id);
+    const ref = firebase.firestore().collection('ideas').doc(id);
     // Set the 'capital' field of the city 'DC'
     return ref.update({
       reported: true
@@ -1002,39 +1124,39 @@ export class SurveyServiceService {
     });
   }*/
 
-  createFeedbackNotifications(teamMates, surveyId, category, toggle) {
-    console.log('in create feedback notificatino')
-    console.log(teamMates)
+  async createFeedbackNotifications(teamMates, surveyId, category, toggle) {
+    console.log('in create feedback notificatino');
+    console.log(teamMates);
     this.team = teamMates;
     // this.team = Object.entries(teamMates);
-
-    // cycle through team mates array
-    this.team.forEach(member => {
-      // loop through each category
-      //  this.categories.forEach(category =>{
-      // if selected is true 
-      console.log('Looping...')
-      console.log(member)
-      console.log(category)
-      if (member.checked) {
-        if (category.checked || toggle == 'event') {
-          //create survey 
-          if (toggle == 'category') {
-            this.createSurveyQuestions(surveyId, member.uid, category.name, member.name);
-            this.createNotification(surveyId, member.uid, 'feedback', member.name, category.name)
-
-          } else {
-            this.createFeedbackQuestion(surveyId, member.uid, category, member.name);
-            this.createNotification(surveyId, member.uid, 'feedback', member.name, category)
-
+    const userId = firebase.auth().currentUser.uid;
+    const teamId = await this.getTeamId(firebase.auth().currentUser.uid);
+    console.log('[createFeedbackNotifications] team id = ' + teamId.data().teamId);
+    if (teamId.data().teamId && teamId.data().teamId !== '') {
+      this.team.forEach(member => {
+        // loop through each category
+        //  this.categories.forEach(category =>{
+        // if selected is true
+        console.log('Looping...');
+        console.log(member);
+        console.log(category);
+        if (member.checked) {
+          if (category.checked || toggle === 'event') {
+            if (toggle === 'category') {
+              this.createSurveyQuestions(surveyId, member.uid, category.name, member.name, teamId.data().teamId);
+              this.createNotification(surveyId, member.uid, 'feedback', member.name, category.name, teamId.data().teamId);
+            } else {
+              this.createFeedbackQuestion(surveyId, member.uid, category, member.name, teamId.data().teamId);
+              this.createNotification(surveyId, member.uid, 'feedback', member.name, category, teamId.data().teamId);
+            }
           }
         }
-
-      }
-      //  });
-
-    });
-    // send notification 
+      });
+    } else if (teamId.data().teamId === '') {
+      this.showToastMsg('you have already been deleted from this team by team creator!');
+    } else {
+      console.log('[createFeedbackNotifications] did not get teamID');
+    }
   }
 
 }

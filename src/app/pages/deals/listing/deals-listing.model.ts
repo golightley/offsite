@@ -32,7 +32,7 @@ export class QuestionModel {
   avgScore = 0;
   updatedAt: Date;
   type = QuestionType.input;
-  goal:string;
+  goal: string;
 
   constructor(id: string, data: any) {
     this.id = id;

@@ -30,7 +30,8 @@ const routes: Routes = [
   // { path: 'modal', loadChildren: './modal/modal.module#ModalPageModule' }
 ];
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],
+  imports: [RouterModule.forRoot(routes, {onSameUrlNavigation: 'reload'})],
+  //imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule]
 })
 export class AppRoutingModule {}

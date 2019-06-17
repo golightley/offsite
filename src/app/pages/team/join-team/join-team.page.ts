@@ -45,7 +45,7 @@ export class JoinTeamPage implements OnInit {
     // get the team we are inviting them to
     const data = await this.surveyService.joinTeamWithName(this.userId, this.teamName);
     console.log('[JoinTeam] error = ' + data.error);
-    if ( data && data.error === undefined && data.error != 'Not found') {
+    if ( data && data.error === undefined && data.error !== 'Not found') {
       this.surveyService.showToastMsg('You have joined the team successfully');
       const navigationExtras: NavigationExtras = {
         replaceUrl: true,
@@ -54,12 +54,11 @@ export class JoinTeamPage implements OnInit {
         }
       };
       this.router.navigate(['/app/notifications'], navigationExtras);
-    } else if (data.error == 'Not found') {
+    } else if (data.error === 'Not found') {
       this.showToastMsg('Team not exist');
-    } else if (data.error == 'already exist') {
-      this.showToastMsg('The user has already joined the team.');
-    }
-    else {
+    } else if (data.error === 'already exist') {
+      this.showToastMsg('You have already joined this team.');
+    } else {
       this.showToastMsg(data.error);
     }
   }

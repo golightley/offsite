@@ -14,7 +14,7 @@
           <ion-label>
               {{ member.name }}
           </ion-label>
-          <ion-button fill="outline" color="danger" slot="end">
+          <ion-button fill="outline" color="danger" slot="end" (click)="onRemove(member)" [disabled]="'true'!==bCreator">
               Remove
             </ion-button>
         </ion-item>

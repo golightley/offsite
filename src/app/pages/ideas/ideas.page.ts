@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, NgZone } from '@angular/core';
 import * as firebase from 'firebase/app';
 import { IdeaModel, CommentActionType } from './ideas.model';
 import { SurveyServiceService } from '../../services/survey-service.service';
@@ -8,7 +8,7 @@ import { ModalController } from '@ionic/angular';
 
 import { PopoverController } from '@ionic/angular';
 import { PopoverReportComponent } from '../../components/popover-report/popover-report.component';
-import { Router, NavigationExtras } from '@angular/router';
+import { Router, NavigationExtras, NavigationEnd } from '@angular/router';
 import { LoadingService } from '../../services/loading-service';
 require('firebase/auth');
 @Component({
@@ -26,7 +26,9 @@ export class IdeasPage implements OnInit {
   ideas: IdeaModel[] = [];
   type = '';
   teamId = '';
+  navigationSubscription;
   messageCount = '';
+  unsubscribe: any;
 
   constructor(
     public surveyService: SurveyServiceService,
@@ -34,20 +36,57 @@ export class IdeasPage implements OnInit {
     public modalController: ModalController,
     public popoverController: PopoverController,
     private router: Router,
-    public loadingService: LoadingService
-
+    public loadingService: LoadingService,
+    private zone: NgZone
   ) {
-    firebase.auth().onAuthStateChanged(user => {
-      if (user) {
-        this.loadIdeas();
-        
+    this.navigationSubscription = this.router.events.subscribe((e: any) => {
+      // If it is a NavigationEnd event re-initalise the component
+      if (e instanceof NavigationEnd
+        && (this.router.url === '/app/ideas')) {
+        this.initialiseInvites();
       }
     });
   }
 
-  ngOnInit() { }
+  async initialiseInvites() {
+    // Set default values and re-fetch any data you need.
+    console.log('[Ideas] initialiseInvites unsubscrib = ' + this.unsubscribe);
+    console.log('[Ideas] ionViewDidEnter teamId = ' + this.teamId);
+    if (this.unsubscribe !== undefined) {
+      console.log('[Ideas] call unsubscribe!');
+      this.unsubscribe();
+    }
+    await firebase.auth().onAuthStateChanged(async user => {
+      if (user) {
+        console.log('[Ideas] Got user!');
+        await this.loadIdeas();
+      }
+    });
+  }
 
-  ionViewWillEnter() { }
+  ngOnInit() {
+    console.log('[Ideas] ngOnInit');
+  }
+
+  ionViewWillEnter() {
+    console.log('[Ideas] ionViewWillEnter teamId = ' + this.teamId);
+  }
+
+  async ionViewDidEnter() {
+    console.log('[Ideas] end ionViewDidEnter!');
+  }
+
+  ionViewWillLeave() {
+  }
+
+  ionViewDidLeave() {
+    console.log('[Ideas] ionViewDidLeave teamId = ' + this.teamId);
+    console.log('[Ideas] ionViewDidLeave unsubscribe = ' + this.unsubscribe);
+    console.log(this.unsubscribe);
+    if (this.unsubscribe && this.teamId) {
+      this.unsubscribe();
+    }
+  }
 
   async setPopover(ev: Event, idea) {
     this.currentIdea = idea;
@@ -68,8 +107,6 @@ export class IdeasPage implements OnInit {
 
   enterChatRoom(idea) {
     console.log('enter chat_room');
-    //const ideaId = idea.uid;
-
     const navigationExtras: NavigationExtras = {
       replaceUrl: true,
       queryParams: {
@@ -89,82 +126,65 @@ export class IdeasPage implements OnInit {
   async getMessageCount(ideaId) {
     const that = this;
       const query = firebase.firestore().collection('chats')
-        .where('ideaId', '==', ideaId)
-        query.onSnapshot((snapshot) => {
-          // console.log('Listener attached');
-          // console.log('onSnapshot changed count = ' + ' ' + snapshot.size);
-          const ideaMessageCount = snapshot.size.toString();
-          const idea_index = that.ideas.findIndex(idea => idea.uid === ideaId);
-          that.ideas[idea_index].messageCount = ideaMessageCount;
-
-        });
+        .where('ideaId', '==', ideaId);
+      query.onSnapshot((snapshot) => {
+        const ideaMessageCount = snapshot.size.toString();
+        const idea_index = that.ideas.findIndex(idea => idea.uid === ideaId);
+        console.log('[Ideas] message count = ' + ideaMessageCount);
+        that.ideas[idea_index].messageCount = ideaMessageCount;
+      });
   }
 
+
   async loadIdeas() {
-
     console.log('== load Ideas ==');
+    const that = this;
     await this.loadingService.doFirebase(async () => {
-
-      const that = this;
       that.ideas = [];
       if (typeof firebase.auth === 'function') {
-        const teamData = await this.surveyService.getTeamByUserId(firebase.auth().currentUser.uid);
-        if (teamData.exists) {
+        const teamId = await that.surveyService.getTeamId(firebase.auth().currentUser.uid);
+        console.log('[Ideas] team id = ' + teamId.data().teamId);
+        if (teamId.data().teamId && teamId.data().teamId !== '') {
             // first fetch the team ID
-            console.log('Selected Team Name:', teamData.data().teamName);
-            that.teamId = teamData.id;
+            console.log('[Ideas] Selected Team ID:', teamId.data().teamId);
+            that.teamId = teamId.data().teamId;
             if (that.teamId === undefined) {
-              console.log('No selected team! returned');
+              console.log('[Ideas] No selected team! returned');
               return;
             }
             // now get the ideas based on that team
             const query = await firebase.firestore().collection('ideas')
-              // .where('team', '==', 'E4ZWxJbFoDE29ywISRQY')
               .where('team', '==', that.teamId)
               .where('reported', '==', false)
               .orderBy('score', 'desc')
               .orderBy('timestamp', 'asc');
-            query.onSnapshot((snapshot) => {
-              // console.log(snapshot);
-              // retrieve anything that has changed
-              console.log('-- Changed ideas count: ' + that.ideas.length);
+            this.unsubscribe = query.onSnapshot((snapshot) => {
+              console.log('[Ideas] Listener attached >> idea count = ' + snapshot.size);
               const changedDocs = snapshot.docChanges();
               changedDocs.forEach((change) => {
-                // console.log('-- Ideas onSnapshot -- ' + change.type);
                 if (change.oldIndex !== -1) {
                   that.ideas.splice(change.oldIndex, 1);
                 }
                 if (change.newIndex !== -1) {
-                  
+                  console.log('[Ideas] onSnapshot >> add...');
                   const newIdea = new IdeaModel(change.doc.id, change.doc.data());
                   that.ideas.splice(change.newIndex, 0, newIdea);
                   that.getMessageCount(change.doc.id);
                 }
+                // UI Refresh
+                this.zone.run(() => {});
+                
               });
             });
+          } else if (teamId.data().teamId === '') {
+            that.surveyService.showToastMsg('you have already been deleted from this team by team creator!');
           } else {
             // doc.data() will be undefined in this case
-            console.log('No such document!');
+            console.log('[Ideas] No such document!');
           }
       }
     });
   }
-
-  /*improvementTypeChipSelected(type) {
-    console.log('stop');
-    if (type === 'start') {
-      this.color = 'green';
-      this.type = 'start';
-    } else if ( type === 'stop') {
-       this.color = 'red';
-       this.type = 'stop';
-    } else {
-       this.color = 'black';
-       this.type = 'keep';
-    }
-    this.loadSuggestions(type);
-    // this.loadIdeas(type);
-  }*/
 
   getCommentActionColor() {
     return this.color;
@@ -234,6 +254,16 @@ export class IdeasPage implements OnInit {
     }
   }
 
+  // tslint:disable-next-line:use-life-cycle-interface
+  ngOnDestroy() {
+    // avoid memory leaks here by cleaning up after ourselves. If we
+    // don't then we will continue to run our initialiseInvites()
+    // method on every navigationEnd event.
+    console.log('[Ideas] ngOnDestroy');
+    if (this.navigationSubscription) {
+       this.navigationSubscription.unsubscribe();
+    }
+  }
 
   async inputFocus() {
     console.log('Ion focus...');
@@ -247,6 +277,4 @@ export class IdeasPage implements OnInit {
     await modal.present();
   }
 }
-
-
 

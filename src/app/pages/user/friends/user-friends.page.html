@@ -1,7 +1,7 @@
 <ion-header>
   <ion-toolbar color="primary">
       <ion-buttons slot="start">
-        <ion-back-button  mode="ios" icon="md-arrow-back" text="" defaultHref="app/categories"></ion-back-button>
+        <ion-back-button  mode="ios" icon="md-arrow-back" text="" defaultHref="app/categories" (click)="onBack()"></ion-back-button>
       </ion-buttons>
       <ion-title>Data</ion-title>
   </ion-toolbar>
@@ -14,7 +14,7 @@
             <ion-card-title>{{question}}</ion-card-title>
           </ion-card-header>
     </ion-card>
-    <ion-card>
+    <ion-card *ngIf="questionType  == 'multiple'">
         <ion-card-header>
             <ion-card-subtitle>Team breakdown</ion-card-subtitle>
             <!-- <ion-card-title># of people</ion-card-title> -->
@@ -29,7 +29,7 @@
           </div>
     </ion-card>
 
-    <ion-card>
+    <ion-card *ngIf="questionType  == 'multiple'">
         <ion-card-header>
             <ion-card-subtitle>Average score over time</ion-card-subtitle>
             <!-- <ion-card-title># of people</ion-card-title> -->
@@ -42,6 +42,16 @@
                         </canvas>
               </div>
     </ion-card>
+    
+    <div *ngIf="questionType  == 'input'">
+        <ion-card *ngFor="let r of responses">
+            <ion-card-header>
+                <ion-card-subtitle>{{r}}}</ion-card-subtitle>
+              </ion-card-header>
+        </ion-card>
+    </div>
+
+
 
   <!-- <ion-card *ngFor="let comment of comments"> -->
       <!-- <ion-row>

@@ -4,7 +4,7 @@ import {SurveyServiceService} from '../../../services/survey-service.service';
 import {AlertController, NavController} from '@ionic/angular';
 import {QuestionModel, QuestionType} from '../../deals/listing/deals-listing.model';
 import { Vibration } from '@ionic-native/vibration/ngx';
-import { ActivatedRoute } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { LoadingService } from '../../../services/loading-service';
 @Component({
   selector: 'forms-filters-page',
@@ -17,11 +17,12 @@ export class FormsFiltersPage implements OnInit {
   radioTagsForm: FormGroup;
   questions: QuestionModel[] = [];
   responses: any = {};
-
+  page: string;
   constructor(
     public surveyService: SurveyServiceService,
     private navCtrl: NavController,
     public alertController: AlertController,
+    public router: Router,
     private vibration: Vibration,
     public loadingService: LoadingService,
     private route: ActivatedRoute
@@ -36,12 +37,12 @@ export class FormsFiltersPage implements OnInit {
   }
   async getQuestions() {
     const surveyId = this.surveyService.myParam.data().survey;
-    
-    console.log('form-filters.qetQuestions.Fetching questions with ID:'+surveyId)
+    console.log('form-filters.qetQuestions.Fetching questions with ID:' + surveyId);
     const questionData = await this.surveyService.getQuestions(surveyId);
-    if (questionData != 'error') {
+    if (questionData !== 'error') {
       questionData.forEach(data => {
         const question = new QuestionModel(data.id, data.data());
+        this.page = question.goal;
         this.questions.push(question);
         if (question.type === QuestionType.input) {
           this.responses[question.id] = '';
@@ -50,7 +51,6 @@ export class FormsFiltersPage implements OnInit {
         }
       });
     } else {
-      
     }
     console.log(this.questions);
     console.log('Responses', this.responses);
@@ -58,19 +58,24 @@ export class FormsFiltersPage implements OnInit {
 
   async submitSurvey() {
     // iterate through each survey response=
-    this.surveyService.responses = this.responses;  
+    this.surveyService.responses = this.responses;
     await this.surveyService.submitSurvey(this.responses);
     // this.presentAlert();
     this.surveyService.markSurveyComplete(this.surveyService.myParam.id);
-    this.navCtrl.navigateBack('app/categories');
-
+    //this.navCtrl.navigateBack('app/categories');
+    if (this.page === 'pulse') {
+      this.router.navigate(['/app/categories', {page: 'team'}]);
+    } else {
+      // this.router.navigate(['/app/categories', {page: 'my'}]);
+      this.router.navigate(['/app/notifications']);
+    }
   }
 
-  vibrate(){
+  vibrate() {
     // Vibrate the device for a second
     // Duration is ignored on iOS.
     this.vibration.vibrate(1000);
-    console.log("Vibrate");
+    console.log('Vibrate');
   }
 
   async presentAlert() {

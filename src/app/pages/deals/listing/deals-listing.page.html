@@ -11,14 +11,45 @@
 <ion-content class="deals-listing-content">
 
     <ion-segment mode="md" color="success" [(ngModel)]="page">
-        <ion-segment-button (click) = "updateListner('pulse')" value="what" mode="md">
+        <ion-segment-button (click) = "updateListner('pulse')" value="team" mode="md">
             <ion-label>Team dashboard</ion-label>
         </ion-segment-button>
-        <ion-segment-button (click) = "updateListner('feedback')" value="who" mode="md">
+        <ion-segment-button (click) = "updateListner('feedback')" value="my" mode="md">
             <ion-label>My dashboard</ion-label>
         </ion-segment-button>
     </ion-segment>
     <div [ngSwitch]="page">
+
+  <ion-card>
+      <ion-card-header>
+          <ion-card-subtitle>Team Summary</ion-card-subtitle>
+      </ion-card-header>
+      <div style="display: block">
+          <canvas baseChart
+              [data]="barChartData"
+              [labels]="barChartLabels"
+              [chartType]="barChartType"
+              [colors]="barColors"
+              [legend]="false"                >
+          </canvas>
+        </div>
+  </ion-card>
+
+  <ion-card>
+      <ion-card-header>
+          <ion-card-subtitle>Attrition risk</ion-card-subtitle>
+      </ion-card-header>
+      <div style="display: block">
+          <canvas baseChart
+              [data]="doughnutChartData"
+              [labels]="doughnutChartLabels"
+              [chartType]="doughnutChartType"
+              [colors]="doughnutColors"
+              [legend]="false"                >
+          </canvas>
+        </div>
+  </ion-card>
+
   <ion-card  *ngFor="let question of results">
     <div class="question-content" (click)="viewComments(question)">
       <ion-row>
@@ -27,7 +58,7 @@
         </ion-col>
         <ion-col *ngIf="question.goal == 'feedback'" text-start class="question-type">
             My Feedback
-          </ion-col>
+        </ion-col>
         <ion-col text-end class="question-date">
           {{question.updatedAt | date: 'd MMM yyyy'}}
         </ion-col>

@@ -11,9 +11,10 @@ export class TeammatesModel {
   uid: string;
   name: string;
   checked = false;
-
+  email: string;
   constructor(uid: string, data: any) {
     this.uid = uid;
     this.name = data['name'];
+    this.email = data['email'];
   }
 }
