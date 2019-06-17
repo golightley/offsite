@@ -742,6 +742,7 @@ export class SurveyServiceService {
               active: true,
               Question: questionText,
               type: question.type,
+              category:question.category,
               users: [user],
               teamId: teamId,
               goal: 'feedback',

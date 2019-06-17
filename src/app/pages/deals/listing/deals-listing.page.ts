@@ -8,6 +8,7 @@ import { Router } from '@angular/router';
 import { attachEmbeddedView } from '@angular/core/src/view';
 import { Chart } from 'chart.js';
 import { __core_private_testing_placeholder__ } from '@angular/core/testing';
+import { NULL_EXPR } from '@angular/compiler/src/output/output_ast';
 require('firebase/auth');
 
 @Component({
@@ -30,6 +31,27 @@ export class DealsListingPage implements OnInit {
   chartData = null;
   navigationSubscription;
   userId: string;
+
+
+  //summary card 
+  public barChartLabels: string[] = [];
+  public barChartData: number[]    = [];
+  public barChartType: string     = 'horizontalBar';
+  public barColors: any[] = [
+    { backgroundColor: ['#ff1a72', '#ff84b3', '#7de8a7', '#20dc6a'] },
+    { borderColor: ['#AEEBF2', '#FEFFC9']     }
+    ];
+
+  public doughnutChartLabels: string[] = ['Sustainable', 'Support', 'Valuable', 'Learning'];
+  public doughnutChartData: number[]    = [4.2, 3.1, 4.5, 4.4];
+  public doughnutChartType: string     = 'doughnut';
+  public doughnutColors: any[] = [
+    { backgroundColor: ['#ff1a72', '#ff84b3', '#7de8a7', '#20dc6a'] },
+    { borderColor: ['#AEEBF2', '#FEFFC9']     }
+    ];
+
+    
+
   @HostBinding('class.is-shell') get isShell() {
     return this.listing && this.listing.isShell;
   }
@@ -148,12 +170,36 @@ export class DealsListingPage implements OnInit {
     }
   }
 
+  buildSummaryBarChart(results){
+   // public barChartLabels: string[] = ['Sustainable', 'Support', 'Valuable', 'Learning'];
+   // public barChartData: number[]    = [4.2, 3.1, 4.5, 4.4];
+   console.log('[Deals] updating summary bary chart with this data ' + results);
+
+   // remove old data
+    this.barChartLabels = [];
+    this.barChartData = [];
+    this.barColors = [];
+
+    results.forEach((question)=>{
+      console.log('[Deals] updating summary bary chart. Question ' + question);
+      console.log('[Deals] updating summary bary chart.  avgScore ' + question.avgScore);
+      console.log(question)
+      this.barChartLabels.push(question.category);
+      this.barChartData.push(Number(question.avgScore));
+      this.barColors.push("#AEEBF2")
+      console.log('[Deals] updating summary bary chart.  avgScore ' + this.barChartData);
+      console.log(this.barChartData)
+
+    })
+  }
+
   getResults(goal) {
     this.surveyService.getResults(firebase.auth().currentUser.uid, goal).then((resultsData: firebase.firestore.QueryDocumentSnapshot[]) => {
       resultsData.forEach(data => {
         this.results.push(new QuestionModel(data.id, data.data()));
       });
       console.log(this.results);
+      this.buildSummaryBarChart(this.results);
     });
   }
 
@@ -216,6 +262,8 @@ export class DealsListingPage implements OnInit {
               }
               // UI Refresh
               this.zone.run(() => {});
+              this.buildSummaryBarChart(this.results);
+
             });
             // this.notifications = notifications;
           });
@@ -241,6 +289,9 @@ export class DealsListingPage implements OnInit {
               }
               // UI Refresh
               this.zone.run(() => {});
+              this.buildSummaryBarChart(this.results);
+
+              
             });
             // this.notifications = notifications;
           });
