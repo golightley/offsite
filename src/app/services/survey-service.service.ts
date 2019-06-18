@@ -438,7 +438,7 @@ export class SurveyServiceService {
       isTeamCreate: isTeamCreate
     };
     try {
-      const resp = await this.http.post('//us-central1-offsite-9f67c.cloudfunctions.net/createPulseChecks', JSON.stringify(body), {
+      const resp = await this.http.post('https://us-central1-offsite-9f67c.cloudfunctions.net/createPulseChecks/', JSON.stringify(body), {
         responseType: 'text'
       }).toPromise();
       console.log(resp);
@@ -742,6 +742,7 @@ export class SurveyServiceService {
               active: true,
               Question: questionText,
               type: question.type,
+              category:question.category,
               users: [user],
               teamId: teamId,
               goal: 'feedback',

@@ -1,6 +1,7 @@
 import { Component, OnInit, ViewChild, ElementRef, ViewChildren, ContentChildren } from '@angular/core';
 import { ModalController, NavParams, IonContent } from '@ionic/angular';
 import { Keyboard } from '@ionic-native/keyboard/ngx';
+import { AlertController } from '@ionic/angular';
 
 import * as firebase from 'firebase/app';
 import { SurveyServiceService } from '../../services/survey-service.service';
@@ -37,7 +38,8 @@ export class ModalPage implements OnInit {
     public modalController: ModalController,
     public navParams: NavParams,
     public surveyService: SurveyServiceService,
-    private keyboard: Keyboard
+    private keyboard: Keyboard,
+    public alertController: AlertController
   ) {
     this.team = navParams.get('team');
     this.loadSuggestions('start');
@@ -55,7 +57,16 @@ export class ModalPage implements OnInit {
     });
 
   }
+  async presentAlert() {
+    const alert = await this.alertController.create({
+      // header: 'Info',
+      subHeader: 'What activities do you want your team to start, stop, or keep doing? Structuring feedback makes it actionable.',
+      // message: 'Structuring feedback helps make it actionable.',
+      buttons: ['OK']
+    });
 
+    await alert.present();
+  }
 
   ionViewDidLoad() {
 
@@ -69,6 +80,9 @@ export class ModalPage implements OnInit {
     this.mutationObserver.observe(this.chatList.nativeElement, {
       childList: true
     });
+
+
+    
 
   }
 

@@ -19,6 +19,37 @@
         </ion-segment-button>
     </ion-segment>
     <div [ngSwitch]="page">
+
+  <ion-card>
+      <ion-card-header>
+          <ion-card-subtitle>Team Summary</ion-card-subtitle>
+      </ion-card-header>
+      <div style="display: block">
+          <canvas baseChart
+              [data]="barChartData"
+              [labels]="barChartLabels"
+              [chartType]="barChartType"
+              [colors]="barColors"
+              [legend]="false"                >
+          </canvas>
+        </div>
+  </ion-card>
+
+  <ion-card>
+      <ion-card-header>
+          <ion-card-subtitle>Attrition risk</ion-card-subtitle>
+      </ion-card-header>
+      <div style="display: block">
+          <canvas baseChart
+              [data]="doughnutChartData"
+              [labels]="doughnutChartLabels"
+              [chartType]="doughnutChartType"
+              [colors]="doughnutColors"
+              [legend]="false"                >
+          </canvas>
+        </div>
+  </ion-card>
+
   <ion-card  *ngFor="let question of results">
     <div class="question-content" (click)="viewComments(question)">
       <ion-row>
