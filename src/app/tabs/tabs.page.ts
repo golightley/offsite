@@ -15,7 +15,6 @@ require('firebase/auth');
   ]
 })
 export class TabsPage  {
-  unsubSurvey: any;
   unsubFeedback: any;
   unsubIdea: any;
   notifications: any = [];
@@ -245,7 +244,6 @@ export class TabsPage  {
     console.log('[Tabs] ngOnDestroy');
     if (this.unsubFeedback !== undefined) {
       this.unsubFeedback();
-      this.unsubSurvey();
       this.unsubIdea();
     }
   }
