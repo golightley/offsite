@@ -10,6 +10,35 @@ ion-content {
       font-size: 0.8rem;
       color: rgb(152, 169, 188);
     }
+    .mainimage{
+      margin-top: 3%;
+      padding-top: 10px;
+
+    }
+
+      img {
+        width: 60%;
+        margin-top: 20%;
+      }
+    
+      .title {
+        margin-top: 10%;
+        font-weight: 500;
+        font-size: 1.3rem;
+      }
+    
+      .description {
+        margin: 10% 5%;
+        font-size: 0.9rem;
+        color: rgb(152, 169, 188);
+      }
+    
+      ion-button {
+        width: 90%;
+        margin: 0 5%;
+        --background: rgb(79, 219, 165);
+      }
+    
   
     ion-list {
       margin-top: 5%;

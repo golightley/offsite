@@ -3,6 +3,7 @@ import {ActivatedRoute, Router, NavigationEnd} from '@angular/router';
 import * as firebase from 'firebase/app';
 import {SurveyServiceService} from '../../services/survey-service.service';
 import { LoadingService } from '../../services/loading-service';
+
 require('firebase/auth');
 
 @Component({
@@ -19,7 +20,12 @@ export class NotificationsPage implements OnInit {
   unsubFeedback: any;
   unsubSurvey: any;
   userId: string;
+  titleName:string = "Welcome!";
+  tipCount:any = 0;
+  showNotifications:any = false;
   navigationSubscription;
+  imageName:any = "assets/images/chat.svg";
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -50,6 +56,34 @@ export class NotificationsPage implements OnInit {
         this.attachNotificationListener(this.userId);
       });
     }
+  
+  onClickBtnNext(){
+     
+    switch(this.tipCount) { 
+      case 0: { 
+         //statements; 
+         this.imageName = "assets/images/notifications.svg";
+         this.titleName = "Tabs"
+
+         break; 
+      } 
+      case 1: { 
+        this.imageName = "assets/images/posts.svg";
+        this.titleName = "Next tip"        
+        break; 
+      } 
+      case 2: { 
+        //statements; 
+        break; 
+     } 
+      default: { 
+         //statements; 
+         break; 
+      } 
+   } 
+   this.tipCount++;
+
+  }
 
   ngOnInit() {
     // console.log('[Notification] ngOnInit');

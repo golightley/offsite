@@ -10,6 +10,21 @@
 </ion-header>
 
 <ion-content class="notifications-content">
+    <ion-card *ngIf="notifications">
+        <ion-card-header>
+            <ion-card-title > {{titleName}} </ion-card-title>
+            <!-- <ion-card-subtitle>Ideas to improve your team will show up here</ion-card-subtitle> -->
+        </ion-card-header>
+        <ion-card-content class ='mainimage'>
+                Slacks helps teams talk about how to get better in a constructive way.
+                <img src={{imageName}} alt="Feedback Logo"/>
+        </ion-card-content>
+        <ion-button (click)="onClickBtnNext()">Next Tip</ion-button>
+
+
+</ion-card>
+
+<div *ngIf="showNotifications">
   <ng-container *ngIf="notifications">
     <ion-item-group>
       <ion-item class="notification-item" lines="none" *ngFor="let notification of notifications" (click)=teamSurvey(notification);>
@@ -37,7 +52,6 @@
           </ion-col>
           <ion-col class="details-wrapper">
               <h2 class="details-name"><b>{{ notification.data().message }}</b></h2>
-            <!-- <p class="details-description">{{ notification.data().owner_name }}</p> -->
           </ion-col>
         </ion-row>
         <ion-row  *ngIf="notification.data().type == 'feedback-ask'" class="notification-item-wrapper">
@@ -83,6 +97,7 @@
 
     </ion-item-group>
   </ng-container>
+  </div>
 
   <ion-content *ngIf= "empty" text-center padding fullscreen="true">
       <img src="assets/images/ic_make_feedback.png" alt="Feedback Logo"/>
@@ -91,7 +106,6 @@
       <ion-button (click)="onClickBtnNext()">Make request</ion-button>
   </ion-content>
 </ion-content>
-
 
           <!-- <ion-col size="2" class="date-wrapper">
             <h3 class="notification-date">{{ notification.data().created }}</h3>
