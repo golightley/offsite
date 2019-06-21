@@ -31,6 +31,8 @@ export class DealsListingPage implements OnInit {
   chartData = null;
   navigationSubscription;
   userId: string;
+  buttonMessage:string = "Next tip"
+
 
 
   //summary card 
@@ -353,6 +355,10 @@ export class DealsListingPage implements OnInit {
   }
   updateChart(data) {
 
+  }
+
+  onClickBtnNext(){
+    this.router.navigate(['/app/ideas']);
   }
 
   viewComments(result) {

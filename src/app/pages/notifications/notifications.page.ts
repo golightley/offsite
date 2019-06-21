@@ -24,6 +24,8 @@ export class NotificationsPage implements OnInit {
   tipCount:any = 0;
   showNotifications:any = false;
   navigationSubscription;
+  buttonMessage:string = "Next tip"
+  cardContent:string = "Slacks helps teams talk about how to get better in a constructive way."
   imageName:any = "assets/images/chat.svg";
 
   constructor(
@@ -62,18 +64,18 @@ export class NotificationsPage implements OnInit {
     switch(this.tipCount) { 
       case 0: { 
          //statements; 
-         this.imageName = "assets/images/notifications.svg";
-         this.titleName = "Tabs"
+         this.imageName    = "assets/images/notifications.svg";
+         this.titleName    = "This is your Notifications tab"
+         this.cardContent  = "Notifications remind you to take a pulse check, see your teams ideas, or give team mates feedback"
 
          break; 
       } 
       case 1: { 
-        this.imageName = "assets/images/posts.svg";
-        this.titleName = "Next tip"        
+        this.router.navigate(['/app/categories', {page: 'team'}]);
+        this.showNotifications =true;
         break; 
       } 
       case 2: { 
-        //statements; 
         break; 
      } 
       default: { 

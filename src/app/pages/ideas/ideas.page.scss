@@ -109,4 +109,29 @@ div[scrollx=true] {
 }
   
 
+ion-content {
+  img {
+    width: 95%;
+    margin-top: 20%;
+  }
+
+  .title {
+    margin-top: 10%;
+    font-weight: 500;
+    font-size: 1.3rem;
+  }
+
+  .description {
+    margin: 10% 5%;
+    font-size: 0.9rem;
+    color: rgb(152, 169, 188);
+  }
+
+  ion-button {
+    width: 85%;
+    margin: 10% 10%;
+    --background: rgb(79, 219, 165);
+  }
+}
+
   

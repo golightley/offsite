@@ -29,6 +29,7 @@ export class IdeasPage implements OnInit {
   navigationSubscription;
   messageCount = '';
   unsubscribe: any;
+  buttonMessage:string = "Next tip"
 
   constructor(
     public surveyService: SurveyServiceService,
@@ -254,6 +255,10 @@ export class IdeasPage implements OnInit {
     }
   }
 
+  onClickBtnNext(){
+    this.router.navigate(['/app/feedback']);
+
+  }
   // tslint:disable-next-line:use-life-cycle-interface
   ngOnDestroy() {
     // avoid memory leaks here by cleaning up after ourselves. If we
