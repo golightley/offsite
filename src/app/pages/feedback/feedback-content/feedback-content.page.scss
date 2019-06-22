@@ -13,6 +13,16 @@ ion-content {
     color: rgb(152, 169, 188);
   }
 
+  .component-container {
+    width: 100%;
+    border: lightgray 1px solid;
+    border-radius: 2px;
+
+    ion-input {
+      margin: 0 3%;
+    }
+  }
+
   textArea{
     padding-left: 8px;
     padding-top: 15px;

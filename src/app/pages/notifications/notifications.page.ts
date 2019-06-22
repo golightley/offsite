@@ -25,7 +25,7 @@ export class NotificationsPage implements OnInit {
   showNotifications:any = false;
   navigationSubscription;
   buttonMessage:string = "Next tip"
-  cardContent:string = "Slacks helps teams talk about how to get better in a constructive way."
+  cardContent:string = "Offsite helps teams talk about how to get better"
   imageName:any = "assets/images/chat.svg";
 
   constructor(

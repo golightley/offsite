@@ -26,7 +26,7 @@
                 <!-- <ion-card-subtitle>Ideas to improve your team will show up here</ion-card-subtitle> -->
             </ion-card-header>
             <ion-card-content>
-                    Your team's survey results will show up here. Get started by taking the first pulse check on the notifications tab!.
+                    Your team's survey results will show up here. Get started by taking the first pulse check on the notifications tab!
                     <img src="assets/images/charts.svg" alt="Feedback Logo"/>
             </ion-card-content>
             <ion-button (click)="onClickBtnNext()">{{buttonMessage}}</ion-button>
@@ -40,11 +40,13 @@
       </ion-card-header>
       <div style="display: block">
           <canvas baseChart
+              [options]="barChartOptions"                
               [data]="barChartData"
               [labels]="barChartLabels"
               [chartType]="barChartType"
               [colors]="barColors"
-              [legend]="false"                >
+              [legend]="false"
+              >
           </canvas>
         </div>
   </ion-card>

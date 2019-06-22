@@ -5,6 +5,7 @@ import {FeedbackCategoryModel, TeammatesModel} from './feedback-content.model';
 import * as firebase from 'firebase/app';
 import { MessageChannel } from 'worker_threads';
 import { LoadingService } from '../../../services/loading-service';
+import { InviteTeamMatesModel } from '../../team/invite-team-mates/invite-team-mates.model';
 
 require('firebase/auth');
 
@@ -14,6 +15,7 @@ require('firebase/auth');
   styleUrls: ['./feedback-content.page.scss'],
 })
 export class FeedbackContentPage implements OnInit {
+  aryMembers: InviteTeamMatesModel[];
   page = 'what';
   categories: FeedbackCategoryModel[] = [];
   teammates: TeammatesModel[] = [];
@@ -42,6 +44,10 @@ export class FeedbackContentPage implements OnInit {
     console.log('[feedback-content] ViewWillEnter - feedback content loaded - ');
     this.page = 'what';
     this.getTeamMembers();
+    const that = this;
+    this.aryMembers = [
+      new InviteTeamMatesModel()
+    ];
   }
   private getFeedbackQuestions() {
     // get notification data from the survey service
@@ -54,6 +60,24 @@ export class FeedbackContentPage implements OnInit {
         });
         console.log(this.categories);
     });
+  }
+  
+  onClickBtnAddMember() {
+    this.aryMembers.push(new InviteTeamMatesModel());
+  }
+
+  onClickBtnRemoveMember(index) {
+    this.aryMembers.splice(index, 1);
+  }
+
+
+  async onClickBtnInvite() {
+    console.log('[InviteTeam] count = ' + this.aryMembers.length);
+    await this.surveyService.inviteTeamMembers(this.aryMembers, this.teamId, this.createTeam);
+    console.log(' **** Sent all invite email **** ');
+    this.router.navigateByUrl('app/feedback/feedback-request');
+
+    // this.router.navigateByUrl('app/notifications');
   }
 
   async getTeamMembers() {

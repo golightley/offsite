@@ -11,6 +11,7 @@ import { __core_private_testing_placeholder__ } from '@angular/core/testing';
 import { NULL_EXPR } from '@angular/compiler/src/output/output_ast';
 require('firebase/auth');
 
+
 @Component({
   selector: 'app-deals-listing',
   templateUrl: './deals-listing.page.html',
@@ -43,6 +44,18 @@ export class DealsListingPage implements OnInit {
     { backgroundColor: [] },
     { borderColor: []     }
     ];
+
+  public barChartOptions:any ={
+    scales: {
+      yAxes: [{
+          ticks: {
+              beginAtZero: true,
+              min: 0,
+              max:5,
+          }
+      }]
+  },
+};
   // public barColors: any[] = [];
 
   public doughnutChartLabels: string[] = ['Sustainable', 'Support', 'Valuable', 'Learning'];
@@ -195,6 +208,7 @@ export class DealsListingPage implements OnInit {
       console.log(question)
       this.barChartLabels.push(question.category);
       this.barChartData.push(Number(question.avgScore));
+
       console.log(this.barColors);
       this.barColors[0].backgroundColor.push(this.getMarkColorStyle(question))
       console.log('[Deals] updating summary bary chart.  avgScore ' + this.barChartData);

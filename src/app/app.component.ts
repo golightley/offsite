@@ -34,26 +34,26 @@ export class AppComponent {
       url: '/team/join-team',
       icon: './assets/sample-icons/side-menu/aperture.svg'
     },
-    {
-      title: 'Invited team list',
-      url: '/team/invited-team-list',
-      icon: './assets/sample-icons/side-menu/notifications-1.svg'
-    },
+    // {
+    //   title: 'Invited team list',
+    //   url: '/team/invited-team-list',
+    //   icon: './assets/sample-icons/side-menu/notifications-1.svg'
+    // },
     {
       title: 'Invite team members',
       url: '/team/invite-team-mates',
       icon: './assets/sample-icons/side-menu/megaphone.svg'
     },
-    {
-      title: 'Manage Team',
-      url: '/team/manage-team',
-      icon: './assets/sample-icons/side-menu/construct.svg'
-    },
-    {
-      title: 'Tutorial',
-      url: '/walkthrough',
-      icon: './assets/sample-icons/side-menu/tutorial.svg'
-    },
+    // {
+    //   title: 'Manage Team',
+    //   url: '/team/manage-team',
+    //   icon: './assets/sample-icons/side-menu/construct.svg'
+    // },
+    // {
+    //   title: 'Tutorial',
+    //   url: '/walkthrough',
+    //   icon: './assets/sample-icons/side-menu/tutorial.svg'
+    // },
   ];
 
   userTeams: any = [];
