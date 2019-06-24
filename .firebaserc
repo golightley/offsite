@@ -1,6 +1,7 @@
 {
   "projects": {
     "preview": "ion4fullpwa",
-    "default": "ion4fullpwa"
+    "default": "ion4fullpwa",
+    "staging": "offsite-9f67c"
   }
 }

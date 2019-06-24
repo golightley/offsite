@@ -7,6 +7,8 @@ import { ModalPage } from '../modal/modal.page';
 import { IonicModule } from '@ionic/angular';
 import { IdeasPage } from './ideas.page';
 import { PopoverReportComponent } from '../../components/popover-report/popover-report.component';
+import { ModalPageModule } from '../../pages/modal/modal.module';  // <-- don't forget to import the AddEventModule class
+
 
 const routes: Routes = [
   {
@@ -21,10 +23,14 @@ const routes: Routes = [
     FormsModule,
     IonicModule,
     ComponentsModule,
-    RouterModule.forChild(routes)
+    RouterModule.forChild(routes),
+    ModalPageModule
   ],
-  declarations: [IdeasPage, ModalPage],
-  entryComponents: [ModalPage, PopoverReportComponent],
+  // declarations: [IdeasPage, ModalPage],
+  declarations: [IdeasPage],
+  // entryComponents: [ModalPage, PopoverReportComponent],
+
+  entryComponents: [ PopoverReportComponent,ModalPage],
 
 })
 export class IdeasPageModule {}
