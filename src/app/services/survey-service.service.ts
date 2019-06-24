@@ -157,6 +157,25 @@ export class SurveyServiceService {
     });
   }
 
+  getTeamName(teamId: string) {
+
+    console.log('ServeyService.GetTeamName.TeamId=' + teamId);
+
+    // pull each question from firebase
+    return new Promise<any>((resolve, reject) => {
+      firebase.firestore().collection('teams')
+      .doc(teamId)
+      .get()
+      .then((teamData) => {
+        if (teamData.exists) {
+          resolve(teamData);
+        } else {
+          resolve('not found!');
+        }
+        }, err => reject(err));
+    });
+  }
+
   // pull questions for results tab
   checkIfInvitedtoAteam() {
 

@@ -51,7 +51,7 @@
             </div>
         </ion-card>
         <ion-card *ngSwitchCase="'who'" padding>
-            <div  *ngIf="teammates.length == 0" class="title">No teammates yet!</div>
+            <div  *ngIf="teammates.length == 0" class="title">You are only member of your team</div>
             <div  *ngIf="teammates.length > 0" class="title">Who would you like to ask for feedback from?</div>
 
             <div  *ngIf="teammates.length > 0">
@@ -65,7 +65,7 @@
             </div>            
         </ion-card>
         <ion-card *ngSwitchCase="'who'" padding>
-                <div class="title">Which team members do you want to invite?</div>
+                <div class="title">Invite team members to get feedback </div>
                 <ion-list class="list-members" lines="none" inset>
                   <ion-row *ngFor="let member of aryMembers; let i = index" align-items-center>
                     <ion-col size="10">

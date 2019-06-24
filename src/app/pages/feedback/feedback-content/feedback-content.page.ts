@@ -20,8 +20,10 @@ export class FeedbackContentPage implements OnInit {
   categories: FeedbackCategoryModel[] = [];
   teammates: TeammatesModel[] = [];
   message = '';
-
+  userId:string = "";
+  teamId:string;
   toggle: string;
+  teamName:string;
   startSuggestions = [
     {text: 'How did the presentation go?'},
     {text: 'How did I lead that meeting?'},
@@ -48,6 +50,12 @@ export class FeedbackContentPage implements OnInit {
     this.aryMembers = [
       new InviteTeamMatesModel()
     ];
+
+  }
+
+  async loadTeam() {
+    this.teamId = await this.surveyService.getTeamId(firebase.auth().currentUser.uid);
+    this.teamName = await this.surveyService.getTeamName(this.teamId);
   }
   private getFeedbackQuestions() {
     // get notification data from the survey service
@@ -61,6 +69,8 @@ export class FeedbackContentPage implements OnInit {
         console.log(this.categories);
     });
   }
+
+  
   
   onClickBtnAddMember() {
     this.aryMembers.push(new InviteTeamMatesModel());
@@ -70,10 +80,11 @@ export class FeedbackContentPage implements OnInit {
     this.aryMembers.splice(index, 1);
   }
 
+  
 
   async onClickBtnInvite() {
     console.log('[InviteTeam] count = ' + this.aryMembers.length);
-    await this.surveyService.inviteTeamMembers(this.aryMembers, this.teamId, this.createTeam);
+    await this.surveyService.inviteTeamMembers(this.aryMembers, this.teamId, this.teamName);
     console.log(' **** Sent all invite email **** ');
     this.router.navigateByUrl('app/feedback/feedback-request');
 
