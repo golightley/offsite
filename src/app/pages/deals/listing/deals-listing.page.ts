@@ -47,7 +47,7 @@ export class DealsListingPage implements OnInit {
 
   public barChartOptions:any ={
     scales: {
-      yAxes: [{
+      xAxes: [{
           ticks: {
               beginAtZero: true,
               min: 0,
