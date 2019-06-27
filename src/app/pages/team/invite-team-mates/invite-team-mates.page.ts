@@ -188,12 +188,14 @@ export class InviteTeamMatesPage {
     }
     // get the team we are inviting them to
     this.surveyService.joinTeamWithCode(firebase.auth().currentUser.uid, myTeamId).then(joinedTeamData => {
-      this.teamId = teamId;
+      this.surveyService.getTeamByUserId(firebase.auth().currentUser.uid).then(joinedTeamData => {
+        this.teamId = joinedTeamData.id;
         this.teamName = this.invitedToTeamName;
-        this.createTeam = this.invitedToTeamName;
+        this.createTeam = joinedTeamData.data().teamName;
         this.stage = 'invite';
         myTeamId = myTeamId;
+
+      });
     });
   }
 }
-

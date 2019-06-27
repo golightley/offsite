@@ -956,6 +956,7 @@ export class SurveyServiceService {
   }
 
   updateDocument(response) {
+    // response[0] : questionId, response[1] : score.
     console.log('[ResultUpdate] doc = ' + response[0]);
     // get data
     const questionRef = firebase.firestore().collection('questions').doc(response[0]);

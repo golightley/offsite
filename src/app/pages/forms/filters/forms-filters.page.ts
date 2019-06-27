@@ -58,6 +58,8 @@ export class FormsFiltersPage implements OnInit {
 
   async submitSurvey() {
     // iterate through each survey response=
+    console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
+    console.log(this.responses);
     this.surveyService.responses = this.responses;
     await this.surveyService.submitSurvey(this.responses);
     // this.presentAlert();

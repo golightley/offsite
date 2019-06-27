@@ -15,7 +15,6 @@ require('firebase/auth');
   ]
 })
 export class TabsPage  {
-  unsubSurvey: any;
   unsubFeedback: any;
   unsubIdea: any;
   notifications: any = [];
@@ -34,7 +33,7 @@ export class TabsPage  {
     const that = this;
     firebase.auth().onAuthStateChanged(async user => {
       if (user) {
-        console.log('[Tabs] Got user!!!!!!!!!! >> user ID = ' + user.email);
+        console.log('[Tabs] Got user >> user ID = ' + user.email);
         that.userId = user.uid;
         if (that.router.url === '/app/notifications' || that.router.url === '/app/notifications?fromLoginScreen=true') {
           console.log('[Tabs] router >> call app/notifications');
@@ -142,13 +141,13 @@ export class TabsPage  {
           console.log('[Tabs] No selected team! returned');
           return;
         }
-        if (that.unsubIdea !== undefined) {
-          console.log('[Tabs] Stop Idea Listener');
-          that.unsubIdea();
-        }
         // now get the ideas based on that team
         firebase.firestore().collection('users').doc(that.userId).get().then(async docUser => {
           console.log('[Tabs] readIdeaTime = ' + docUser.data().readIdeaTime);
+          if (that.unsubIdea !== undefined) {
+            console.log('[Tabs] Stop Idea Listener');
+            that.unsubIdea();
+          }
           const readIdeaTime = docUser.data().readIdeaTime;
           if (readIdeaTime === undefined) {
             firebase.firestore().collection('users').doc(this.userId).update({
@@ -164,7 +163,6 @@ export class TabsPage  {
               const changedDocs = snapshot.docChanges();
               changedDocs.forEach((change) => {
                 if (change.oldIndex !== -1) {
-                  // that.ideas.splice(change.oldIndex, 1);
                 }
                 if (change.newIndex !== -1) {
                   if (that.router.url === '/app/ideas') {
@@ -180,16 +178,15 @@ export class TabsPage  {
                 });
               });
             }).catch((error) => {
-              console.log('[Tabs] !!!!! reset readIdeaTime error = ' + error);
+              console.log('[Tabs] reset readIdeaTime error = ' + error);
             });
           } else {
               const query = await firebase.firestore().collection('ideas')
                 .where('team', '==', that.teamId)
                 .where('timestamp', '>', readIdeaTime)
-                // .where('timestamp', '>', new Date((new Date()).setDate((new Date).getDate() + 1)))
                 .where('reported', '==', false);
               this.unsubIdea = query.onSnapshot((snapshot) => {
-              console.log('[Tabs] !!!!! Listener attached >> idea count = ' + snapshot.size + ' url = ' + this.router.url);
+              console.log('[Tabs] Listener attached >> idea count = ' + snapshot.size + ' url = ' + this.router.url);
               const changedDocs = snapshot.docChanges();
               changedDocs.forEach((change) => {
                 if (change.oldIndex !== -1) {
@@ -247,7 +244,6 @@ export class TabsPage  {
     console.log('[Tabs] ngOnDestroy');
     if (this.unsubFeedback !== undefined) {
       this.unsubFeedback();
-      this.unsubSurvey();
       this.unsubIdea();
     }
   }
