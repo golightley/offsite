@@ -24,13 +24,13 @@ const routes: Routes = [
     IonicModule,
     ComponentsModule,
     RouterModule.forChild(routes),
-    ModalPageModule
+    // ModalPageModule
   ],
   // declarations: [IdeasPage, ModalPage],
-  declarations: [IdeasPage],
+  declarations: [IdeasPage, ModalPage],
   // entryComponents: [ModalPage, PopoverReportComponent],
 
-  entryComponents: [ PopoverReportComponent,ModalPage],
+  entryComponents: [ PopoverReportComponent, ModalPage],
 
 })
 export class IdeasPageModule {}

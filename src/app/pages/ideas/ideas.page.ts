@@ -28,7 +28,7 @@ export class IdeasPage implements OnInit {
   navigationSubscription;
   messageCount = '';
   unsubscribe: any;
-  buttonMessage:string = "Next tip"
+  buttonMessage: string = 'Next tip';
 
   constructor(
     public surveyService: SurveyServiceService,
@@ -70,6 +70,7 @@ export class IdeasPage implements OnInit {
 
   ionViewWillEnter() {
     console.log('[Ideas] ionViewWillEnter teamId = ' + this.teamId);
+    console.log('[Ideas] ionViewWillEnter idea.count = ' + this.ideas.length);
   }
 
   async ionViewDidEnter() {
@@ -173,7 +174,6 @@ export class IdeasPage implements OnInit {
                 }
                 // UI Refresh
                 this.zone.run(() => {});
-                
               });
             });
           } else if (teamId.data().teamId === '') {
@@ -254,7 +254,7 @@ export class IdeasPage implements OnInit {
     }
   }
 
-  onClickBtnNext(){
+  onClickBtnNext() {
     this.router.navigate(['/app/feedback']);
 
   }

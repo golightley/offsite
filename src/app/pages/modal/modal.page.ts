@@ -15,11 +15,9 @@ import { timer } from 'rxjs/observable/timer';
   styleUrls: ['./modal.page.scss'],
 })
 export class ModalPage implements OnInit {
-  
   private mutationObserver: MutationObserver;
-  
   // team: any;
-  @Input() team:any;
+  @Input() team: any;
 
   // team;
   suggestions = [];
@@ -47,8 +45,8 @@ export class ModalPage implements OnInit {
     private keyboard: Keyboard,
     public alertController: AlertController
   ) {
-    // team 
-    console.log("[Ideas.Modal] Team Name=" + this.team)
+    // team
+    console.log("[Ideas.Modal] Team Name=" + this.team);
 
 
     // this.team = navParams.get('team');
@@ -83,17 +81,13 @@ export class ModalPage implements OnInit {
     this.keyBoardShow();
 
     this.mutationObserver = new MutationObserver((mutations) => {
-      console.log('mutation')
+      console.log('mutation');
       // this.contentArea.scrollToBottom();
     });
 
     this.mutationObserver.observe(this.chatList.nativeElement, {
       childList: true
     });
-
-
-    
-
   }
 
   keyBoardShow() {
@@ -167,14 +161,12 @@ export class ModalPage implements OnInit {
 
 
   createIdea() {
-
     console.log('Creater idea...');
     // create the comment
     this.surveyService.createIdea(this.team, this.message, this.type, this.type);
     // reset the message
     this.message = '';
     this.dismiss();
-
   }
 
   cancel() {
@@ -193,16 +185,13 @@ export class ModalPage implements OnInit {
   }
 
   ngOnInit() {
-    console.log("[Ideas.Modal] Team Name=")
-    console.log(`${this.team} `)
-
-
+    console.log('[Ideas.Modal] Team Name=');
+    console.log(`${this.team}`);
 
     timer(1500).subscribe(() => this.step = 2); // <-- hide animation after 3s
     timer(2000).subscribe(() => this.step = 3); // <-- hide animation after 3s
     timer(3000).subscribe(() => this.step = 4); // <-- hide animation after 3s
     // this.contentArea.scrollToBottom();
-
   }
 
   dismiss() {
