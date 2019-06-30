@@ -23,7 +23,9 @@ require('firebase/auth');
 })
 export class DealsListingPage implements OnInit {
   listing: DealsListingModel;
-  results: QuestionModel[] = [];
+  // results: QuestionModel[] = [];
+  results: QuestionModel[];
+
   page = 'team';
   teamUnsubscribe: any;
   myUnsubscribe: any;
@@ -31,6 +33,7 @@ export class DealsListingPage implements OnInit {
   valueBarsChart: any;
   chartData = null;
   navigationSubscription;
+  loading:boolean = true;
   userId: string;
   buttonMessage:string = "Next tip"
 
@@ -227,11 +230,15 @@ export class DealsListingPage implements OnInit {
       console.log(this.results);
       this.buildSummaryBarChart(this.results);
     });
+
+    this.loading = false;
   }
 
   updateListnerDetail(){
     console.log("updateListnerDetail")
+    console.log("This page = "+this.page)
     this.page = 'detail';
+    console.log("This page = "+this.page)
 
   }
 

@@ -14,18 +14,69 @@
         <ion-segment-button (click) = "updateListner('pulse')" value="team" mode="md">
             <ion-label>Results Summary</ion-label>
         </ion-segment-button>
-        <ion-segment-button (click) = "updateListnerDetail()" mode="md">
+        <ion-segment-button (click) = "updateListnerDetail()" value="detail" mode="md">
+          <ion-label>Individual Questions</ion-label>
+      </ion-segment-button>
+        <!-- <ion-segment-button (click) = "updateListnerDetail()" mode="md">
           <ion-label>Detailed Results</ion-label>
-        </ion-segment-button>
+        </ion-segment-button> -->
 
         <!-- <ion-segment-button  value="my" mode="md">
          <ion-segment-button (click) = "updateListner('feedback')" value="my" mode="md"> 
             <ion-label>Detailed Results</ion-label>
         </ion-segment-button> -->
     </ion-segment>
-    <div [ngSwitch]="page">
-
-    <ion-card *ngIf="results.length == 0">
+    <!-- <div [ngSwitch]="page"> -->
+      <div  *ngIf="page == 'detail'">
+       <ion-card  *ngFor="let question of results">
+          <div class="question-content" (click)="viewComments(question)">
+            <ion-row>
+              <ion-col *ngIf= "question.goal == 'pulse'" text-start class="question-type">
+                Team Results
+              </ion-col>
+              <ion-col *ngIf="question.goal == 'feedback'" text-start class="question-type">
+                  My Feedback
+              </ion-col>
+              <ion-col text-end class="question-date">
+                {{question.updatedAt | date: 'd MMM yyyy'}}
+              </ion-col>
+            </ion-row>
+            <div class="question-title" text-wrap>
+              {{question.question}}
+            </div>
+            <div *ngIf= "question.goal != 'feedback' || question.type != 'input'" class="question-divider"></div>
+            <ion-row *ngIf= "question.goal != 'feedback' || question.type != 'input'" align-items-center>
+              <ion-col class="question-chat" (click)="viewComments(question)">
+                <ion-row align-items-center>
+                  <ion-col size="auto">
+                    <ion-icon name="analytics" mode="ios"></ion-icon>
+                  </ion-col>
+                  <!-- <canvas #valueBarsCanvas></canvas> -->
+                  <!-- <ion-col size="auto">
+                    <ion-icon name="trending-up" mode="ios"></ion-icon>
+                  </ion-col>
+                  <ion-col>
+                    <span>{{question.commentsCount}}</span>
+                  </ion-col> -->
+                </ion-row>
+              </ion-col>
+              <ion-col></ion-col>
+              <ion-col size="auto" class="question-star">
+                <ion-row align-items-center>
+                  <ion-col size="auto">
+                    <ion-icon name="star"></ion-icon>
+                  </ion-col>
+                  <ion-col align-self-start>
+                    <span>{{question.avgScore | number : '1.2-2'}}</span> /4
+                  </ion-col>
+                </ion-row>
+              </ion-col>
+            </ion-row>
+          </div>
+          <div *ngIf= "question.goal != 'feedback' || question.type != 'input'" class="question-marker" [ngStyle]="{'background-color': getMarkColorStyle(question)}"></div>
+        </ion-card>
+      </div>
+    <ion-card *ngIf="results.length == 0 && loading==false">
           <ion-card-header>
                 <ion-card-title> No results yet!</ion-card-title>
                 <!-- <ion-card-subtitle>Ideas to improve your team will show up here</ion-card-subtitle> -->
@@ -57,54 +108,6 @@
         </div>
   </ion-card>
 </div>
-<div  *ngIf="page == 'detail'">
-  <ion-card  *ngFor="let question of results">
-    <div class="question-content" (click)="viewComments(question)">
-      <ion-row>
-        <ion-col *ngIf= "question.goal == 'pulse'" text-start class="question-type">
-          Team Results
-        </ion-col>
-        <ion-col *ngIf="question.goal == 'feedback'" text-start class="question-type">
-            My Feedback
-        </ion-col>
-        <ion-col text-end class="question-date">
-          {{question.updatedAt | date: 'd MMM yyyy'}}
-        </ion-col>
-      </ion-row>
-      <div class="question-title" text-wrap>
-        {{question.question}}
-      </div>
-      <div *ngIf= "question.goal != 'feedback' || question.type != 'input'" class="question-divider"></div>
-      <ion-row *ngIf= "question.goal != 'feedback' || question.type != 'input'" align-items-center>
-        <ion-col class="question-chat" (click)="viewComments(question)">
-          <ion-row align-items-center>
-            <ion-col size="auto">
-              <ion-icon name="analytics" mode="ios"></ion-icon>
-            </ion-col>
-            <!-- <canvas #valueBarsCanvas></canvas> -->
-            <!-- <ion-col size="auto">
-              <ion-icon name="trending-up" mode="ios"></ion-icon>
-            </ion-col>
-            <ion-col>
-              <span>{{question.commentsCount}}</span>
-            </ion-col> -->
-          </ion-row>
-        </ion-col>
-        <ion-col></ion-col>
-        <ion-col size="auto" class="question-star">
-          <ion-row align-items-center>
-            <ion-col size="auto">
-              <ion-icon name="star"></ion-icon>
-            </ion-col>
-            <ion-col align-self-start>
-              <span>{{question.avgScore | number : '1.2-2'}}</span> /4
-            </ion-col>
-          </ion-row>
-        </ion-col>
-      </ion-row>
-    </div>
-    <div *ngIf= "question.goal != 'feedback' || question.type != 'input'" class="question-marker" [ngStyle]="{'background-color': getMarkColorStyle(question)}"></div>
-  </ion-card>
-</div>
-  </div>
+
+  <!-- </div> -->
 </ion-content>
