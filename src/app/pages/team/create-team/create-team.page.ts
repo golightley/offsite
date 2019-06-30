@@ -16,6 +16,9 @@ export class CreateTeamPage implements OnInit {
   userId = '';
   isCancel = '';
   fromMenu: string;
+  industry: string;
+  position:string;
+
   constructor(
     public surveyService: SurveyServiceService,
     private route: ActivatedRoute,
@@ -69,8 +72,12 @@ export class CreateTeamPage implements OnInit {
       return;
     }
 
+    // console log
+    console.log("[CreateTeam] industry "+ this.industry)
+    console.log("[CreateTeam] industry "+ this.position)
+
     // get the team we are inviting them to
-    const data = await this.surveyService.createTeamByUserId(this.userId, this.createTeam);
+    const data = await this.surveyService.createTeamByUserId(this.userId, this.createTeam,this.industry,this.position);
     if ( data && data.error === undefined && data.error !== 'exist') {
         console.log('Team created...');
         this.surveyService.showToastMsg('Successfully created!');

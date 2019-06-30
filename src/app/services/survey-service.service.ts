@@ -411,7 +411,7 @@ export class SurveyServiceService {
     });
   }
 
-  async createTeamByUserId(uid, teamName) {
+  async createTeamByUserId(uid, teamName, industry, createdByLevel) {
     const result = await this.loadingService.doFirebase(async() => {
       return new Promise<any>((resolve, reject) => {
         const that = this;
@@ -425,6 +425,8 @@ export class SurveyServiceService {
               memembersids: [uid],
               members: firebase.firestore.FieldValue.arrayUnion({ uid }),
               teamName: teamName,
+              industry: industry,
+              creatorLevel: createdByLevel,
               createdBy: uid,
               teamCreated: firebase.firestore.FieldValue.serverTimestamp()
             }).then(async(teamData) => {

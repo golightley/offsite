@@ -150,7 +150,7 @@ export class InviteTeamMatesPage {
       return;
     }
     // get the team we are inviting them to
-    const data = await this.surveyService.createTeamByUserId(this.userId, this.createTeam);
+    const data = await this.surveyService.createTeamByUserId(this.userId, this.createTeam,"NA","NA");
     // if ( data && data.error === undefined) {
     //     console.log('Team created...');
     //     this.teamId = data;

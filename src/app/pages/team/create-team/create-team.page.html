@@ -18,7 +18,30 @@
           </div>
         </ion-col>
       </ion-row>
-    </ion-list>    
+    
+    </ion-list> 
+    <ion-list-header>Team Options</ion-list-header>
+
+    <ion-item>
+      <ion-label>Industry</ion-label>
+      <ion-select [(ngModel)]="industry" placeholder="Select One">
+        <ion-select-option value="o">Office</ion-select-option>
+        <ion-select-option value="r">Retail</ion-select-option>
+        <ion-select-option value="b">Bar & Restaurant</ion-select-option>
+        <ion-select-option value="T"> Other</ion-select-option>
+
+      </ion-select>
+    </ion-item>
+
+
+    <ion-item>
+        <ion-label>Position</ion-label>
+        <ion-select [(ngModel)]="position" placeholder="Select One">
+          <ion-select-option value="M">Manager</ion-select-option>
+          <ion-select-option value="I">Individual Contributor</ion-select-option>
+        </ion-select>
+      </ion-item>
+
   </ion-card>
   <ion-button  class="button-invite" expand="block" (click)="onClickCreateTeam()">
       Create team
