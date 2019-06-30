@@ -5,7 +5,6 @@ import { SurveyServiceService } from '../../services/survey-service.service';
 import { HttpClient } from '@angular/common/http';
 import { ModalPage } from '../modal/modal.page';
 import { ModalController } from '@ionic/angular';
-
 import { PopoverController } from '@ionic/angular';
 import { PopoverReportComponent } from '../../components/popover-report/popover-report.component';
 import { Router, NavigationExtras, NavigationEnd } from '@angular/router';

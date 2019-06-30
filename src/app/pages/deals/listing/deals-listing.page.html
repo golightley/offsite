@@ -12,10 +12,15 @@
 
     <ion-segment mode="md" color="success" [(ngModel)]="page">
         <ion-segment-button (click) = "updateListner('pulse')" value="team" mode="md">
-            <ion-label>Team dashboard</ion-label>
+            <ion-label>Results Summary</ion-label>
         </ion-segment-button>
-        <!-- <ion-segment-button (click) = "updateListner('feedback')" value="my" mode="md">
-            <ion-label>My dashboard</ion-label>
+        <ion-segment-button (click) = "updateListnerDetail()" mode="md">
+          <ion-label>Detailed Results</ion-label>
+        </ion-segment-button>
+
+        <!-- <ion-segment-button  value="my" mode="md">
+         <ion-segment-button (click) = "updateListner('feedback')" value="my" mode="md"> 
+            <ion-label>Detailed Results</ion-label>
         </ion-segment-button> -->
     </ion-segment>
     <div [ngSwitch]="page">
@@ -34,6 +39,7 @@
     </ion-card>
   
 
+<div  *ngIf="page == 'team'">
   <ion-card *ngIf="results.length != 0">
       <ion-card-header>
           <ion-card-subtitle>Team Summary</ion-card-subtitle>
@@ -50,22 +56,8 @@
           </canvas>
         </div>
   </ion-card>
-
-  <!-- <ion-card>
-      <ion-card-header>
-          <ion-card-subtitle>Attrition risk</ion-card-subtitle>
-      </ion-card-header>
-      <div style="display: block">
-          <canvas baseChart
-              [data]="doughnutChartData"
-              [labels]="doughnutChartLabels"
-              [chartType]="doughnutChartType"
-              [colors]="doughnutColors"
-              [legend]="false"                >
-          </canvas>
-        </div>
-  </ion-card> -->
-
+</div>
+<div  *ngIf="page == 'detail'">
   <ion-card  *ngFor="let question of results">
     <div class="question-content" (click)="viewComments(question)">
       <ion-row>
@@ -113,5 +105,6 @@
     </div>
     <div *ngIf= "question.goal != 'feedback' || question.type != 'input'" class="question-marker" [ngStyle]="{'background-color': getMarkColorStyle(question)}"></div>
   </ion-card>
+</div>
   </div>
 </ion-content>

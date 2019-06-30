@@ -229,6 +229,12 @@ export class DealsListingPage implements OnInit {
     });
   }
 
+  updateListnerDetail(){
+    console.log("updateListnerDetail")
+    this.page = 'detail';
+
+  }
+
   updateListner(goal) {
     if (goal === 'pulse') {
       console.log('[Deals] team');
