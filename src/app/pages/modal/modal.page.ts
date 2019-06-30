@@ -1,5 +1,7 @@
-import { Component, OnInit, ViewChild, ElementRef, ViewChildren, ContentChildren } from '@angular/core';
-import { ModalController, NavParams, IonContent } from '@ionic/angular';
+import { Component, OnInit, ViewChild, ElementRef, ViewChildren, ContentChildren, Input } from '@angular/core';
+// import { ModalController, NavParams, IonContent } from '@ionic/angular';
+import { ModalController, IonContent } from '@ionic/angular';
+
 import { Keyboard } from '@ionic-native/keyboard/ngx';
 import { AlertController } from '@ionic/angular';
 
@@ -13,9 +15,13 @@ import { timer } from 'rxjs/observable/timer';
   styleUrls: ['./modal.page.scss'],
 })
 export class ModalPage implements OnInit {
+  
   private mutationObserver: MutationObserver;
+  
+  // team: any;
+  @Input() team:any;
 
-  team: any;
+  // team;
   suggestions = [];
   startSuggestions = [];
   stopSuggestions = [];
@@ -36,12 +42,16 @@ export class ModalPage implements OnInit {
   message = '';
   constructor(
     public modalController: ModalController,
-    public navParams: NavParams,
+    // public navParams: NavParams,
     public surveyService: SurveyServiceService,
     private keyboard: Keyboard,
     public alertController: AlertController
   ) {
-    this.team = navParams.get('team');
+    // team 
+    console.log("[Ideas.Modal] Team Name=" + this.team)
+
+
+    // this.team = navParams.get('team');
     this.loadSuggestions('start');
     this.loadSuggestions('stop');
 
@@ -183,6 +193,10 @@ export class ModalPage implements OnInit {
   }
 
   ngOnInit() {
+    console.log("[Ideas.Modal] Team Name=")
+    console.log(`${this.team} `)
+
+
 
     timer(1500).subscribe(() => this.step = 2); // <-- hide animation after 3s
     timer(2000).subscribe(() => this.step = 3); // <-- hide animation after 3s
