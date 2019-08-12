@@ -76,7 +76,9 @@
           <div *ngIf= "question.goal != 'feedback' || question.type != 'input'" class="question-marker" [ngStyle]="{'background-color': getMarkColorStyle(question)}"></div>
         </ion-card>
       </div>
-    <ion-card *ngIf="results.length == 0 && loading==false">
+    <!-- <ion-card *ngIf="results.length == 0 && loading==false"> -->
+        <ion-card *ngIf="results.length == 0">
+
           <ion-card-header>
                 <ion-card-title> No results yet!</ion-card-title>
                 <!-- <ion-card-subtitle>Ideas to improve your team will show up here</ion-card-subtitle> -->

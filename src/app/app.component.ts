@@ -10,7 +10,6 @@ import { LoadingService } from './services/loading-service';
 import { UserTeamsModel, UserModel } from './pages/team/select-team/select-team.component.model';
 import { FCM } from '@ionic-native/fcm/ngx';
 require('firebase/auth');
-import { Firebase } from '@ionic-native/firebase';
 
 
 @Component({
@@ -30,7 +29,7 @@ export class AppComponent {
       icon: './assets/sample-icons/side-menu/add-circle.svg'
     },
     {
-      title: 'Join to a team',
+      title: 'Join a team',
       url: '/team/join-team',
       icon: './assets/sample-icons/side-menu/aperture.svg'
     },

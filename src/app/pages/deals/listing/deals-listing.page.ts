@@ -229,9 +229,10 @@ export class DealsListingPage implements OnInit {
       });
       console.log(this.results);
       this.buildSummaryBarChart(this.results);
-    });
+      this.loading =false;
 
-    this.loading = false;
+    });
+    // this.loading = false;
   }
 
   updateListnerDetail(){

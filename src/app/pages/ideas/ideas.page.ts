@@ -255,7 +255,7 @@ export class IdeasPage implements OnInit {
   }
 
   onClickBtnNext() {
-    this.router.navigate(['/app/feedback']);
+    this.router.navigate(['/app/notifications']);
 
   }
   // tslint:disable-next-line:use-life-cycle-interface

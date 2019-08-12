@@ -69,8 +69,7 @@
     </ion-card>
   <ion-list *ngIf="stage=='invite'" lines="none" class="anonymous">
     <ion-item>
-      <ion-checkbox [(ngModel)]="isAnonymously" color="success"></ion-checkbox>
-      <ion-label>Send invitation anonymously</ion-label>
+      <ion-label>All invitations sent anonymously</ion-label>
     </ion-item>
   </ion-list>
   <ion-button  *ngIf="stage=='team'" class="button-invite" expand="block" (click)="onClickCreateTeam()">
